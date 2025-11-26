@@ -1,0 +1,77 @@
+<div id="control-panel" style="display: none;">
+  <div class="win95-window">
+    <div class="win95-titlebar">
+      <span>⚙ Control Panel</span>
+      <div class="win95-titlebar-buttons">
+        <button class="win95-btn-close" id="ctrl-close">×</button>
+      </div>
+    </div>
+    <div class="win95-content">
+
+      <fieldset class="win95-fieldset">
+        <legend>Retros</legend>
+        <div id="retro-checkboxes" class="win95-checkbox-grid"></div>
+        <div class="win95-buttons" style="margin-top: 8px;">
+          <button id="ctrl-select-all" class="win95-btn" style="min-width: 50px; padding: 2px 8px;">All</button>
+          <button id="ctrl-select-random" class="win95-btn" style="min-width: 50px; padding: 2px 8px;">Random</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="win95-fieldset">
+        <legend>Media Player</legend>
+        <div class="win95-row">
+          <span class="win95-label">Song:</span>
+          <select id="ctrl-song" class="win95-select">
+            <option value="">Random</option>
+          </select>
+        </div>
+        <div class="win95-row">
+          <span class="win95-label">Viz:</span>
+          <select id="ctrl-viz" class="win95-select">
+            <option value="">Random</option>
+            <option value="waveform">Waveform</option>
+            <option value="spectrogram">Spectrogram</option>
+            <option value="spectrum">Spectrum</option>
+            <option value="psychedelic">Psychedelic</option>
+            <option value="radial">Radial</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <div class="win95-row">
+        <span class="win95-label">WordArt:</span>
+        <select id="ctrl-wordart" class="win95-select">
+          <option value="">Random</option>
+          <option value="one">Style 1 - Outlined</option>
+          <option value="two">Style 2 - Slanted</option>
+          <option value="three">Style 3 - Italic Shadow</option>
+          <option value="four">Style 4 - Blue Serif</option>
+          <option value="five">Style 5 - 3D Purple</option>
+          <option value="six">Style 6 - Silver</option>
+          <option value="seven">Style 7 - Impact Blue</option>
+          <option value="eight">Style 8 - Sunset</option>
+          <option value="nine">Style 9 - Purple Skew</option>
+          <option value="ten">Style 10 - Green Echo</option>
+          <option value="eleven">Style 11 - Blue 3D</option>
+          <option value="twelve">Style 12 - Teal Serif</option>
+          <option value="thirteen">Style 13 - Western</option>
+          <option value="fourteen">Style 14 - Pink Depth</option>
+          <option value="fifteen">Style 15 - Gold</option>
+          <option value="sixteen">Style 16 - Cyan Navy</option>
+          <option value="seventeen">Style 17 - Striped</option>
+          <option value="eighteen">Style 18 - Chrome</option>
+          <option value="nineteen">Style 19 - Green 3D</option>
+          <option value="twenty">Style 20 - Silver 3D</option>
+          <option value="twentyone">Style 21 - Fire</option>
+          <option value="twentytwo">Style 22 - Ice & Fire</option>
+        </select>
+      </div>
+
+      <div class="win95-buttons">
+        <button id="ctrl-apply" class="win95-btn">Apply</button>
+        <button id="ctrl-reset" class="win95-btn">Reset</button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div id="retro-badges" style="display: none;"></div>
+
+<div id="retro-media-player" style="display: none;">
+  <span class="media-player">
+    <audio id="audioPlayer" preload="metadata"></audio>
+    <span class="media-display-container">
+      <canvas id="waveformCanvas"></canvas>
+      <select id="trackSelector" class="media-display"></select>
+    </span>
+    <span class="media-controls">
+      <button onclick="var a = document.getElementById('audioPlayer'); if(a.paused) a.play(); else a.pause();">⏯</button>
+    </span>
+  </span>
+</div>
+
+<div id="retro-webring" style="display: none;">
+  <iframe id="webring" style="border: 0.2em double #000000; width: 100%;"></iframe>
+</div>
+
+<div id="retro-guestbook" style="display: none;">
+  <iframe id="guestbook" style="border: 0.2em double #000000; width: 100%;"></iframe>
+</div>
+
+<div id="retro-counter" style="display: none;">
+  <div class="visitor-container">
+    <div class="visitor-display">
+      <div id="visitorLabel">Visitors</div>
+      <span id="visitorCount">000000</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div id="chat-window" style="display: none;">
+  <div class="win95-window">
+    <div class="win95-titlebar">
+      <span>💬 Chat Room</span>
+      <div class="win95-titlebar-buttons">
+        <button class="win95-btn-close" onclick="closeChatWindow();">×</button>
+      </div>
+    </div>
+    <div class="win95-content chat-content" id="chat-content">
+      <div id="chat-confirm">
+        <p>This chat room is powered by<br><a href="https://chitchatter.im/" target="_blank">chitchatter.im</a></p>
+        <p class="chat-confirm-note">Clicking "Connect" will load content from their servers.</p>
+        <button class="win95-btn" onclick="loadChatIframe();">Connect</button>
+      </div>
+    </div>
+  </div>
+</div>
