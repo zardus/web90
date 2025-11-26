@@ -3,6 +3,8 @@
 [Github](https://github.com/zardus/web90)  
 [Deployment](https://yancomm.net/web90)
 
+⚠️ **Warning**: This entire project was 100% vibecoded. Proceed with appropriate expectations.
+
 A drop-in JavaScript library that adds nostalgic 90s/2000s web aesthetics to any website.
 Relive the glory days of GeoCities, AngelFire, and the early web with animated GIFs, visitor counters, mouse trails, WordArt, and more.
 
@@ -53,6 +55,7 @@ Clone this repo into your site, then:
 ## Available Retros
 
 ### DOM Retros (visual elements)
+
 | Name | Description |
 |------|-------------|
 | `badges` | 90s-style badge images (under construction, best viewed in, etc.) |
@@ -62,6 +65,7 @@ Clone this repo into your site, then:
 | `guestbook` | Embedded guestbook iframe |
 
 ### JS Retros (effects)
+
 | Name | Description |
 |------|-------------|
 | `mouse-trail` | Binary digits follow your cursor |
@@ -74,6 +78,7 @@ Clone this repo into your site, then:
 | `dividers` | Animated GIF dividers between sections |
 
 ### Special
+
 | Name | Description |
 |------|-------------|
 | `control-panel` | Windows 95-style control panel to toggle retros |
