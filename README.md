@@ -1,4 +1,7 @@
-# web90
+# web90: Bringing the web back to the 90s!
+
+[Github](https://github.com/zardus/web90)  
+[Deployment](https://yancomm.net/web90)
 
 A drop-in JavaScript library that adds nostalgic 90s/2000s web aesthetics to any website.
 Relive the glory days of GeoCities, AngelFire, and the early web with animated GIFs, visitor counters, mouse trails, WordArt, and more.
