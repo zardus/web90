@@ -195,6 +195,8 @@ marquee {
   position: relative;
   display: block;
   margin-bottom: 1.5em; /* Compensate for transforms that don't affect layout */
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Extra space for styles with tall transforms (scaleY 1.5+) */
@@ -210,7 +212,7 @@ marquee {
 .wordart-style-two .wordart-container,
 .wordart-style-nineteen .wordart-container,
 .wordart-style-twentyone .wordart-container {
-  margin-bottom: 4.5em;
+  margin-bottom: 5.0em;
 }
 
 /* Even more space for styles with floor shadows/reflections */
