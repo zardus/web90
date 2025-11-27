@@ -384,6 +384,9 @@
     document.querySelectorAll('.untableable').forEach(function(el) {
       el.style.display = 'none';
     });
+    document.querySelectorAll('.divider').forEach(function(el) {
+      el.style.display = 'none';
+    });
   }
 
   function initHampsterDance() {
