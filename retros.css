@@ -210,13 +210,13 @@ marquee {
 .wordart-style-two .wordart-container,
 .wordart-style-nineteen .wordart-container,
 .wordart-style-twentyone .wordart-container {
-  margin-bottom: 3.5em;
+  margin-bottom: 4.5em;
 }
 
 /* Even more space for styles with floor shadows/reflections */
 .wordart-style-eleven .wordart-container,
 .wordart-style-fifteen .wordart-container {
-  margin-bottom: 3.5em;
+  margin-bottom: 2.5em;
 }
 
 h1.wordart {
