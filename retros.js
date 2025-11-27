@@ -390,6 +390,12 @@
   }
 
   function initHampsterDance() {
+    // Save the original body background styles before overwriting
+    var computedStyle = window.getComputedStyle(document.body);
+    var originalBackground = computedStyle.background;
+    var originalBackgroundColor = computedStyle.backgroundColor;
+    var originalBackgroundImage = computedStyle.backgroundImage;
+
     document.body.style.backgroundImage = 'url("' + config.basePath + '/hampsters.gif")';
     document.body.style.backgroundRepeat = 'repeat';
     document.body.style.backgroundSize = 'auto';
@@ -400,7 +406,12 @@
 
     var main = document.getElementById('main');
     if (main) {
-      main.style.background = 'white';
+      // Apply the original body background to main instead of white
+      if (originalBackgroundImage && originalBackgroundImage !== 'none') {
+        main.style.background = originalBackground;
+      } else {
+        main.style.backgroundColor = originalBackgroundColor || 'white';
+      }
       main.style.position = 'relative';
       main.style.zIndex = '1';
     }
