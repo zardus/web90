@@ -257,7 +257,8 @@
 
   function initMouseTrail() {
     var lastSpawn = 0;
-    document.addEventListener('mousemove', function(e) {
+
+    function spawnTrail(x, y) {
       var now = Date.now();
       if (now - lastSpawn < 50) return;
       lastSpawn = now;
@@ -265,14 +266,25 @@
       var digit = document.createElement('span');
       digit.className = 'binary-trail';
       digit.textContent = Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1');
-      digit.style.left = (e.clientX + (Math.random() - 0.5) * 10) + 'px';
-      digit.style.top = (e.clientY + (Math.random() - 0.5) * 10) + 'px';
+      digit.style.left = (x + (Math.random() - 0.5) * 10) + 'px';
+      digit.style.top = (y + (Math.random() - 0.5) * 10) + 'px';
       digit.style.setProperty('--drift-x', (Math.random() - 0.5) * 20 + 'px');
       document.body.appendChild(digit);
 
       setTimeout(function() {
         if (digit.parentNode) digit.parentNode.removeChild(digit);
       }, 1000);
+    }
+
+    document.addEventListener('mousemove', function(e) {
+      spawnTrail(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchmove', function(e) {
+      var touch = e.touches[0];
+      if (touch) {
+        spawnTrail(touch.clientX, touch.clientY);
+      }
     });
   }
 
