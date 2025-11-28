@@ -91,7 +91,8 @@
     { name: 'table', type: 'js', emoji: '📊', label: 'Table', init: initTable },
     { name: 'hampsterdance', type: 'js', emoji: '🐹', label: 'Hampster Dance', init: initHampsterDance },
     { name: 'custom-cursor', type: 'js', emoji: '🖱️', label: 'Custom Cursor', init: initCustomCursor },
-    { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers }
+    { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers },
+    { name: 'flash', type: 'js', emoji: '⚡', label: 'Flash Site', init: initFlash }
   ];
 
   // Slots are detected from DOM via data-retro-slot attribute
@@ -341,6 +342,281 @@
         hr.parentNode.replaceChild(div, hr);
       };
       img.src = src;
+    });
+  }
+
+  // ============================================
+  // Flash Mode - Y2K Macromedia Flash Experience
+  // ============================================
+  function initFlash() {
+    // Extract semantic content from the page
+    var header = document.querySelector('header');
+    var nav = document.querySelector('nav');
+    var sections = document.querySelectorAll('section[id]');
+    var main = document.getElementById('main');
+
+    if (!header || !sections.length) return;
+
+    // Hide everything first
+    document.body.classList.add('flash-mode');
+
+    // Extract content data before we nuke everything
+    var headshotImg = document.querySelector('.headshot');
+    var headerContent = {
+      title: header.querySelector('h1') ? header.querySelector('h1').textContent : 'Welcome',
+      headshot: headshotImg ? headshotImg.src : null
+    };
+
+    var navLinks = [];
+    if (nav) {
+      nav.querySelectorAll('a').forEach(function(a) {
+        navLinks.push({ text: a.textContent, href: a.href });
+      });
+    }
+
+    var sectionData = [];
+    sections.forEach(function(section) {
+      sectionData.push({
+        id: section.id,
+        title: section.dataset.title || section.id,
+        element: section // Keep reference to watch for dynamic content
+      });
+    });
+
+    // Create the Flash container
+    var flashContainer = document.createElement('div');
+    flashContainer.id = 'flash-container';
+    flashContainer.innerHTML = '\
+      <div id="flash-loader">\
+        <div class="flash-loader-content">\
+          <div class="flash-logo">⚡</div>\
+          <div class="flash-loading-text">Loading...</div>\
+          <div class="flash-progress-container">\
+            <div class="flash-progress-bar"></div>\
+          </div>\
+          <div class="flash-progress-percent">0%</div>\
+          <div class="flash-macromedia">Made with Macromedia® Flash™</div>\
+        </div>\
+      </div>\
+      <div id="flash-intro" style="display:none;">\
+        <div class="flash-intro-content">\
+          <div class="flash-intro-headshot"></div>\
+          <div class="flash-intro-title"></div>\
+          <div class="flash-intro-subtitle">ENTER SITE</div>\
+          <button class="flash-enter-btn">► CLICK TO ENTER ◄</button>\
+          <div class="flash-skip">[ skip intro ]</div>\
+        </div>\
+      </div>\
+      <div id="flash-site" style="display:none;">\
+        <div class="flash-header">\
+          <div class="flash-header-left">\
+            <div class="flash-header-headshot"></div>\
+            <div class="flash-site-title"></div>\
+          </div>\
+          <div class="flash-nav"></div>\
+        </div>\
+        <div class="flash-main">\
+          <div class="flash-sidebar"></div>\
+          <div class="flash-content"></div>\
+        </div>\
+        <div class="flash-footer">\
+          <span>© 2003 All Rights Reserved</span>\
+          <span class="flash-visitor-count">Visitors: <span id="flash-visitors">0</span></span>\
+          <span>Best viewed in 800x600</span>\
+        </div>\
+      </div>\
+    ';
+
+    // Hide the original content
+    if (main) main.style.display = 'none';
+    document.body.appendChild(flashContainer);
+
+    // Populate the Flash site with extracted content
+    var flashTitle = flashContainer.querySelector('.flash-site-title');
+    var introTitle = flashContainer.querySelector('.flash-intro-title');
+    if (flashTitle) flashTitle.textContent = headerContent.title;
+    if (introTitle) introTitle.textContent = headerContent.title;
+
+    // Add headshot to intro and header
+    if (headerContent.headshot) {
+      var introHeadshot = flashContainer.querySelector('.flash-intro-headshot');
+      var headerHeadshot = flashContainer.querySelector('.flash-header-headshot');
+      if (introHeadshot) {
+        var img1 = document.createElement('img');
+        img1.src = headerContent.headshot;
+        img1.alt = 'Headshot';
+        introHeadshot.appendChild(img1);
+      }
+      if (headerHeadshot) {
+        var img2 = document.createElement('img');
+        img2.src = headerContent.headshot;
+        img2.alt = 'Headshot';
+        headerHeadshot.appendChild(img2);
+      }
+    }
+
+    // Build navigation
+    var flashNav = flashContainer.querySelector('.flash-nav');
+    var flashSidebar = flashContainer.querySelector('.flash-sidebar');
+
+    // Add section links to nav
+    sectionData.forEach(function(section, index) {
+      var btn = document.createElement('button');
+      btn.className = 'flash-nav-btn';
+      btn.textContent = section.title;
+      btn.dataset.section = section.id;
+      if (index === 0) btn.classList.add('active');
+      flashNav.appendChild(btn);
+
+      var sideBtn = document.createElement('div');
+      sideBtn.className = 'flash-sidebar-btn';
+      sideBtn.innerHTML = '► ' + section.title;
+      sideBtn.dataset.section = section.id;
+      if (index === 0) sideBtn.classList.add('active');
+      flashSidebar.appendChild(sideBtn);
+    });
+
+    // Add external links dropdown
+    if (navLinks.length > 0) {
+      var linksBtn = document.createElement('button');
+      linksBtn.className = 'flash-nav-btn flash-links-btn';
+      linksBtn.textContent = 'Links ▼';
+      flashNav.appendChild(linksBtn);
+
+      var dropdown = document.createElement('div');
+      dropdown.className = 'flash-dropdown';
+      navLinks.forEach(function(link) {
+        var a = document.createElement('a');
+        a.href = link.href;
+        a.textContent = link.text;
+        dropdown.appendChild(a);
+      });
+      linksBtn.appendChild(dropdown);
+
+      linksBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('show');
+      });
+    }
+
+    // Build content sections - move the actual elements instead of copying innerHTML
+    // This preserves dynamically loaded content like paper emojis
+    var flashContent = flashContainer.querySelector('.flash-content');
+    sectionData.forEach(function(section, index) {
+      var div = document.createElement('div');
+      div.className = 'flash-section';
+      div.id = 'flash-' + section.id;
+
+      var title = document.createElement('h2');
+      title.className = 'flash-section-title';
+      title.textContent = section.title;
+      div.appendChild(title);
+
+      // Move the original section element into the flash container
+      // This preserves all event listeners and dynamic content
+      div.appendChild(section.element);
+      section.element.style.display = 'block';
+
+      if (index === 0) div.classList.add('active');
+      flashContent.appendChild(div);
+    });
+
+    // Navigation functionality
+    function showSection(sectionId) {
+      flashContainer.querySelectorAll('.flash-section').forEach(function(s) {
+        s.classList.remove('active');
+      });
+      flashContainer.querySelectorAll('.flash-nav-btn, .flash-sidebar-btn').forEach(function(b) {
+        b.classList.remove('active');
+      });
+
+      var targetSection = flashContainer.querySelector('#flash-' + sectionId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+
+      flashContainer.querySelectorAll('[data-section="' + sectionId + '"]').forEach(function(b) {
+        b.classList.add('active');
+      });
+    }
+
+    flashContainer.querySelectorAll('.flash-nav-btn[data-section], .flash-sidebar-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        showSection(this.dataset.section);
+      });
+    });
+
+    // Loading animation
+    var progress = 0;
+    var progressBar = flashContainer.querySelector('.flash-progress-bar');
+    var progressPercent = flashContainer.querySelector('.flash-progress-percent');
+    var loader = flashContainer.querySelector('#flash-loader');
+    var intro = flashContainer.querySelector('#flash-intro');
+    var site = flashContainer.querySelector('#flash-site');
+
+    function updateProgress() {
+      progress += Math.random() * 15 + 5;
+      if (progress > 100) progress = 100;
+      progressBar.style.width = progress + '%';
+      progressPercent.textContent = Math.floor(progress) + '%';
+
+      if (progress < 100) {
+        setTimeout(updateProgress, 200 + Math.random() * 300);
+      } else {
+        setTimeout(function() {
+          loader.classList.add('fade-out');
+          setTimeout(function() {
+            loader.style.display = 'none';
+            intro.style.display = 'flex';
+            intro.classList.add('fade-in');
+          }, 500);
+        }, 500);
+      }
+    }
+
+    setTimeout(updateProgress, 500);
+
+    // Enter site button
+    var enterBtn = flashContainer.querySelector('.flash-enter-btn');
+    var skipBtn = flashContainer.querySelector('.flash-skip');
+
+    function enterSite() {
+      intro.classList.add('fade-out');
+      setTimeout(function() {
+        intro.style.display = 'none';
+        site.style.display = 'flex';
+        site.classList.add('flash-site-enter');
+
+        // Animate visitor counter
+        var visitorEl = document.getElementById('flash-visitors');
+        var targetCount = Math.floor(Math.random() * 50000) + 10000;
+        var currentCount = 0;
+        var increment = Math.ceil(targetCount / 50);
+        var countInterval = setInterval(function() {
+          currentCount += increment;
+          if (currentCount >= targetCount) {
+            currentCount = targetCount;
+            clearInterval(countInterval);
+          }
+          visitorEl.textContent = currentCount.toLocaleString();
+        }, 30);
+      }, 500);
+    }
+
+    enterBtn.addEventListener('click', enterSite);
+    skipBtn.addEventListener('click', function() {
+      loader.style.display = 'none';
+      intro.style.display = 'none';
+      site.style.display = 'flex';
+      site.classList.add('flash-site-enter');
+      document.getElementById('flash-visitors').textContent = (Math.floor(Math.random() * 50000) + 10000).toLocaleString();
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+      flashContainer.querySelectorAll('.flash-dropdown').forEach(function(d) {
+        d.classList.remove('show');
+      });
     });
   }
 

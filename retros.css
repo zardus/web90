@@ -868,3 +868,519 @@ h1.wordart {
 }
 
 /* Custom cursor is now injected via JS based on config.cursorUrl */
+
+/* ============================================
+   FLASH MODE - Y2K Macromedia Flash Experience
+   ============================================ */
+
+.flash-mode {
+  overflow: hidden;
+}
+
+#flash-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  font-family: 'Trebuchet MS', 'Comic Sans MS', Arial, sans-serif;
+}
+
+/* Loading Screen */
+#flash-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+#flash-loader.fade-out {
+  opacity: 0;
+}
+
+.flash-loader-content {
+  text-align: center;
+  color: #fff;
+}
+
+.flash-logo {
+  font-size: 80px;
+  animation: flash-pulse 1.5s ease-in-out infinite;
+  text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff;
+}
+
+@keyframes flash-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.flash-loading-text {
+  font-size: 24px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin: 20px 0;
+  color: #00d4ff;
+  animation: flash-blink 1s steps(2) infinite;
+}
+
+@keyframes flash-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.flash-progress-container {
+  width: 300px;
+  height: 20px;
+  background: #000;
+  border: 2px solid #00d4ff;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5), inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.flash-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00d4ff, #00ff88, #00d4ff);
+  background-size: 200% 100%;
+  animation: flash-progress-shimmer 1s linear infinite;
+  transition: width 0.2s ease;
+  box-shadow: 0 0 15px #00d4ff;
+}
+
+@keyframes flash-progress-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.flash-progress-percent {
+  font-size: 18px;
+  font-family: 'Courier New', monospace;
+  color: #00ff88;
+  text-shadow: 0 0 5px #00ff88;
+}
+
+.flash-macromedia {
+  margin-top: 40px;
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 2px;
+}
+
+/* Intro Screen */
+#flash-intro {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #2d1b4e 0%, #1a0a2e 50%, #0d0015 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#flash-intro.fade-in {
+  opacity: 1;
+}
+
+#flash-intro.fade-out {
+  opacity: 0;
+}
+
+.flash-intro-content {
+  text-align: center;
+}
+
+.flash-intro-headshot {
+  margin-bottom: 20px;
+}
+
+.flash-intro-headshot img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid #ffd700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 140, 0, 0.3);
+  animation: flash-headshot-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes flash-headshot-glow {
+  0% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 140, 0, 0.3); }
+  100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 140, 0, 0.5); }
+}
+
+.flash-intro-title {
+  font-size: 72px;
+  font-weight: bold;
+  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 50%, #ff4500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.8)) drop-shadow(0 4px 0 #000);
+  animation: flash-title-glow 2s ease-in-out infinite alternate;
+  letter-spacing: 4px;
+}
+
+@keyframes flash-title-glow {
+  0% { filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.8)) drop-shadow(0 4px 0 #000); }
+  100% { filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1)) drop-shadow(0 4px 0 #000); }
+}
+
+.flash-intro-subtitle {
+  font-size: 24px;
+  color: #c0c0c0;
+  letter-spacing: 12px;
+  margin: 30px 0;
+  text-transform: uppercase;
+}
+
+.flash-enter-btn {
+  background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 50%, #1a1a1a 100%);
+  border: 3px solid;
+  border-color: #666 #333 #222 #555;
+  color: #ffd700;
+  font-size: 20px;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  padding: 15px 40px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  animation: flash-btn-pulse 2s ease-in-out infinite;
+}
+
+@keyframes flash-btn-pulse {
+  0%, 100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 40px rgba(255, 215, 0, 0.6); }
+}
+
+.flash-enter-btn:hover {
+  background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 50%, #2a2a2a 100%);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.flash-enter-btn:active {
+  transform: scale(0.98);
+  border-color: #333 #666 #555 #222;
+}
+
+.flash-skip {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.flash-skip:hover {
+  color: #999;
+  text-decoration: underline;
+}
+
+/* Main Flash Site */
+#flash-site {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+  flex-direction: column;
+  opacity: 0;
+}
+
+#flash-site.flash-site-enter {
+  animation: flash-site-reveal 0.8s ease forwards;
+}
+
+@keyframes flash-site-reveal {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Flash Header */
+.flash-header {
+  background: linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%);
+  border-bottom: 3px solid;
+  border-image: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700) 1;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.flash-header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.flash-header-headshot img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.flash-site-title {
+  font-size: 32px;
+  font-weight: bold;
+  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(2px 2px 0 #000);
+  letter-spacing: 2px;
+}
+
+.flash-nav {
+  display: flex;
+  gap: 5px;
+}
+
+.flash-nav-btn {
+  background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+  border: 2px solid;
+  border-color: #666 #333 #222 #555;
+  color: #ddd;
+  font-size: 12px;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.flash-nav-btn:hover {
+  background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%);
+  color: #ffd700;
+}
+
+.flash-nav-btn.active {
+  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 100%);
+  color: #000;
+  border-color: #ffee00 #cc7000 #aa5500 #ffdd00;
+}
+
+.flash-links-btn {
+  position: relative;
+}
+
+.flash-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%);
+  border: 2px solid #555;
+  min-width: 150px;
+  z-index: 100;
+  flex-direction: column;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.flash-dropdown.show {
+  display: flex;
+}
+
+.flash-dropdown a {
+  color: #ddd;
+  text-decoration: none;
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  border-bottom: 1px solid #333;
+  transition: all 0.15s;
+}
+
+.flash-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.flash-dropdown a:hover {
+  background: #ffd700;
+  color: #000;
+}
+
+/* Flash Main Content Area */
+.flash-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.flash-sidebar {
+  width: 180px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+  border-right: 2px solid #333;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: inset -10px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.flash-sidebar-btn {
+  color: #888;
+  font-size: 13px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.flash-sidebar-btn:hover {
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  border-left-color: #ffd700;
+}
+
+.flash-sidebar-btn.active {
+  color: #ffd700;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, transparent 100%);
+  border-left-color: #ffd700;
+  font-weight: bold;
+}
+
+.flash-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+}
+
+.flash-section {
+  display: none;
+  animation: flash-section-fade 0.5s ease;
+  color: #fff;
+}
+
+.flash-section.active {
+  display: block;
+}
+
+@keyframes flash-section-fade {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.flash-section-title {
+  font-size: 28px;
+  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg, #ffd700, transparent) 1;
+}
+
+/* Style the content inside flash sections */
+.flash-section a {
+  color: #00d4ff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.flash-section a:hover {
+  color: #ffd700;
+  text-decoration: underline;
+}
+
+.flash-section h2,
+.flash-section h3,
+.flash-section h4 {
+  color: #ffd700;
+}
+
+.flash-section p {
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* Flash Footer */
+.flash-footer {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  border-top: 2px solid #333;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #666;
+}
+
+.flash-visitor-count {
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+}
+
+#flash-visitors {
+  color: #ffd700;
+  text-shadow: 0 0 5px #ffd700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .flash-sidebar {
+    display: none;
+  }
+
+  .flash-intro-title {
+    font-size: 36px;
+  }
+
+  .flash-intro-headshot img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .flash-header-headshot {
+    display: none;
+  }
+
+  .flash-site-title {
+    font-size: 20px;
+  }
+
+  .flash-nav {
+    flex-wrap: wrap;
+  }
+
+  .flash-nav-btn {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .flash-footer {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+
+  .flash-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
