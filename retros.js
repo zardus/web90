@@ -521,23 +521,46 @@
       flashContent.appendChild(div);
     });
 
-    // Navigation functionality
+    // Navigation functionality with INSANE transitions
     function showSection(sectionId) {
-      flashContainer.querySelectorAll('.flash-section').forEach(function(s) {
-        s.classList.remove('active');
-      });
+      var currentActive = flashContainer.querySelector('.flash-section.active');
+      var targetSection = flashContainer.querySelector('#flash-' + sectionId);
+
+      // Don't do anything if clicking the same section
+      if (currentActive && targetSection && currentActive === targetSection) return;
+
+      // Add screen shake to content area
+      flashContent.classList.add('flash-screen-shake');
+      setTimeout(function() {
+        flashContent.classList.remove('flash-screen-shake');
+      }, 300);
+
+      // Exit animation for current section
+      if (currentActive) {
+        currentActive.classList.add('exiting');
+        currentActive.classList.remove('active');
+      }
+
+      // Update nav buttons immediately
       flashContainer.querySelectorAll('.flash-nav-btn, .flash-sidebar-btn').forEach(function(b) {
         b.classList.remove('active');
       });
-
-      var targetSection = flashContainer.querySelector('#flash-' + sectionId);
-      if (targetSection) {
-        targetSection.classList.add('active');
-      }
-
       flashContainer.querySelectorAll('[data-section="' + sectionId + '"]').forEach(function(b) {
         b.classList.add('active');
       });
+
+      // Delay the new section entrance for dramatic effect
+      setTimeout(function() {
+        // Remove exiting class from old section
+        if (currentActive) {
+          currentActive.classList.remove('exiting');
+        }
+
+        // Enter the new section
+        if (targetSection) {
+          targetSection.classList.add('active');
+        }
+      }, 250);
     }
 
     flashContainer.querySelectorAll('.flash-nav-btn[data-section], .flash-sidebar-btn').forEach(function(btn) {
