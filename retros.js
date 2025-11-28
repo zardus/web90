@@ -280,6 +280,13 @@
       spawnTrail(e.clientX, e.clientY);
     });
 
+    document.addEventListener('touchstart', function(e) {
+      var touch = e.touches[0];
+      if (touch) {
+        spawnTrail(touch.clientX, touch.clientY);
+      }
+    });
+
     document.addEventListener('touchmove', function(e) {
       var touch = e.touches[0];
       if (touch) {
