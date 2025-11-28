@@ -1997,6 +1997,123 @@ h1.wordart {
   margin-bottom: 8px;
 }
 
+/* Generic handling for dark content - make it FLASH-y */
+.flash-section img:not(.headshot),
+.flash-section svg,
+.flash-section canvas {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(230, 230, 255, 0.95) 100%);
+  border: 3px solid;
+  border-color: #ffd700 #aa8800 #775500 #ddaa00;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+/* Tables get the Flash treatment */
+.flash-section table {
+  background: linear-gradient(180deg, rgba(0, 20, 40, 0.9) 0%, rgba(0, 10, 30, 0.95) 100%);
+  border: 2px solid #ffd700;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.flash-section th {
+  background: linear-gradient(180deg, #3a3000 0%, #2a2000 100%);
+  color: #ffd700;
+  padding: 10px 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  border-bottom: 2px solid #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.flash-section td {
+  padding: 8px 15px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  color: #ddd;
+}
+
+.flash-section tr:hover td {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* Code/pre blocks */
+.flash-section code,
+.flash-section pre {
+  background: linear-gradient(180deg, #0a0a1a 0%, #050510 100%);
+  border: 1px solid #00d4ff;
+  border-radius: 4px;
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+}
+
+.flash-section code {
+  padding: 2px 6px;
+}
+
+.flash-section pre {
+  padding: 15px;
+  overflow-x: auto;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2), inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Blockquotes */
+.flash-section blockquote {
+  border-left: 4px solid #ff4500;
+  background: linear-gradient(90deg, rgba(255, 69, 0, 0.1) 0%, transparent 100%);
+  padding: 15px 20px;
+  margin: 15px 0;
+  font-style: italic;
+  color: #ccc;
+}
+
+/* Form elements */
+.flash-section input,
+.flash-section textarea,
+.flash-section select {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+  border: 2px solid #555;
+  border-radius: 4px;
+  color: #fff;
+  padding: 8px 12px;
+  transition: all 0.3s;
+}
+
+.flash-section input:focus,
+.flash-section textarea:focus,
+.flash-section select:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  outline: none;
+}
+
+.flash-section button,
+.flash-section input[type="submit"] {
+  background: linear-gradient(180deg, #3a3000 0%, #2a2000 100%);
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+}
+
+.flash-section button:hover,
+.flash-section input[type="submit"]:hover {
+  background: linear-gradient(180deg, #5a4a00 0%, #3a3000 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
 /* Flash Footer */
 .flash-footer {
   background: linear-gradient(180deg, #0d0d0d 0%, #000 100%);
