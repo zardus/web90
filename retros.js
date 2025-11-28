@@ -454,8 +454,81 @@
         var img2 = document.createElement('img');
         img2.src = headerContent.headshot;
         img2.alt = 'Headshot';
+        img2.style.cursor = 'pointer';
+        img2.title = 'Click me!';
+        img2.addEventListener('click', function() {
+          triggerHeadshotFreakout(headerContent.headshot);
+        });
         headerHeadshot.appendChild(img2);
       }
+    }
+
+    // INSANE headshot click effect
+    function triggerHeadshotFreakout(imgSrc) {
+      // Create the freakout overlay
+      var overlay = document.createElement('div');
+      overlay.className = 'flash-headshot-freakout';
+
+      // Giant spinning headshot
+      var bigHead = document.createElement('img');
+      bigHead.src = imgSrc;
+      bigHead.className = 'flash-freakout-head';
+      overlay.appendChild(bigHead);
+
+      // Particle explosion
+      for (var i = 0; i < 30; i++) {
+        var particle = document.createElement('div');
+        particle.className = 'flash-freakout-particle';
+        particle.style.setProperty('--angle', (Math.random() * 360) + 'deg');
+        particle.style.setProperty('--distance', (100 + Math.random() * 300) + 'px');
+        particle.style.setProperty('--duration', (0.5 + Math.random() * 0.5) + 's');
+        particle.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+        particle.style.setProperty('--size', (10 + Math.random() * 20) + 'px');
+        particle.textContent = ['⭐', '✨', '💥', '🔥', '⚡', '💫', '🌟'][Math.floor(Math.random() * 7)];
+        overlay.appendChild(particle);
+      }
+
+      // Matrix rain columns
+      for (var j = 0; j < 20; j++) {
+        var column = document.createElement('div');
+        column.className = 'flash-freakout-matrix-col';
+        column.style.left = (j * 5) + '%';
+        column.style.animationDelay = (Math.random() * 2) + 's';
+        column.style.animationDuration = (1 + Math.random() * 2) + 's';
+
+        var chars = '';
+        for (var k = 0; k < 30; k++) {
+          chars += String.fromCharCode(0x30A0 + Math.random() * 96) + '<br>';
+        }
+        column.innerHTML = chars;
+        overlay.appendChild(column);
+      }
+
+      // Lens flare bursts
+      for (var l = 0; l < 5; l++) {
+        var flare = document.createElement('div');
+        flare.className = 'flash-freakout-flare';
+        flare.style.setProperty('--flare-delay', (l * 0.15) + 's');
+        flare.style.left = (20 + Math.random() * 60) + '%';
+        flare.style.top = (20 + Math.random() * 60) + '%';
+        overlay.appendChild(flare);
+      }
+
+      // "EPIC" text that flies in
+      var epicText = document.createElement('div');
+      epicText.className = 'flash-freakout-text';
+      epicText.textContent = ['EPIC!', 'AWESOME!', 'LEGENDARY!', 'ULTRA!', 'MAXIMUM!', 'EXTREME!'][Math.floor(Math.random() * 6)];
+      overlay.appendChild(epicText);
+
+      flashContainer.appendChild(overlay);
+
+      // Remove after animation
+      setTimeout(function() {
+        overlay.classList.add('ending');
+        setTimeout(function() {
+          overlay.remove();
+        }, 500);
+      }, 2500);
     }
 
     // Build navigation
