@@ -435,7 +435,10 @@
     var flashTitle = flashContainer.querySelector('.flash-site-title');
     var introTitle = flashContainer.querySelector('.flash-intro-title');
     if (flashTitle) flashTitle.textContent = headerContent.title;
-    if (introTitle) introTitle.textContent = headerContent.title;
+    if (introTitle) {
+      introTitle.textContent = headerContent.title;
+      introTitle.setAttribute('data-text', headerContent.title); // For glitch effect
+    }
 
     // Add headshot to intro and header
     if (headerContent.headshot) {
@@ -459,7 +462,7 @@
     var flashNav = flashContainer.querySelector('.flash-nav');
     var flashSidebar = flashContainer.querySelector('.flash-sidebar');
 
-    // Add section links to nav
+    // Add section links to nav and sidebar
     sectionData.forEach(function(section, index) {
       var btn = document.createElement('button');
       btn.className = 'flash-nav-btn';
@@ -476,26 +479,23 @@
       flashSidebar.appendChild(sideBtn);
     });
 
-    // Add external links dropdown
+    // Add external links to sidebar
     if (navLinks.length > 0) {
-      var linksBtn = document.createElement('button');
-      linksBtn.className = 'flash-nav-btn flash-links-btn';
-      linksBtn.textContent = 'Links ▼';
-      flashNav.appendChild(linksBtn);
+      var divider = document.createElement('div');
+      divider.className = 'flash-sidebar-divider';
+      flashSidebar.appendChild(divider);
 
-      var dropdown = document.createElement('div');
-      dropdown.className = 'flash-dropdown';
+      var linksHeader = document.createElement('div');
+      linksHeader.className = 'flash-sidebar-header';
+      linksHeader.textContent = '✦ LINKS ✦';
+      flashSidebar.appendChild(linksHeader);
+
       navLinks.forEach(function(link) {
-        var a = document.createElement('a');
-        a.href = link.href;
-        a.textContent = link.text;
-        dropdown.appendChild(a);
-      });
-      linksBtn.appendChild(dropdown);
-
-      linksBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        dropdown.classList.toggle('show');
+        var sideLink = document.createElement('a');
+        sideLink.className = 'flash-sidebar-link';
+        sideLink.href = link.href;
+        sideLink.innerHTML = '› ' + link.text;
+        flashSidebar.appendChild(sideLink);
       });
     }
 
@@ -610,13 +610,6 @@
       site.style.display = 'flex';
       site.classList.add('flash-site-enter');
       document.getElementById('flash-visitors').textContent = (Math.floor(Math.random() * 50000) + 10000).toLocaleString();
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function() {
-      flashContainer.querySelectorAll('.flash-dropdown').forEach(function(d) {
-        d.classList.remove('show');
-      });
     });
   }
 
