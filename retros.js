@@ -290,11 +290,24 @@
   // ============================================
 
   // Mouse trail styles - selectable via ?trail-style=xxx
-  var TRAIL_STYLES = ['binary', 'sparkles', 'fire', 'rainbow', 'stars', 'hearts', 'neon', 'bubbles', 'snow', 'matrix'];
+  var TRAIL_STYLES = ['binary', 'sparkles', 'fire', 'rainbow', 'stars', 'hearts', 'neon', 'bubbles', 'snow', 'matrix', 'ghost', 'elastic'];
 
   function initMouseTrail() {
     var trailParam = params.get('trail-style');
     var trailStyle = TRAIL_STYLES.includes(trailParam) ? trailParam : TRAIL_STYLES[Math.floor(Math.random() * TRAIL_STYLES.length)];
+
+    // Ghost and elastic trails use canvas-based cursor image rendering
+    if (trailStyle === 'ghost') {
+      initGhostTrail();
+      document.body.classList.add('trail-style-ghost');
+      return;
+    }
+    if (trailStyle === 'elastic') {
+      initElasticTrail();
+      document.body.classList.add('trail-style-elastic');
+      return;
+    }
+
     var lastSpawn = 0;
     var hue = 0;
 
@@ -382,6 +395,116 @@
 
     // Add trail style class to body for CSS
     document.body.classList.add('trail-style-' + trailStyle);
+  }
+
+  // ============================================
+  // Cursor Image Trail - Ghost (fading) and Elastic (timed vanish)
+  // ============================================
+  function initCursorTrail(mode) {
+    var cursorImg = new Image();
+    cursorImg.src = config.basePath + '/cursors/win95.png';
+
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+    document.body.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var trailLength = 50;
+    var cursorScale = 1.0; // 32x32 matches native cursor size
+
+    // Ghost: fades out over lifeSpan frames
+    // Elastic: vanishes after maxAge ms
+    var lifeSpan = 65; // frames for ghost
+    var maxAge = 200;  // ms for elastic
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function Particle(x, y) {
+      this.x = x;
+      this.y = y;
+      this.lifeSpan = lifeSpan;
+      this.initialLife = lifeSpan;
+      this.birthTime = Date.now();
+    }
+
+    var cursorX = 0, cursorY = 0;
+    var lastSpawn = 0;
+    var spawnRate = mode === 'elastic' ? 3 : 6;
+
+    document.addEventListener('mousemove', function(e) {
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+
+      var now = Date.now();
+      if (now - lastSpawn > spawnRate) {
+        lastSpawn = now;
+        particles.push(new Particle(cursorX, cursorY));
+        if (particles.length > trailLength) {
+          particles.shift();
+        }
+      }
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      var scaledWidth = cursorImg.width * cursorScale;
+      var scaledHeight = cursorImg.height * cursorScale;
+      var now = Date.now();
+
+      // Draw oldest first so newest appears on top
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+
+        if (mode === 'ghost') {
+          // Ghost mode: fade out over lifeSpan frames
+          p.lifeSpan--;
+          if (p.lifeSpan <= 0) {
+            particles.splice(i, 1);
+            i--;
+            continue;
+          }
+          var alpha = (p.lifeSpan / p.initialLife) * 0.8;
+          ctx.globalAlpha = alpha;
+        } else {
+          // Elastic mode: vanish after maxAge ms
+          var age = now - p.birthTime;
+          if (age >= maxAge) {
+            particles.splice(i, 1);
+            i--;
+            continue;
+          }
+          ctx.globalAlpha = 0.8;
+        }
+
+        ctx.drawImage(cursorImg, p.x, p.y, scaledWidth, scaledHeight);
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
+    }
+
+    cursorImg.onload = function() {
+      animate();
+    };
+
+    if (cursorImg.complete) {
+      animate();
+    }
+  }
+
+  function initGhostTrail() {
+    initCursorTrail('ghost');
+  }
+
+  function initElasticTrail() {
+    initCursorTrail('elastic');
   }
 
   function initBlink() {
