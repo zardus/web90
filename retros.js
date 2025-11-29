@@ -173,6 +173,7 @@
     snow: {
       chars: ['❄', '❅', '❆', '✻'],
       color: function() { return '#fff'; },
+      textShadow: function() { return '0 0 3px #08f, 0 0 6px #08f, 0 0 2px #000'; },
       driftY: function() { return (30 + Math.random() * 20) + 'px'; }
     },
     matrix: {
