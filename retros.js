@@ -30,13 +30,63 @@
 (function() {
   'use strict';
 
-  // Auto-detect base path from script location
+  // ============================================
+  // Utility Functions
+  // ============================================
+
+  function randomFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+    return arr;
+  }
+
+  function createElement(tag, styles, parent) {
+    var el = document.createElement(tag);
+    if (styles) el.style.cssText = styles;
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+
+  function createCanvas(styles, parent) {
+    var canvas = createElement('canvas', styles, parent || document.body);
+    return { canvas: canvas, ctx: canvas.getContext('2d') };
+  }
+
+  function createFullscreenCanvas(zIndex, opacity, pointerEvents) {
+    var styles = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:' + (zIndex || 9999) + ';';
+    if (opacity !== undefined) styles += 'opacity:' + opacity + ';';
+    if (pointerEvents === false) styles += 'pointer-events:none;';
+    return createCanvas(styles, document.body);
+  }
+
+  function setupCanvasResize(canvas, scaleFactor) {
+    scaleFactor = scaleFactor || 1;
+    function resize() {
+      canvas.width = window.innerWidth / scaleFactor;
+      canvas.height = window.innerHeight / scaleFactor;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    return resize;
+  }
+
+  // ============================================
+  // Configuration
+  // ============================================
+
   var scripts = document.getElementsByTagName('script');
   var currentScript = scripts[scripts.length - 1];
   var scriptSrc = currentScript.src || '';
   var detectedBasePath = scriptSrc.substring(0, scriptSrc.lastIndexOf('/')) || '/web90';
 
-  // Default configuration
   var DEFAULT_CONFIG = {
     basePath: detectedBasePath,
     badges: [
@@ -61,11 +111,10 @@
     chatUrl: '',
     cursorUrl: '',
     counterGlitchText: '',
-    randomRetros: null,      // Array of retro names to randomly choose from (null = all retros)
-    aprilFoolsRetros: null   // Array of retro names for April Fools chaos (null = all retros)
+    randomRetros: null,
+    aprilFoolsRetros: null
   };
 
-  // Merge user config with defaults
   var config = (function() {
     var userConfig = window.WEB90_CONFIG || {};
     var merged = {};
@@ -78,8 +127,99 @@
   var params = new URLSearchParams(window.location.search);
 
   // ============================================
+  // Trail Style Definitions
+  // ============================================
+
+  var TRAIL_STYLES = {
+    binary: {
+      chars: function() { return Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1'); }
+    },
+    sparkles: {
+      chars: ['✦', '✧', '★', '✯', '⋆', '✶', '✴', '✹'],
+      color: function() { return 'hsl(' + Math.random() * 360 + ', 100%, 70%)'; }
+    },
+    fire: {
+      chars: ['🔥', '💥', '✨', '⚡'],
+      driftY: function() { return -(30 + Math.random() * 40) + 'px'; }
+    },
+    rainbow: {
+      chars: ['●'],
+      throttle: 30,
+      color: function(hue) { return 'hsl(' + hue + ', 100%, 60%)'; },
+      textShadow: function(hue) { return '0 0 10px hsl(' + hue + ', 100%, 50%)'; },
+      hueStep: 15
+    },
+    stars: {
+      chars: ['⭐', '🌟', '💫', '✨']
+    },
+    hearts: {
+      chars: ['❤️', '💖', '💕', '💗', '💜', '💙']
+    },
+    neon: {
+      chars: ['◆', '◇', '○', '●', '□', '■'],
+      color: function() {
+        var colors = ['#ff00ff', '#00ffff', '#ff0080', '#80ff00', '#0080ff'];
+        return randomFrom(colors);
+      },
+      textShadow: function(_, color) {
+        return '0 0 5px ' + color + ', 0 0 10px ' + color + ', 0 0 20px ' + color;
+      }
+    },
+    bubbles: {
+      chars: ['○', '◌', '◯', '⬤'],
+      color: function() { return 'rgba(100, 200, 255, 0.7)'; },
+      driftY: function() { return -(20 + Math.random() * 30) + 'px'; }
+    },
+    snow: {
+      chars: ['❄', '❅', '❆', '✻'],
+      color: function() { return '#fff'; },
+      driftY: function() { return (30 + Math.random() * 20) + 'px'; }
+    },
+    matrix: {
+      chars: function() { return String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)); },
+      color: function() { return '#0f0'; },
+      textShadow: function() { return '0 0 5px #0f0, 0 0 10px #0f0, 0 0 2px #000, 0 0 4px #000'; },
+      driftY: function() { return (30 + Math.random() * 50) + 'px'; }
+    }
+  };
+
+  var TRAIL_STYLE_NAMES = Object.keys(TRAIL_STYLES).concat(['ghost', 'elastic']);
+
+  // ============================================
+  // Theme Definitions
+  // ============================================
+
+  var THEMES = {
+    matrix: initThemeMatrix,
+    crt: initThemeCRT,
+    neon: initThemeNeon,
+    y2k: initThemeY2K,
+    hampsterdance: initHampsterDance,
+    table: initTable,
+    flash: initFlash,
+    snow: initThemeTVSnow
+  };
+
+  var THEME_NAMES = Object.keys(THEMES);
+
+  // ============================================
+  // Visualization Definitions
+  // ============================================
+
+  var VIZ_MODES = {
+    waveform: { dataType: 'time', draw: drawWaveform },
+    spectrogram: { dataType: 'freq', draw: drawSpectrogram },
+    spectrum: { dataType: 'freq', draw: drawSpectrum },
+    psychedelic: { dataType: 'freq', draw: drawPsychedelic },
+    radial: { dataType: 'freq', draw: drawRadial }
+  };
+
+  var VIZ_MODE_NAMES = Object.keys(VIZ_MODES);
+
+  // ============================================
   // Retro Definitions - Single Source of Truth
   // ============================================
+
   var RETROS = [
     // DOM retros (have HTML elements)
     { name: 'badges', type: 'dom', emoji: '🏅', label: 'Badges' },
@@ -100,11 +240,17 @@
     { name: 'glitch', type: 'js', emoji: '📼', label: 'VHS Glitch', init: initGlitch }
   ];
 
-  // Slots are detected from DOM via data-retro-slot attribute
-  // First slot (primary container) keeps elements in place, others receive overflow
+  // Derived arrays
+  var ALL_DOM_RETROS = RETROS.filter(function(r) { return r.type === 'dom'; }).map(function(r) { return r.name; });
+  var ALL_JS_RETROS = RETROS.filter(function(r) { return r.type === 'js'; }).map(function(r) { return r.name; });
+  var ALL_FUN_RETROS = RETROS.map(function(r) { return r.name; });
+
+  // ============================================
+  // Slot Management
+  // ============================================
+
   function getSlots() {
     var slots = Array.from(document.querySelectorAll('[data-retro-slot]'));
-    // Sort by slot number
     slots.sort(function(a, b) {
       var orderA = parseInt(a.dataset.retroSlot, 10);
       var orderB = parseInt(b.dataset.retroSlot, 10);
@@ -115,51 +261,29 @@
     return slots;
   }
 
-  // Derived arrays
-  var ALL_DOM_RETROS = RETROS.filter(function(r) { return r.type === 'dom'; }).map(function(r) { return r.name; });
-  var ALL_JS_RETROS = RETROS.filter(function(r) { return r.type === 'js'; }).map(function(r) { return r.name; });
-  var ALL_FUN_RETROS = RETROS.map(function(r) { return r.name; });
-
-  // Shuffle array in place (Fisher-Yates)
-  function shuffle(arr) {
-    for (var i = arr.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = temp;
-    }
-    return arr;
-  }
-
   // ============================================
-  // April Fools Detection
+  // April Fools Detection & Selection
   // ============================================
+
   function isAprilFools() {
     var today = new Date();
     return today.getMonth() === 3 && today.getDate() === 1;
   }
 
-  // ============================================
-  // April Fools Random Selection
-  // Selects a random number of retros for maximum chaos
-  // ============================================
-  function selectAprilFoolsRetros() {
-    // null/undefined = all retros; empty array = no retros; array = only those retros
-    var pool;
-    if (Array.isArray(config.aprilFoolsRetros)) {
-      if (config.aprilFoolsRetros.length === 0) {
-        return []; // Empty array = no April Fools retros
-      }
-      pool = config.aprilFoolsRetros.filter(function(r) { return ALL_FUN_RETROS.indexOf(r) !== -1; });
-      if (pool.length === 0) {
-        return []; // All specified retros were invalid
-      }
-    } else {
-      pool = ALL_FUN_RETROS.slice();
+  function selectFromPool(configPool, allRetros) {
+    if (Array.isArray(configPool)) {
+      if (configPool.length === 0) return [];
+      var filtered = configPool.filter(function(r) { return allRetros.indexOf(r) !== -1; });
+      return filtered.length > 0 ? filtered : [];
     }
+    return allRetros.slice();
+  }
+
+  function selectAprilFoolsRetros() {
+    var pool = selectFromPool(config.aprilFoolsRetros, ALL_FUN_RETROS);
+    if (pool.length === 0) return [];
 
     var allRetros = shuffle(pool);
-    // Pick random count, weighted toward chaos (sqrt biases toward more)
     var minRetros = 2;
     var maxRetros = allRetros.length;
     var count = Math.floor(Math.sqrt(Math.random()) * (maxRetros - minRetros + 1)) + minRetros;
@@ -169,6 +293,7 @@
   // ============================================
   // Retro List Parser
   // ============================================
+
   function parseRetroList() {
     var retroParam = params.get('retros') || params.get('retro');
     if (!retroParam) return null;
@@ -177,7 +302,6 @@
 
     if (retros.length === 1 && retros[0] === 'none') return [];
 
-    // Handle "april-fools"
     if (retros.indexOf('april-fools') !== -1) {
       var aprilFoolsRetros = selectAprilFoolsRetros();
       var extras = retros.filter(function(r) {
@@ -187,7 +311,6 @@
       return retros.filter(function(r, i, arr) { return arr.indexOf(r) === i; });
     }
 
-    // Handle "all"
     if (retros.indexOf('all') !== -1) {
       retros.splice(retros.indexOf('all'), 1);
       retros = ALL_FUN_RETROS.concat(retros);
@@ -199,6 +322,7 @@
   // ============================================
   // Retro Element Enabler
   // ============================================
+
   function initRetroSelector() {
     var retroList = parseRetroList();
 
@@ -213,7 +337,6 @@
 
     if (retroList.length === 0) return [];
 
-    // Handle DOM retros
     var domRetrosSelected = retroList.filter(function(r) {
       return ALL_DOM_RETROS.indexOf(r) !== -1;
     });
@@ -233,21 +356,12 @@
   // ============================================
   // Random Retro Selection
   // ============================================
-  function selectRandomRetro() {
-    // null/undefined = all retros; empty array = no retros; array = only those retros
-    if (Array.isArray(config.randomRetros)) {
-      if (config.randomRetros.length === 0) {
-        return null; // Empty array = no random retro
-      }
-      var pool = config.randomRetros.filter(function(r) { return ALL_FUN_RETROS.indexOf(r) !== -1; });
-      if (pool.length === 0) {
-        return null; // All specified retros were invalid
-      }
-    } else {
-      var pool = ALL_FUN_RETROS;
-    }
 
-    var selected = pool[Math.floor(Math.random() * pool.length)];
+  function selectRandomRetro() {
+    var pool = selectFromPool(config.randomRetros, ALL_FUN_RETROS);
+    if (pool.length === 0) return null;
+
+    var selected = randomFrom(pool);
 
     if (ALL_DOM_RETROS.indexOf(selected) !== -1) {
       var el = document.getElementById('retro-' + selected);
@@ -259,8 +373,8 @@
 
   // ============================================
   // Distribute DOM Retros
-  // Randomizes order and fills slots detected via data-retro-slot
   // ============================================
+
   function distributeRetros(domRetros) {
     var shuffled = shuffle(domRetros.slice());
     var slots = getSlots();
@@ -269,8 +383,6 @@
       var el = document.getElementById('retro-' + name);
       if (!el) return;
 
-      // First element stays in primary container (index 0)
-      // Others go to overflow slots, defaulting to slot[1] if available
       if (index > 0 && slots.length > 1) {
         var slotIndex = index < slots.length ? index : 1;
         var slot = slots[slotIndex];
@@ -286,91 +398,58 @@
   }
 
   // ============================================
-  // JS Retro Initializers
+  // Mouse Trail
   // ============================================
-
-  // Mouse trail styles - selectable via ?trail-style=xxx
-  var TRAIL_STYLES = ['binary', 'sparkles', 'fire', 'rainbow', 'stars', 'hearts', 'neon', 'bubbles', 'snow', 'matrix', 'ghost', 'elastic'];
 
   function initMouseTrail() {
     var trailParam = params.get('trail-style');
-    var trailStyle = TRAIL_STYLES.includes(trailParam) ? trailParam : TRAIL_STYLES[Math.floor(Math.random() * TRAIL_STYLES.length)];
+    var trailStyle = TRAIL_STYLE_NAMES.includes(trailParam) ? trailParam : randomFrom(TRAIL_STYLE_NAMES);
 
-    // Ghost and elastic trails use canvas-based cursor image rendering
     if (trailStyle === 'ghost') {
-      initGhostTrail();
+      initCursorTrail('ghost');
       document.body.classList.add('trail-style-ghost');
       return;
     }
     if (trailStyle === 'elastic') {
-      initElasticTrail();
+      initCursorTrail('elastic');
       document.body.classList.add('trail-style-elastic');
       return;
     }
 
+    var styleDef = TRAIL_STYLES[trailStyle];
     var lastSpawn = 0;
     var hue = 0;
+    var throttle = styleDef.throttle || 50;
 
     function spawnTrail(x, y) {
       var now = Date.now();
-      var throttle = trailStyle === 'rainbow' ? 30 : 50;
       if (now - lastSpawn < throttle) return;
       lastSpawn = now;
 
-      var el = document.createElement('span');
+      var el = createElement('span');
       el.className = 'mouse-trail trail-' + trailStyle;
       el.style.left = (x + (Math.random() - 0.5) * 10) + 'px';
       el.style.top = (y + (Math.random() - 0.5) * 10) + 'px';
       el.style.setProperty('--drift-x', (Math.random() - 0.5) * 30 + 'px');
-      el.style.setProperty('--drift-y', (Math.random() - 0.5) * 30 + 'px');
+      el.style.setProperty('--drift-y', styleDef.driftY ? styleDef.driftY() : (Math.random() - 0.5) * 30 + 'px');
 
-      switch (trailStyle) {
-        case 'binary':
-          el.textContent = Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1');
-          break;
-        case 'sparkles':
-          el.textContent = ['✦', '✧', '★', '✯', '⋆', '✶', '✴', '✹'][Math.floor(Math.random() * 8)];
-          el.style.color = 'hsl(' + Math.random() * 360 + ', 100%, 70%)';
-          break;
-        case 'fire':
-          el.textContent = ['🔥', '💥', '✨', '⚡'][Math.floor(Math.random() * 4)];
-          el.style.setProperty('--drift-y', -(30 + Math.random() * 40) + 'px');
-          break;
-        case 'rainbow':
-          el.textContent = '●';
-          hue = (hue + 15) % 360;
-          el.style.color = 'hsl(' + hue + ', 100%, 60%)';
-          el.style.textShadow = '0 0 10px hsl(' + hue + ', 100%, 50%)';
-          break;
-        case 'stars':
-          el.textContent = ['⭐', '🌟', '💫', '✨'][Math.floor(Math.random() * 4)];
-          break;
-        case 'hearts':
-          el.textContent = ['❤️', '💖', '💕', '💗', '💜', '💙'][Math.floor(Math.random() * 6)];
-          break;
-        case 'neon':
-          el.textContent = ['◆', '◇', '○', '●', '□', '■'][Math.floor(Math.random() * 6)];
-          var neonColors = ['#ff00ff', '#00ffff', '#ff0080', '#80ff00', '#0080ff'];
-          var neonColor = neonColors[Math.floor(Math.random() * neonColors.length)];
-          el.style.color = neonColor;
-          el.style.textShadow = '0 0 5px ' + neonColor + ', 0 0 10px ' + neonColor + ', 0 0 20px ' + neonColor;
-          break;
-        case 'bubbles':
-          el.textContent = ['○', '◌', '◯', '⬤'][Math.floor(Math.random() * 4)];
-          el.style.color = 'rgba(100, 200, 255, 0.7)';
-          el.style.setProperty('--drift-y', -(20 + Math.random() * 30) + 'px');
-          break;
-        case 'snow':
-          el.textContent = ['❄', '❅', '❆', '✻'][Math.floor(Math.random() * 4)];
-          el.style.color = '#fff';
-          el.style.setProperty('--drift-y', (30 + Math.random() * 20) + 'px');
-          break;
-        case 'matrix':
-          el.textContent = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
-          el.style.color = '#0f0';
-          el.style.textShadow = '0 0 5px #0f0, 0 0 10px #0f0, 0 0 2px #000, 0 0 4px #000';
-          el.style.setProperty('--drift-y', (30 + Math.random() * 50) + 'px');
-          break;
+      // Get character
+      var chars = styleDef.chars;
+      el.textContent = typeof chars === 'function' ? chars() : randomFrom(chars);
+
+      // Get color
+      if (styleDef.color) {
+        if (styleDef.hueStep) {
+          hue = (hue + styleDef.hueStep) % 360;
+          el.style.color = styleDef.color(hue);
+        } else {
+          el.style.color = styleDef.color();
+        }
+      }
+
+      // Get text shadow
+      if (styleDef.textShadow) {
+        el.style.textShadow = styleDef.textShadow(hue, el.style.color);
       }
 
       document.body.appendChild(el);
@@ -379,61 +458,53 @@
       }, 1000);
     }
 
+    function handleMove(x, y) {
+      spawnTrail(x, y);
+    }
+
     document.addEventListener('mousemove', function(e) {
-      spawnTrail(e.clientX, e.clientY);
+      handleMove(e.clientX, e.clientY);
     });
 
     document.addEventListener('touchstart', function(e) {
       var touch = e.touches[0];
-      if (touch) spawnTrail(touch.clientX, touch.clientY);
+      if (touch) handleMove(touch.clientX, touch.clientY);
     }, { passive: true });
 
     document.addEventListener('touchmove', function(e) {
       var touch = e.touches[0];
-      if (touch) spawnTrail(touch.clientX, touch.clientY);
+      if (touch) handleMove(touch.clientX, touch.clientY);
     }, { passive: true });
 
-    // Add trail style class to body for CSS
     document.body.classList.add('trail-style-' + trailStyle);
   }
 
   // ============================================
-  // Cursor Image Trail - Ghost (fading) and Elastic (timed vanish)
+  // Cursor Image Trail - Ghost and Elastic modes
   // ============================================
+
   function initCursorTrail(mode) {
     var cursorImg = new Image();
-
-    // Use the active custom cursor if set, otherwise fall back to win95
     var cursorParam = params.get('cursor-style');
+
     if (cursorParam === 'custom' && config.cursorUrl) {
       cursorImg.src = config.cursorUrl;
     } else if (cursorParam && cursorParam !== 'none' && cursorParam !== 'custom') {
-      // Named cursor style (e.g., 'hourglass')
       cursorImg.src = config.basePath + '/cursors/' + cursorParam + '.png';
     } else {
       cursorImg.src = config.basePath + '/cursors/win95.png';
     }
 
-    var canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
-    document.body.appendChild(canvas);
-
-    var ctx = canvas.getContext('2d');
+    var result = createFullscreenCanvas(9999, undefined, false);
+    var canvas = result.canvas;
+    var ctx = result.ctx;
     var particles = [];
     var trailLength = 50;
-    var cursorScale = 1.0; // 32x32 matches native cursor size
+    var cursorScale = 1.0;
+    var lifeSpan = 65;
+    var maxAge = 200;
 
-    // Ghost: fades out over lifeSpan frames
-    // Elastic: vanishes after maxAge ms
-    var lifeSpan = 65; // frames for ghost
-    var maxAge = 200;  // ms for elastic
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
+    setupCanvasResize(canvas);
 
     function Particle(x, y) {
       this.x = x;
@@ -468,22 +539,18 @@
       var scaledHeight = cursorImg.height * cursorScale;
       var now = Date.now();
 
-      // Draw oldest first so newest appears on top
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
 
         if (mode === 'ghost') {
-          // Ghost mode: fade out over lifeSpan frames
           p.lifeSpan--;
           if (p.lifeSpan <= 0) {
             particles.splice(i, 1);
             i--;
             continue;
           }
-          var alpha = (p.lifeSpan / p.initialLife) * 0.8;
-          ctx.globalAlpha = alpha;
+          ctx.globalAlpha = (p.lifeSpan / p.initialLife) * 0.8;
         } else {
-          // Elastic mode: vanish after maxAge ms
           var age = now - p.birthTime;
           if (age >= maxAge) {
             particles.splice(i, 1);
@@ -500,36 +567,28 @@
       requestAnimationFrame(animate);
     }
 
-    cursorImg.onload = function() {
-      animate();
-    };
-
-    if (cursorImg.complete) {
-      animate();
-    }
+    cursorImg.onload = animate;
+    if (cursorImg.complete) animate();
   }
 
-  function initGhostTrail() {
-    initCursorTrail('ghost');
-  }
+  // ============================================
+  // Simple JS Retros
+  // ============================================
 
-  function initElasticTrail() {
-    initCursorTrail('elastic');
-  }
-
-  function initBlink() {
+  function wrapH1(tag) {
     var h1 = document.querySelector('h1');
-    if (h1) h1.innerHTML = '<blink>' + h1.textContent + '</blink>';
+    if (h1) h1.innerHTML = '<' + tag + '>' + h1.textContent + '</' + tag + '>';
   }
 
-  function initMarquee() {
-    var h1 = document.querySelector('h1');
-    if (h1) h1.innerHTML = '<marquee>' + h1.textContent + '</marquee>';
-  }
+  function initBlink() { wrapH1('blink'); }
+  function initMarquee() { wrapH1('marquee'); }
 
-  // Cursor styles - selectable via ?cursor-style=xxx
+  // ============================================
+  // Custom Cursor
+  // ============================================
+
   var CURSOR_STYLES = {
-    'custom': null, // Uses config.cursorUrl
+    'custom': null,
     'hourglass': '/cursors/hourglass.png'
   };
 
@@ -538,35 +597,34 @@
     var cursorUrl;
 
     if (cursorParam && CURSOR_STYLES.hasOwnProperty(cursorParam)) {
-      if (cursorParam === 'custom') {
-        cursorUrl = config.cursorUrl;
-      } else {
-        cursorUrl = config.basePath + CURSOR_STYLES[cursorParam];
-      }
+      cursorUrl = cursorParam === 'custom' ? config.cursorUrl : config.basePath + CURSOR_STYLES[cursorParam];
     } else {
-      // Default to config.cursorUrl for backwards compatibility
       cursorUrl = config.cursorUrl;
     }
 
     if (!cursorUrl) return;
-    var style = document.createElement('style');
+    var style = createElement('style');
     style.textContent = 'body, body * { cursor: url(' + cursorUrl + '), auto !important; }';
     document.head.appendChild(style);
   }
 
-  function initWebring() {
-    var iframe = document.getElementById('webring');
-    if (iframe && config.webringUrl) {
-      iframe.src = config.webringUrl;
+  // ============================================
+  // Iframe Loaders
+  // ============================================
+
+  function initIframe(elementId, configUrl) {
+    var iframe = document.getElementById(elementId);
+    if (iframe && configUrl) {
+      iframe.src = configUrl;
     }
   }
 
-  function initGuestbook() {
-    var iframe = document.getElementById('guestbook');
-    if (iframe && config.guestbookUrl) {
-      iframe.src = config.guestbookUrl;
-    }
-  }
+  function initWebring() { initIframe('webring', config.webringUrl); }
+  function initGuestbook() { initIframe('guestbook', config.guestbookUrl); }
+
+  // ============================================
+  // Image Rotate & Dividers
+  // ============================================
 
   function initImageRotate() {
     document.querySelectorAll('img[data-image-rotate="true"]').forEach(function(img) {
@@ -575,21 +633,21 @@
   }
 
   function initDividers() {
-    // Replace hr elements inside .divider with tiling divider images
     document.querySelectorAll('div.divider hr').forEach(function(hr) {
       if (config.dividers.length === 0) return;
-      // Check for divider-style param (1-indexed number or empty for random)
+
       var dividerParam = params.get('divider-style');
       var src;
       if (dividerParam && !isNaN(parseInt(dividerParam))) {
-        var idx = parseInt(dividerParam) - 1; // Convert to 0-indexed
+        var idx = parseInt(dividerParam) - 1;
         src = config.dividers[idx] || config.dividers[0];
       } else {
-        src = config.dividers[Math.floor(Math.random() * config.dividers.length)];
+        src = randomFrom(config.dividers);
       }
+
       var img = new Image();
       img.onload = function() {
-        var div = document.createElement('div');
+        var div = createElement('div');
         div.style.width = '100%';
         div.style.height = img.naturalHeight + 'px';
         div.style.backgroundImage = 'url(' + src + ')';
@@ -602,51 +660,35 @@
 
   // ============================================
   // Retheme - Unified theming system
-  // Themes: matrix, crt, neon, y2k, hampsterdance, table, flash, snow
   // ============================================
-  var RETHEME_STYLES = ['matrix', 'crt', 'neon', 'y2k', 'hampsterdance', 'table', 'flash', 'snow'];
 
   function initRetheme() {
     var themeParam = params.get('theme');
-    var theme = RETHEME_STYLES.includes(themeParam) ? themeParam : RETHEME_STYLES[Math.floor(Math.random() * RETHEME_STYLES.length)];
+    var theme = THEME_NAMES.includes(themeParam) ? themeParam : randomFrom(THEME_NAMES);
 
     document.body.classList.add('retheme-' + theme);
 
-    switch (theme) {
-      case 'matrix':
-        initThemeMatrix();
-        break;
-      case 'crt':
-        initThemeCRT();
-        break;
-      case 'neon':
-        initThemeNeon();
-        break;
-      case 'y2k':
-        initThemeY2K();
-        break;
-      case 'hampsterdance':
-        initHampsterDance();
-        break;
-      case 'table':
-        initTable();
-        break;
-      case 'flash':
-        initFlash();
-        break;
-      case 'snow':
-        initThemeTVSnow();
-        break;
-    }
+    var initFn = THEMES[theme];
+    if (initFn) initFn();
   }
 
-  function initThemeMatrix() {
-    var canvas = document.createElement('canvas');
-    canvas.id = 'matrix-bg';
-    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0;transition:opacity 1s ease;background:#000;';
-    document.body.insertBefore(canvas, document.body.firstChild);
+  // ============================================
+  // Theme: Matrix
+  // ============================================
 
-    var ctx = canvas.getContext('2d');
+  function initThemeMatrix() {
+    var result = createCanvas(
+      'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0;transition:opacity 1s ease;background:#000;',
+      document.body.insertBefore(createElement('div'), document.body.firstChild)
+    );
+    var canvas = result.canvas;
+    var ctx = result.ctx;
+    canvas.id = 'matrix-bg';
+
+    // Move canvas from temp div to proper position
+    canvas.parentNode.parentNode.insertBefore(canvas, canvas.parentNode);
+    canvas.previousSibling && canvas.previousSibling.remove();
+
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()+-=[]{}|;:,.<>?~`\u30A0\u30A1\u30A2\u30A3\u30A4\u30A5\u30A6\u30A7\u30A8\u30A9\u30AA\u30AB\u30AC\u30AD\u30AE\u30AF';
     var fontSize = 16;
     var columns, drops;
@@ -676,38 +718,46 @@
     setInterval(draw, 50);
   }
 
+  // ============================================
+  // Theme: CRT
+  // ============================================
+
   function initThemeCRT() {
-    // Add CRT overlay
-    var overlay = document.createElement('div');
+    var overlay = createElement('div');
     overlay.className = 'crt-overlay';
     document.body.appendChild(overlay);
 
-    // Add screen curvature effect
-    var curvature = document.createElement('div');
+    var curvature = createElement('div');
     curvature.className = 'crt-curvature';
     document.body.appendChild(curvature);
   }
 
+  // ============================================
+  // Theme: Neon
+  // ============================================
+
   function initThemeNeon() {
-    // Add neon glow lines
     var colors = ['#ff00ff', '#00ffff', '#ff0080', '#80ff00'];
-    for (var i = 0; i < 4; i++) {
-      var line = document.createElement('div');
+    colors.forEach(function(color, i) {
+      var line = createElement('div');
       line.className = 'neon-line';
-      line.style.setProperty('--neon-color', colors[i]);
+      line.style.setProperty('--neon-color', color);
       line.style.top = (10 + i * 25) + '%';
       line.style.animationDelay = (i * 0.5) + 's';
       document.body.appendChild(line);
-    }
+    });
   }
 
+  // ============================================
+  // Theme: Y2K
+  // ============================================
+
   function initThemeY2K() {
-    // Add floating 3D shapes
     var shapes = ['💿', '🔮', '💎', '⚪', '🌐'];
     for (var i = 0; i < 8; i++) {
-      var shape = document.createElement('div');
+      var shape = createElement('div');
       shape.className = 'y2k-shape';
-      shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+      shape.textContent = randomFrom(shapes);
       shape.style.left = Math.random() * 100 + '%';
       shape.style.top = Math.random() * 100 + '%';
       shape.style.animationDuration = (5 + Math.random() * 10) + 's';
@@ -718,20 +768,19 @@
   }
 
   // ============================================
-  // TV Snow / Static Effect Theme
+  // Theme: TV Snow / Static
   // ============================================
+
   function initThemeTVSnow() {
-    var canvas = document.createElement('canvas');
+    var result = createCanvas(
+      'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;pointer-events:none;opacity:0.06;mix-blend-mode:overlay;',
+      document.body
+    );
+    var canvas = result.canvas;
+    var ctx = result.ctx;
     canvas.id = 'tv-snow';
-    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;pointer-events:none;opacity:0.06;mix-blend-mode:overlay;';
-    document.body.appendChild(canvas);
 
-    var ctx = canvas.getContext('2d');
-
-    function resize() {
-      canvas.width = window.innerWidth / 4;
-      canvas.height = window.innerHeight / 4;
-    }
+    setupCanvasResize(canvas, 4);
 
     function draw() {
       var imageData = ctx.createImageData(canvas.width, canvas.height);
@@ -747,23 +796,20 @@
       requestAnimationFrame(draw);
     }
 
-    resize();
-    window.addEventListener('resize', resize);
     draw();
   }
 
   // ============================================
-  // 3D Perspective - Tilt whole page on mouse move
+  // 3D Perspective Tilt
   // ============================================
+
   function initPerspective() {
-    // Wrap everything in a perspective container
     document.body.style.perspective = '1000px';
     document.body.style.perspectiveOrigin = '50% 50%';
 
-    var wrapper = document.createElement('div');
+    var wrapper = createElement('div');
     wrapper.className = 'perspective-wrapper';
 
-    // Move all body children into wrapper
     while (document.body.firstChild) {
       wrapper.appendChild(document.body.firstChild);
     }
@@ -783,20 +829,19 @@
   // ============================================
   // VHS Glitch Effect
   // ============================================
+
   function initGlitch() {
     document.body.classList.add('glitch-mode');
 
-    var overlay = document.createElement('div');
+    var overlay = createElement('div');
     overlay.className = 'glitch-overlay';
     document.body.appendChild(overlay);
 
-    // Random glitch bursts
     function triggerGlitch() {
       document.body.classList.add('glitch-active');
       setTimeout(function() {
         document.body.classList.remove('glitch-active');
       }, 100 + Math.random() * 200);
-
       setTimeout(triggerGlitch, 2000 + Math.random() * 5000);
     }
 
@@ -804,10 +849,57 @@
   }
 
   // ============================================
-  // Flash Mode - Y2K Macromedia Flash Experience
+  // Theme: Table
   // ============================================
+
+  function initTable() {
+    document.querySelectorAll('.tableable').forEach(function(el) {
+      el.classList.add('table-cell');
+    });
+    document.querySelectorAll('.untableable').forEach(function(el) {
+      el.style.display = 'none';
+    });
+    document.querySelectorAll('.divider').forEach(function(el) {
+      el.style.display = 'none';
+    });
+  }
+
+  // ============================================
+  // Theme: Hampster Dance
+  // ============================================
+
+  function initHampsterDance() {
+    var computedStyle = window.getComputedStyle(document.body);
+    var originalBackground = computedStyle.background;
+    var originalBackgroundColor = computedStyle.backgroundColor;
+    var originalBackgroundImage = computedStyle.backgroundImage;
+
+    document.body.style.backgroundImage = 'url("' + config.basePath + '/hampsters.gif")';
+    document.body.style.backgroundRepeat = 'repeat';
+    document.body.style.backgroundSize = 'auto';
+
+    var overlay = createElement('div',
+      'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); pointer-events: none; z-index: 0;'
+    );
+    document.body.insertBefore(overlay, document.body.firstChild);
+
+    var main = document.getElementById('main');
+    if (main) {
+      if (originalBackgroundImage && originalBackgroundImage !== 'none') {
+        main.style.background = originalBackground;
+      } else {
+        main.style.backgroundColor = originalBackgroundColor || 'white';
+      }
+      main.style.position = 'relative';
+      main.style.zIndex = '1';
+    }
+  }
+
+  // ============================================
+  // Theme: Flash Mode
+  // ============================================
+
   function initFlash() {
-    // Extract semantic content from the page
     var header = document.querySelector('header');
     var nav = document.querySelector('nav');
     var sections = document.querySelectorAll('section[id]');
@@ -815,10 +907,8 @@
 
     if (!header || !sections.length) return;
 
-    // Hide everything first
     document.body.classList.add('flash-mode');
 
-    // Extract content data before we nuke everything
     var headshotImg = document.querySelector('.headshot');
     var headerContent = {
       title: header.querySelector('h1') ? header.querySelector('h1').textContent : 'Welcome',
@@ -837,14 +927,27 @@
       sectionData.push({
         id: section.id,
         title: section.dataset.title || section.id,
-        element: section // Keep reference to watch for dynamic content
+        element: section
       });
     });
 
-    // Create the Flash container
-    var flashContainer = document.createElement('div');
+    var flashContainer = createElement('div');
     flashContainer.id = 'flash-container';
-    flashContainer.innerHTML = '\
+    flashContainer.innerHTML = buildFlashHTML();
+
+    if (main) main.style.display = 'none';
+    document.body.appendChild(flashContainer);
+
+    var controlPanel = document.getElementById('control-panel');
+    if (controlPanel) flashContainer.appendChild(controlPanel);
+
+    populateFlashContent(flashContainer, headerContent, navLinks, sectionData);
+    setupFlashNavigation(flashContainer);
+    startFlashLoader(flashContainer);
+  }
+
+  function buildFlashHTML() {
+    return '\
       <div id="flash-loader">\
         <div class="flash-loader-content">\
           <div class="flash-logo">⚡</div>\
@@ -884,131 +987,124 @@
         </div>\
       </div>\
     ';
+  }
 
-    // Hide the original content
-    if (main) main.style.display = 'none';
-    document.body.appendChild(flashContainer);
-
-    // Keep control panel visible in flash mode - move it into flash container
-    var controlPanel = document.getElementById('control-panel');
-    if (controlPanel) {
-      flashContainer.appendChild(controlPanel);
-    }
-
-    // Populate the Flash site with extracted content
-    var flashTitle = flashContainer.querySelector('.flash-site-title');
-    var introTitle = flashContainer.querySelector('.flash-intro-title');
+  function populateFlashContent(container, headerContent, navLinks, sectionData) {
+    var flashTitle = container.querySelector('.flash-site-title');
+    var introTitle = container.querySelector('.flash-intro-title');
     if (flashTitle) flashTitle.textContent = headerContent.title;
     if (introTitle) {
       introTitle.textContent = headerContent.title;
-      introTitle.setAttribute('data-text', headerContent.title); // For glitch effect
+      introTitle.setAttribute('data-text', headerContent.title);
     }
 
-    // Add headshot to intro and header
     if (headerContent.headshot) {
-      var introHeadshot = flashContainer.querySelector('.flash-intro-headshot');
-      var headerHeadshot = flashContainer.querySelector('.flash-header-headshot');
-      if (introHeadshot) {
-        var img1 = document.createElement('img');
-        img1.src = headerContent.headshot;
-        img1.alt = 'Headshot';
-        introHeadshot.appendChild(img1);
-      }
-      if (headerHeadshot) {
-        var img2 = document.createElement('img');
-        img2.src = headerContent.headshot;
-        img2.alt = 'Headshot';
-        img2.style.cursor = 'pointer';
-        img2.title = 'Click me!';
-        img2.addEventListener('click', function() {
-          triggerHeadshotFreakout(headerContent.headshot);
-        });
-        headerHeadshot.appendChild(img2);
-      }
+      addHeadshotToFlash(container, headerContent.headshot);
     }
 
-    // INSANE headshot click effect
-    function triggerHeadshotFreakout(imgSrc) {
-      // Create the freakout overlay
-      var overlay = document.createElement('div');
-      overlay.className = 'flash-headshot-freakout';
+    buildFlashNav(container, navLinks, sectionData);
+    buildFlashSections(container, sectionData);
+  }
 
-      // Giant spinning headshot
-      var bigHead = document.createElement('img');
-      bigHead.src = imgSrc;
-      bigHead.className = 'flash-freakout-head';
-      overlay.appendChild(bigHead);
+  function addHeadshotToFlash(container, headshotSrc) {
+    var introHeadshot = container.querySelector('.flash-intro-headshot');
+    var headerHeadshot = container.querySelector('.flash-header-headshot');
 
-      // Particle explosion
-      for (var i = 0; i < 30; i++) {
-        var particle = document.createElement('div');
-        particle.className = 'flash-freakout-particle';
-        particle.style.setProperty('--angle', (Math.random() * 360) + 'deg');
-        particle.style.setProperty('--distance', (100 + Math.random() * 300) + 'px');
-        particle.style.setProperty('--duration', (0.5 + Math.random() * 0.5) + 's');
-        particle.style.setProperty('--delay', (Math.random() * 0.2) + 's');
-        particle.style.setProperty('--size', (10 + Math.random() * 20) + 'px');
-        particle.textContent = ['⭐', '✨', '💥', '🔥', '⚡', '💫', '🌟'][Math.floor(Math.random() * 7)];
-        overlay.appendChild(particle);
-      }
-
-      // Matrix rain columns
-      for (var j = 0; j < 20; j++) {
-        var column = document.createElement('div');
-        column.className = 'flash-freakout-matrix-col';
-        column.style.left = (j * 5) + '%';
-        column.style.animationDelay = (Math.random() * 2) + 's';
-        column.style.animationDuration = (1 + Math.random() * 2) + 's';
-
-        var chars = '';
-        for (var k = 0; k < 30; k++) {
-          chars += String.fromCharCode(0x30A0 + Math.random() * 96) + '<br>';
-        }
-        column.innerHTML = chars;
-        overlay.appendChild(column);
-      }
-
-      // Lens flare bursts
-      for (var l = 0; l < 5; l++) {
-        var flare = document.createElement('div');
-        flare.className = 'flash-freakout-flare';
-        flare.style.setProperty('--flare-delay', (l * 0.15) + 's');
-        flare.style.left = (20 + Math.random() * 60) + '%';
-        flare.style.top = (20 + Math.random() * 60) + '%';
-        overlay.appendChild(flare);
-      }
-
-      // "EPIC" text that flies in
-      var epicText = document.createElement('div');
-      epicText.className = 'flash-freakout-text';
-      epicText.textContent = ['EPIC!', 'AWESOME!', 'LEGENDARY!', 'ULTRA!', 'MAXIMUM!', 'EXTREME!'][Math.floor(Math.random() * 6)];
-      overlay.appendChild(epicText);
-
-      flashContainer.appendChild(overlay);
-
-      // Remove after animation
-      setTimeout(function() {
-        overlay.classList.add('ending');
-        setTimeout(function() {
-          overlay.remove();
-        }, 500);
-      }, 2500);
+    if (introHeadshot) {
+      var img1 = createElement('img');
+      img1.src = headshotSrc;
+      img1.alt = 'Headshot';
+      introHeadshot.appendChild(img1);
     }
 
-    // Build navigation
-    var flashNav = flashContainer.querySelector('.flash-nav');
-    var flashSidebar = flashContainer.querySelector('.flash-sidebar');
+    if (headerHeadshot) {
+      var img2 = createElement('img');
+      img2.src = headshotSrc;
+      img2.alt = 'Headshot';
+      img2.style.cursor = 'pointer';
+      img2.title = 'Click me!';
+      img2.addEventListener('click', function() {
+        triggerHeadshotFreakout(container, headshotSrc);
+      });
+      headerHeadshot.appendChild(img2);
+    }
+  }
 
-    // Add section links to nav and sidebar
+  function triggerHeadshotFreakout(container, imgSrc) {
+    var overlay = createElement('div');
+    overlay.className = 'flash-headshot-freakout';
+
+    var bigHead = createElement('img');
+    bigHead.src = imgSrc;
+    bigHead.className = 'flash-freakout-head';
+    overlay.appendChild(bigHead);
+
+    // Particle explosion
+    for (var i = 0; i < 30; i++) {
+      var particle = createElement('div');
+      particle.className = 'flash-freakout-particle';
+      particle.style.setProperty('--angle', (Math.random() * 360) + 'deg');
+      particle.style.setProperty('--distance', (100 + Math.random() * 300) + 'px');
+      particle.style.setProperty('--duration', (0.5 + Math.random() * 0.5) + 's');
+      particle.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      particle.style.setProperty('--size', (10 + Math.random() * 20) + 'px');
+      particle.textContent = randomFrom(['⭐', '✨', '💥', '🔥', '⚡', '💫', '🌟']);
+      overlay.appendChild(particle);
+    }
+
+    // Matrix rain columns
+    for (var j = 0; j < 20; j++) {
+      var column = createElement('div');
+      column.className = 'flash-freakout-matrix-col';
+      column.style.left = (j * 5) + '%';
+      column.style.animationDelay = (Math.random() * 2) + 's';
+      column.style.animationDuration = (1 + Math.random() * 2) + 's';
+
+      var chars = '';
+      for (var k = 0; k < 30; k++) {
+        chars += String.fromCharCode(0x30A0 + Math.random() * 96) + '<br>';
+      }
+      column.innerHTML = chars;
+      overlay.appendChild(column);
+    }
+
+    // Lens flares
+    for (var l = 0; l < 5; l++) {
+      var flare = createElement('div');
+      flare.className = 'flash-freakout-flare';
+      flare.style.setProperty('--flare-delay', (l * 0.15) + 's');
+      flare.style.left = (20 + Math.random() * 60) + '%';
+      flare.style.top = (20 + Math.random() * 60) + '%';
+      overlay.appendChild(flare);
+    }
+
+    // Epic text
+    var epicText = createElement('div');
+    epicText.className = 'flash-freakout-text';
+    epicText.textContent = randomFrom(['EPIC!', 'AWESOME!', 'LEGENDARY!', 'ULTRA!', 'MAXIMUM!', 'EXTREME!']);
+    overlay.appendChild(epicText);
+
+    container.appendChild(overlay);
+
+    setTimeout(function() {
+      overlay.classList.add('ending');
+      setTimeout(function() { overlay.remove(); }, 500);
+    }, 2500);
+  }
+
+  function buildFlashNav(container, navLinks, sectionData) {
+    var flashNav = container.querySelector('.flash-nav');
+    var flashSidebar = container.querySelector('.flash-sidebar');
+
     sectionData.forEach(function(section, index) {
-      var btn = document.createElement('button');
+      var btn = createElement('button');
       btn.className = 'flash-nav-btn';
       btn.textContent = section.title;
       btn.dataset.section = section.id;
       if (index === 0) btn.classList.add('active');
       flashNav.appendChild(btn);
 
-      var sideBtn = document.createElement('div');
+      var sideBtn = createElement('div');
       sideBtn.className = 'flash-sidebar-btn';
       sideBtn.innerHTML = '► ' + section.title;
       sideBtn.dataset.section = section.id;
@@ -1016,116 +1112,102 @@
       flashSidebar.appendChild(sideBtn);
     });
 
-    // Add external links to sidebar and top nav
     if (navLinks.length > 0) {
-      var divider = document.createElement('div');
+      var divider = createElement('div');
       divider.className = 'flash-sidebar-divider';
       flashSidebar.appendChild(divider);
 
-      var linksHeader = document.createElement('div');
+      var linksHeader = createElement('div');
       linksHeader.className = 'flash-sidebar-header';
       linksHeader.textContent = '✦ LINKS ✦';
       flashSidebar.appendChild(linksHeader);
 
-      // Add divider to top nav for external links (visible on mobile)
-      var navDivider = document.createElement('span');
+      var navDivider = createElement('span');
       navDivider.className = 'flash-nav-divider';
       navDivider.textContent = '|';
       flashNav.appendChild(navDivider);
 
       navLinks.forEach(function(link) {
-        var sideLink = document.createElement('a');
+        var sideLink = createElement('a');
         sideLink.className = 'flash-sidebar-link';
         sideLink.href = link.href;
         sideLink.innerHTML = '› ' + link.text;
         flashSidebar.appendChild(sideLink);
 
-        // Also add to top nav for mobile visibility
-        var navLink = document.createElement('a');
+        var navLink = createElement('a');
         navLink.className = 'flash-nav-link';
         navLink.href = link.href;
         navLink.textContent = link.text;
         flashNav.appendChild(navLink);
       });
     }
+  }
 
-    // Build content sections - move the actual elements instead of copying innerHTML
-    // This preserves dynamically loaded content like paper emojis
-    var flashContent = flashContainer.querySelector('.flash-content');
+  function buildFlashSections(container, sectionData) {
+    var flashContent = container.querySelector('.flash-content');
+
     sectionData.forEach(function(section, index) {
-      var div = document.createElement('div');
+      var div = createElement('div');
       div.className = 'flash-section';
       div.id = 'flash-' + section.id;
 
-      var title = document.createElement('h2');
+      var title = createElement('h2');
       title.className = 'flash-section-title';
       title.textContent = section.title;
       div.appendChild(title);
 
-      // Move the original section element into the flash container
-      // This preserves all event listeners and dynamic content
       div.appendChild(section.element);
       section.element.style.display = 'block';
 
       if (index === 0) div.classList.add('active');
       flashContent.appendChild(div);
     });
+  }
 
-    // Navigation functionality with INSANE transitions
+  function setupFlashNavigation(container) {
+    var flashContent = container.querySelector('.flash-content');
+
     function showSection(sectionId) {
-      var currentActive = flashContainer.querySelector('.flash-section.active');
-      var targetSection = flashContainer.querySelector('#flash-' + sectionId);
+      var currentActive = container.querySelector('.flash-section.active');
+      var targetSection = container.querySelector('#flash-' + sectionId);
 
-      // Don't do anything if clicking the same section
       if (currentActive && targetSection && currentActive === targetSection) return;
 
-      // Add screen shake to content area
       flashContent.classList.add('flash-screen-shake');
-      setTimeout(function() {
-        flashContent.classList.remove('flash-screen-shake');
-      }, 300);
+      setTimeout(function() { flashContent.classList.remove('flash-screen-shake'); }, 300);
 
-      // Exit animation for current section
       if (currentActive) {
         currentActive.classList.add('exiting');
         currentActive.classList.remove('active');
       }
 
-      // Update nav buttons immediately
-      flashContainer.querySelectorAll('.flash-nav-btn, .flash-sidebar-btn').forEach(function(b) {
+      container.querySelectorAll('.flash-nav-btn, .flash-sidebar-btn').forEach(function(b) {
         b.classList.remove('active');
       });
-      flashContainer.querySelectorAll('[data-section="' + sectionId + '"]').forEach(function(b) {
+      container.querySelectorAll('[data-section="' + sectionId + '"]').forEach(function(b) {
         b.classList.add('active');
       });
 
-      // Delay the new section entrance for dramatic effect
       setTimeout(function() {
-        // Remove exiting class from old section
-        if (currentActive) {
-          currentActive.classList.remove('exiting');
-        }
-
-        // Enter the new section
-        if (targetSection) {
-          targetSection.classList.add('active');
-        }
+        if (currentActive) currentActive.classList.remove('exiting');
+        if (targetSection) targetSection.classList.add('active');
       }, 250);
     }
 
-    flashContainer.querySelectorAll('.flash-nav-btn[data-section], .flash-sidebar-btn').forEach(function(btn) {
+    container.querySelectorAll('.flash-nav-btn[data-section], .flash-sidebar-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         showSection(this.dataset.section);
       });
     });
+  }
 
-    // Loading animation
+  function startFlashLoader(container) {
     var progress = 0;
-    var progressBar = flashContainer.querySelector('.flash-progress-bar');
-    var progressPercent = flashContainer.querySelector('.flash-progress-percent');
-    var loader = flashContainer.querySelector('#flash-loader');
-    var intro = flashContainer.querySelector('#flash-intro');
-    var site = flashContainer.querySelector('#flash-site');
+    var progressBar = container.querySelector('.flash-progress-bar');
+    var progressPercent = container.querySelector('.flash-progress-percent');
+    var loader = container.querySelector('#flash-loader');
+    var intro = container.querySelector('#flash-intro');
+    var site = container.querySelector('#flash-site');
 
     function updateProgress() {
       progress += Math.random() * 15 + 5;
@@ -1149,10 +1231,6 @@
 
     setTimeout(updateProgress, 500);
 
-    // Enter site button
-    var enterBtn = flashContainer.querySelector('.flash-enter-btn');
-    var skipBtn = flashContainer.querySelector('.flash-skip');
-
     function enterSite() {
       intro.classList.add('fade-out');
       setTimeout(function() {
@@ -1160,7 +1238,6 @@
         site.style.display = 'flex';
         site.classList.add('flash-site-enter');
 
-        // Animate visitor counter
         var visitorEl = document.getElementById('flash-visitors');
         var targetCount = Math.floor(Math.random() * 50000) + 10000;
         var currentCount = 0;
@@ -1176,8 +1253,8 @@
       }, 500);
     }
 
-    enterBtn.addEventListener('click', enterSite);
-    skipBtn.addEventListener('click', function() {
+    container.querySelector('.flash-enter-btn').addEventListener('click', enterSite);
+    container.querySelector('.flash-skip').addEventListener('click', function() {
       loader.style.display = 'none';
       intro.style.display = 'none';
       site.style.display = 'flex';
@@ -1186,26 +1263,25 @@
     });
   }
 
+  // ============================================
+  // Badges
+  // ============================================
 
-  // ============================================
-  // Initialize Badges
-  // ============================================
   function initBadges() {
     var container = document.getElementById('retro-badges');
     if (!container || config.badges.length === 0) return;
 
-    // Group badges: first one solo, rest together
     var firstBadge = config.badges[0];
     var restBadges = config.badges.slice(1);
 
     if (firstBadge) {
-      var row1 = document.createElement('div');
+      var row1 = createElement('div');
       row1.appendChild(createBadgeElement(firstBadge));
       container.appendChild(row1);
     }
 
     if (restBadges.length > 0) {
-      var row2 = document.createElement('div');
+      var row2 = createElement('div');
       restBadges.forEach(function(badge) {
         row2.appendChild(createBadgeElement(badge));
       });
@@ -1214,7 +1290,7 @@
   }
 
   function createBadgeElement(badge) {
-    var img = document.createElement('img');
+    var img = createElement('img');
     img.src = badge.src;
     img.className = 'badges';
 
@@ -1229,7 +1305,7 @@
     }
 
     if (badge.href) {
-      var link = document.createElement('a');
+      var link = createElement('a');
       link.href = badge.href;
       link.appendChild(img);
       return link;
@@ -1238,45 +1314,9 @@
     return img;
   }
 
-  function initTable() {
-    document.querySelectorAll('.tableable').forEach(function(el) {
-      el.classList.add('table-cell');
-    });
-    document.querySelectorAll('.untableable').forEach(function(el) {
-      el.style.display = 'none';
-    });
-    document.querySelectorAll('.divider').forEach(function(el) {
-      el.style.display = 'none';
-    });
-  }
-
-  function initHampsterDance() {
-    // Save the original body background styles before overwriting
-    var computedStyle = window.getComputedStyle(document.body);
-    var originalBackground = computedStyle.background;
-    var originalBackgroundColor = computedStyle.backgroundColor;
-    var originalBackgroundImage = computedStyle.backgroundImage;
-
-    document.body.style.backgroundImage = 'url("' + config.basePath + '/hampsters.gif")';
-    document.body.style.backgroundRepeat = 'repeat';
-    document.body.style.backgroundSize = 'auto';
-
-    var overlay = document.createElement('div');
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); pointer-events: none; z-index: 0;';
-    document.body.insertBefore(overlay, document.body.firstChild);
-
-    var main = document.getElementById('main');
-    if (main) {
-      // Apply the original body background to main instead of white
-      if (originalBackgroundImage && originalBackgroundImage !== 'none') {
-        main.style.background = originalBackground;
-      } else {
-        main.style.backgroundColor = originalBackgroundColor || 'white';
-      }
-      main.style.position = 'relative';
-      main.style.zIndex = '1';
-    }
-  }
+  // ============================================
+  // WordArt
+  // ============================================
 
   function initWordArt() {
     var h1 = document.querySelector('h1');
@@ -1289,9 +1329,9 @@
     ];
 
     var styleParam = params.get('wordart-style');
-    var selectedStyle = styles.includes(styleParam) ? styleParam : styles[Math.floor(Math.random() * styles.length)];
+    var selectedStyle = styles.includes(styleParam) ? styleParam : randomFrom(styles);
 
-    var container = document.createElement('div');
+    var container = createElement('div');
     container.className = 'wordart-container';
     h1.classList.add('wordart');
     h1.setAttribute('data-content', h1.textContent);
@@ -1303,6 +1343,7 @@
   // ============================================
   // Enable JS Retros
   // ============================================
+
   function enableJsRetros(selectedRetros) {
     RETROS.forEach(function(retro) {
       if (retro.type === 'js' && retro.init && selectedRetros.indexOf(retro.name) !== -1) {
@@ -1312,8 +1353,115 @@
   }
 
   // ============================================
+  // Media Player - Visualization Functions
+  // ============================================
+
+  function drawWaveform(ctx, canvas, dataArray, analyser) {
+    analyser.getByteTimeDomainData(dataArray);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#0f0';
+    ctx.beginPath();
+    var sliceWidth = canvas.width / dataArray.length;
+    for (var i = 0; i < dataArray.length; i++) {
+      var v = dataArray[i] / 128.0;
+      var y = v * canvas.height / 2;
+      if (i === 0) ctx.moveTo(0, y);
+      else ctx.lineTo(i * sliceWidth, y);
+    }
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+  }
+
+  function drawSpectrogram(ctx, canvas, dataArray, analyser) {
+    analyser.getByteFrequencyData(dataArray);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var barWidth = canvas.width / dataArray.length;
+    for (var i = 0; i < dataArray.length; i++) {
+      var barHeight = (dataArray[i] / 255) * canvas.height;
+      ctx.fillStyle = 'rgb(0,' + Math.floor(100 + (dataArray[i] / 255) * 155) + ',0)';
+      ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth, barHeight);
+    }
+  }
+
+  function drawSpectrum(ctx, canvas, dataArray, analyser) {
+    analyser.getByteFrequencyData(dataArray);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var sliceWidth = canvas.width / dataArray.length;
+
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height);
+    for (var i = 0; i < dataArray.length; i++) {
+      ctx.lineTo(i * sliceWidth, canvas.height - (dataArray[i] / 255) * canvas.height);
+    }
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0, 80, 0, 0.6)';
+    ctx.fill();
+
+    ctx.beginPath();
+    for (var j = 0; j < dataArray.length; j++) {
+      var y = canvas.height - (dataArray[j] / 255) * canvas.height;
+      if (j === 0) ctx.moveTo(0, y);
+      else ctx.lineTo(j * sliceWidth, y);
+    }
+    ctx.strokeStyle = '#0f0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  var psychedelicHue = 0;
+
+  function drawPsychedelic(ctx, canvas, dataArray, analyser) {
+    analyser.getByteFrequencyData(dataArray);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    psychedelicHue = (psychedelicHue + 2) % 360;
+    var barWidth = canvas.width / dataArray.length;
+    var centerY = canvas.height / 2;
+    for (var i = 0; i < dataArray.length; i++) {
+      var amplitude = dataArray[i] / 255;
+      var barHeight = amplitude * centerY;
+      var hue = (psychedelicHue + (i / dataArray.length) * 360) % 360;
+      ctx.fillStyle = 'hsl(' + hue + ', 100%, ' + (40 + amplitude * 30) + '%)';
+      ctx.fillRect(i * barWidth, centerY - barHeight, barWidth - 1, barHeight);
+      ctx.fillRect(i * barWidth, centerY, barWidth - 1, barHeight);
+    }
+  }
+
+  var radialRotation = 0;
+
+  function drawRadial(ctx, canvas, dataArray, analyser) {
+    analyser.getByteFrequencyData(dataArray);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    radialRotation += 0.005;
+    var centerX = canvas.width / 2, centerY = canvas.height / 2;
+    var radius = Math.min(centerX, centerY) * 0.3;
+    var bars = dataArray.length / 2;
+    for (var i = 0; i < bars; i++) {
+      var amplitude = dataArray[i] / 255;
+      var angle = (i / bars) * Math.PI * 2 + radialRotation;
+      var x1 = centerX + Math.cos(angle) * radius;
+      var y1 = centerY + Math.sin(angle) * radius;
+      var x2 = centerX + Math.cos(angle) * (radius + amplitude * radius * 2);
+      var y2 = centerY + Math.sin(angle) * (radius + amplitude * radius * 2);
+      ctx.strokeStyle = 'rgb(0,' + Math.floor(100 + amplitude * 155) + ',0)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+  }
+
+  // ============================================
   // Media Player
   // ============================================
+
   function initMediaPlayer() {
     var audio = document.getElementById('audioPlayer');
     var select = document.getElementById('trackSelector');
@@ -1321,16 +1469,14 @@
 
     if (!audio || !select || !canvas) return;
 
-    // Populate tracks from config
     select.innerHTML = '';
     config.music.forEach(function(track) {
-      var option = document.createElement('option');
+      var option = createElement('option');
       option.value = track.src;
       option.textContent = track.label;
       select.appendChild(option);
     });
 
-    // Set up track change handler
     select.onchange = function() {
       audio.src = select.value;
       audio.load();
@@ -1349,11 +1495,8 @@
     var audioCtx, analyser, source, dataArray;
     var initialized = false;
 
-    var vizModes = ['waveform', 'spectrogram', 'spectrum', 'psychedelic', 'radial'];
     var vizOverride = params.get('viz');
-    var vizMode = vizModes.includes(vizOverride) ? vizOverride : vizModes[Math.floor(Math.random() * vizModes.length)];
-
-    var hueOffset = 0, rotation = 0;
+    var vizMode = VIZ_MODE_NAMES.includes(vizOverride) ? vizOverride : randomFrom(VIZ_MODE_NAMES);
 
     function sizeCanvas() {
       var container = canvas.parentElement;
@@ -1377,104 +1520,6 @@
       initialized = true;
     }
 
-    function drawWaveform() {
-      analyser.getByteTimeDomainData(dataArray);
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = '#0f0';
-      ctx.beginPath();
-      var sliceWidth = canvas.width / dataArray.length;
-      for (var i = 0; i < dataArray.length; i++) {
-        var v = dataArray[i] / 128.0;
-        var y = v * canvas.height / 2;
-        if (i === 0) ctx.moveTo(0, y);
-        else ctx.lineTo(i * sliceWidth, y);
-      }
-      ctx.lineTo(canvas.width, canvas.height / 2);
-      ctx.stroke();
-    }
-
-    function drawSpectrogram() {
-      analyser.getByteFrequencyData(dataArray);
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      var barWidth = canvas.width / dataArray.length;
-      for (var i = 0; i < dataArray.length; i++) {
-        var barHeight = (dataArray[i] / 255) * canvas.height;
-        ctx.fillStyle = 'rgb(0,' + Math.floor(100 + (dataArray[i] / 255) * 155) + ',0)';
-        ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth, barHeight);
-      }
-    }
-
-    function drawSpectrum() {
-      analyser.getByteFrequencyData(dataArray);
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      var sliceWidth = canvas.width / dataArray.length;
-
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height);
-      for (var i = 0; i < dataArray.length; i++) {
-        ctx.lineTo(i * sliceWidth, canvas.height - (dataArray[i] / 255) * canvas.height);
-      }
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(0, 80, 0, 0.6)';
-      ctx.fill();
-
-      ctx.beginPath();
-      for (var i = 0; i < dataArray.length; i++) {
-        var y = canvas.height - (dataArray[i] / 255) * canvas.height;
-        if (i === 0) ctx.moveTo(0, y);
-        else ctx.lineTo(i * sliceWidth, y);
-      }
-      ctx.strokeStyle = '#0f0';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-
-    function drawPsychedelic() {
-      analyser.getByteFrequencyData(dataArray);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      hueOffset = (hueOffset + 2) % 360;
-      var barWidth = canvas.width / dataArray.length;
-      var centerY = canvas.height / 2;
-      for (var i = 0; i < dataArray.length; i++) {
-        var amplitude = dataArray[i] / 255;
-        var barHeight = amplitude * centerY;
-        var hue = (hueOffset + (i / dataArray.length) * 360) % 360;
-        ctx.fillStyle = 'hsl(' + hue + ', 100%, ' + (40 + amplitude * 30) + '%)';
-        ctx.fillRect(i * barWidth, centerY - barHeight, barWidth - 1, barHeight);
-        ctx.fillRect(i * barWidth, centerY, barWidth - 1, barHeight);
-      }
-    }
-
-    function drawRadial() {
-      analyser.getByteFrequencyData(dataArray);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      rotation += 0.005;
-      var centerX = canvas.width / 2, centerY = canvas.height / 2;
-      var radius = Math.min(centerX, centerY) * 0.3;
-      var bars = dataArray.length / 2;
-      for (var i = 0; i < bars; i++) {
-        var amplitude = dataArray[i] / 255;
-        var angle = (i / bars) * Math.PI * 2 + rotation;
-        var x1 = centerX + Math.cos(angle) * radius;
-        var y1 = centerY + Math.sin(angle) * radius;
-        var x2 = centerX + Math.cos(angle) * (radius + amplitude * radius * 2);
-        var y2 = centerY + Math.sin(angle) * (radius + amplitude * radius * 2);
-        ctx.strokeStyle = 'rgb(0,' + Math.floor(100 + amplitude * 155) + ',0)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-      }
-    }
-
     function draw() {
       requestAnimationFrame(draw);
       if (!initialized || audio.paused) {
@@ -1482,11 +1527,11 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         return;
       }
-      if (vizMode === 'waveform') drawWaveform();
-      else if (vizMode === 'spectrogram') drawSpectrogram();
-      else if (vizMode === 'spectrum') drawSpectrum();
-      else if (vizMode === 'psychedelic') drawPsychedelic();
-      else drawRadial();
+
+      var vizDef = VIZ_MODES[vizMode];
+      if (vizDef && vizDef.draw) {
+        vizDef.draw(ctx, canvas, dataArray, analyser);
+      }
     }
 
     audio.addEventListener('play', function() {
@@ -1500,6 +1545,7 @@
   // ============================================
   // Visitor Counter
   // ============================================
+
   function initVisitorCounter() {
     var countEl = document.getElementById('visitorCount');
     var labelEl = document.getElementById('visitorLabel');
@@ -1526,7 +1572,7 @@
       var next = count + Math.floor(Math.random() * 10) + 1;
       animateCounter(count, next, function() {
         count = next;
-        setTimeout(incrementCounter, delays[Math.floor(Math.random() * delays.length)]);
+        setTimeout(incrementCounter, randomFrom(delays));
       });
     }
 
@@ -1551,62 +1597,108 @@
   // ============================================
   // Control Panel
   // ============================================
+
   var controlPanelInitialized = false;
+  var THEME_CONTROLLED_RETROS = ['retheme', 'wordart', 'mouse-trail', 'custom-cursor', 'dividers'];
 
   function initControlPanel(retroList) {
     var panel = document.getElementById('control-panel');
     if (!panel || controlPanelInitialized) return;
     controlPanelInitialized = true;
 
-    // Generate checkboxes from RETROS array
-    // Skip retros controlled by Themes dropdowns: retheme, wordart, mouse-trail, custom-cursor
-    var checkboxGrid = document.getElementById('retro-checkboxes');
-    var themeControlledRetros = ['retheme', 'wordart', 'mouse-trail', 'custom-cursor', 'dividers'];
-    if (checkboxGrid) {
-      RETROS.forEach(function(retro) {
-        // Skip retros controlled by Themes dropdowns
-        if (themeControlledRetros.indexOf(retro.name) !== -1) return;
+    initRetroCheckboxes(retroList);
+    initControlDropdowns(retroList);
+    initDividerDropdown();
+    initControlButtons(panel, retroList);
 
-        var row = document.createElement('div');
-        row.className = 'win95-checkbox-row';
-
-        var checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = 'ctrl-retro-' + retro.name;
-        checkbox.checked = retroList.indexOf(retro.name) !== -1;
-
-        var label = document.createElement('label');
-        label.htmlFor = checkbox.id;
-        label.textContent = retro.emoji + ' ' + retro.label;
-
-        row.appendChild(checkbox);
-        row.appendChild(label);
-        checkboxGrid.appendChild(row);
-      });
+    if (retroList.indexOf('control-panel') !== -1) {
+      panel.style.display = 'block';
     }
+  }
 
-    // Other controls
+  function initRetroCheckboxes(retroList) {
+    var checkboxGrid = document.getElementById('retro-checkboxes');
+    if (!checkboxGrid) return;
+
+    RETROS.forEach(function(retro) {
+      if (THEME_CONTROLLED_RETROS.indexOf(retro.name) !== -1) return;
+
+      var row = createElement('div');
+      row.className = 'win95-checkbox-row';
+
+      var checkbox = createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = 'ctrl-retro-' + retro.name;
+      checkbox.checked = retroList.indexOf(retro.name) !== -1;
+
+      var label = createElement('label');
+      label.htmlFor = checkbox.id;
+      label.textContent = retro.emoji + ' ' + retro.label;
+
+      row.appendChild(checkbox);
+      row.appendChild(label);
+      checkboxGrid.appendChild(row);
+    });
+  }
+
+  function initDropdownValue(selectEl, paramName, retroList, retroName, defaultForActive) {
+    if (!selectEl) return;
+
+    var paramValue = params.get(paramName);
+    var hasRetro = retroList.indexOf(retroName) !== -1;
+
+    if (paramValue !== null) {
+      selectEl.value = paramValue;
+    } else if (hasRetro) {
+      selectEl.value = defaultForActive || '';
+    } else {
+      selectEl.value = 'none';
+    }
+  }
+
+  function initControlDropdowns(retroList) {
     var ctrlSong = document.getElementById('ctrl-song');
     var ctrlViz = document.getElementById('ctrl-viz');
     var ctrlWordart = document.getElementById('ctrl-wordart');
     var ctrlCursor = document.getElementById('ctrl-cursor');
     var ctrlTrail = document.getElementById('ctrl-trail');
     var ctrlTheme = document.getElementById('ctrl-theme');
+
+    // Populate song options
+    if (ctrlSong) {
+      config.music.forEach(function(track) {
+        var option = createElement('option');
+        var filename = track.src.split('/').pop().replace(/\.[^.]+$/, '');
+        option.value = filename;
+        option.textContent = track.label;
+        ctrlSong.appendChild(option);
+      });
+      ctrlSong.value = params.get('song') || '';
+    }
+
+    if (ctrlViz) ctrlViz.value = params.get('viz') || '';
+
+    initDropdownValue(ctrlWordart, 'wordart-style', retroList, 'wordart', '');
+    initDropdownValue(ctrlCursor, 'cursor-style', retroList, 'custom-cursor', 'custom');
+    initDropdownValue(ctrlTrail, 'trail-style', retroList, 'mouse-trail', '');
+    initDropdownValue(ctrlTheme, 'theme', retroList, 'retheme', '');
+  }
+
+  function initDividerDropdown() {
     var ctrlDivider = document.getElementById('ctrl-divider');
-
-    // Custom dropdown for dividers
     var ctrlDividerDropdown = document.getElementById('ctrl-divider-dropdown');
-    var ctrlDividerOptions = ctrlDividerDropdown ? ctrlDividerDropdown.querySelector('.win95-custom-dropdown-options') : null;
-    var ctrlDividerSelected = ctrlDividerDropdown ? ctrlDividerDropdown.querySelector('.win95-custom-dropdown-selected') : null;
+    if (!ctrlDividerDropdown) return;
 
-    // Populate divider options with actual images
+    var ctrlDividerOptions = ctrlDividerDropdown.querySelector('.win95-custom-dropdown-options');
+    var ctrlDividerSelected = ctrlDividerDropdown.querySelector('.win95-custom-dropdown-selected');
+
     if (ctrlDividerOptions && config.dividers.length > 0) {
       config.dividers.forEach(function(dividerSrc, index) {
-        var option = document.createElement('div');
+        var option = createElement('div');
         option.className = 'win95-custom-dropdown-option';
         option.dataset.value = (index + 1).toString();
 
-        var preview = document.createElement('div');
+        var preview = createElement('div');
         preview.className = 'divider-preview';
         preview.style.backgroundImage = 'url(' + dividerSrc + ')';
         option.appendChild(preview);
@@ -1615,269 +1707,145 @@
       });
     }
 
-    // Custom dropdown toggle and selection
-    if (ctrlDividerDropdown) {
+    if (ctrlDividerSelected) {
       ctrlDividerSelected.addEventListener('click', function(e) {
         e.stopPropagation();
         ctrlDividerDropdown.classList.toggle('open');
       });
+    }
 
+    if (ctrlDividerOptions) {
       ctrlDividerOptions.addEventListener('click', function(e) {
         var option = e.target.closest('.win95-custom-dropdown-option');
         if (option) {
           var value = option.dataset.value;
           ctrlDivider.value = value;
-
-          // Update selected display
-          if (value === 'none') {
-            ctrlDividerSelected.innerHTML = '<span>Default</span>';
-          } else if (value === '') {
-            ctrlDividerSelected.innerHTML = '<span>Random</span>';
-          } else {
-            var idx = parseInt(value) - 1;
-            var src = config.dividers[idx];
-            ctrlDividerSelected.innerHTML = '<div class="divider-preview" style="background-image: url(' + src + ')"></div>';
-          }
-          ctrlDividerSelected.dataset.value = value;
+          updateDividerDisplay(ctrlDividerSelected, value);
           ctrlDividerDropdown.classList.remove('open');
         }
       });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', function() {
-        ctrlDividerDropdown.classList.remove('open');
-      });
     }
 
-    // Populate song options from config
-    if (ctrlSong) {
-      config.music.forEach(function(track) {
-        var option = document.createElement('option');
-        // Extract filename without extension for URL param matching
-        var filename = track.src.split('/').pop().replace(/\.[^.]+$/, '');
-        option.value = filename;
-        option.textContent = track.label;
-        ctrlSong.appendChild(option);
-      });
-    }
+    document.addEventListener('click', function() {
+      if (ctrlDividerDropdown) ctrlDividerDropdown.classList.remove('open');
+    });
+  }
 
-    ctrlSong.value = params.get('song') || '';
-    ctrlViz.value = params.get('viz') || '';
-
-    // WordArt: if wordart retro is active but no style param, show "Random"
-    // Otherwise default to "none"
-    if (ctrlWordart) {
-      var wordartParam = params.get('wordart-style');
-      var hasWordart = retroList.indexOf('wordart') !== -1;
-      if (wordartParam !== null) {
-        ctrlWordart.value = wordartParam;
-      } else if (hasWordart) {
-        ctrlWordart.value = ''; // Random
-      } else {
-        ctrlWordart.value = 'none'; // None
+  function updateDividerDisplay(selectedEl, value) {
+    if (!selectedEl) return;
+    if (value === 'none') {
+      selectedEl.innerHTML = '<span>Default</span>';
+    } else if (value === '') {
+      selectedEl.innerHTML = '<span>Random</span>';
+    } else {
+      var idx = parseInt(value) - 1;
+      if (config.dividers[idx]) {
+        selectedEl.innerHTML = '<div class="divider-preview" style="background-image: url(' + config.dividers[idx] + ')"></div>';
       }
     }
+    selectedEl.dataset.value = value;
+  }
 
-    // Cursor: if custom-cursor retro is active, check cursor-style param
-    // Otherwise default to "none" (Default)
-    if (ctrlCursor) {
-      var cursorParam = params.get('cursor-style');
-      var hasCursor = retroList.indexOf('custom-cursor') !== -1;
-      if (cursorParam !== null) {
-        ctrlCursor.value = cursorParam;
-      } else if (hasCursor) {
-        ctrlCursor.value = 'custom'; // Default to custom if retro is active but no param
-      } else {
-        ctrlCursor.value = 'none'; // Default
-      }
-    }
+  function initControlButtons(panel, retroList) {
+    var ctrlDivider = document.getElementById('ctrl-divider');
+    var ctrlDividerDropdown = document.getElementById('ctrl-divider-dropdown');
+    var ctrlDividerSelected = ctrlDividerDropdown ? ctrlDividerDropdown.querySelector('.win95-custom-dropdown-selected') : null;
 
-    // Trail: if mouse-trail retro is active but no style param, show "Random"
-    // Otherwise default to "none"
-    if (ctrlTrail) {
-      var trailParam = params.get('trail-style');
-      var hasTrail = retroList.indexOf('mouse-trail') !== -1;
-      if (trailParam !== null) {
-        ctrlTrail.value = trailParam;
-      } else if (hasTrail) {
-        ctrlTrail.value = ''; // Random
-      } else {
-        ctrlTrail.value = 'none'; // None
-      }
-    }
+    // Initialize divider display
+    var dividerParam = params.get('divider-style');
+    var hasDividers = retroList.indexOf('dividers') !== -1;
+    var initialValue = dividerParam !== null ? dividerParam : (hasDividers ? '' : 'none');
+    if (ctrlDivider) ctrlDivider.value = initialValue;
+    updateDividerDisplay(ctrlDividerSelected, initialValue);
 
-    // Page theme: if retheme is active but no theme param, show "Random"
-    // Otherwise default to "none" (Default)
-    if (ctrlTheme) {
-      var themeParam = params.get('theme');
-      var hasRetheme = retroList.indexOf('retheme') !== -1;
-      if (themeParam !== null) {
-        ctrlTheme.value = themeParam;
-      } else if (hasRetheme) {
-        ctrlTheme.value = ''; // Random
-      } else {
-        ctrlTheme.value = 'none'; // Default
-      }
-    }
-
-    // Divider: if dividers retro is active but no divider-style param, show "Random"
-    // Otherwise default to "none"
-    if (ctrlDivider && ctrlDividerSelected) {
-      var dividerParam = params.get('divider-style');
-      var hasDividers = retroList.indexOf('dividers') !== -1;
-      var initialValue;
-      if (dividerParam !== null) {
-        initialValue = dividerParam;
-      } else if (hasDividers) {
-        initialValue = ''; // Random
-      } else {
-        initialValue = 'none'; // None
-      }
-      ctrlDivider.value = initialValue;
-
-      // Update the custom dropdown display
-      if (initialValue === 'none') {
-        ctrlDividerSelected.innerHTML = '<span>Default</span>';
-      } else if (initialValue === '') {
-        ctrlDividerSelected.innerHTML = '<span>Random</span>';
-      } else {
-        var idx = parseInt(initialValue) - 1;
-        if (config.dividers[idx]) {
-          ctrlDividerSelected.innerHTML = '<div class="divider-preview" style="background-image: url(' + config.dividers[idx] + ')"></div>';
-        }
-      }
-      ctrlDividerSelected.dataset.value = initialValue;
-    }
-
+    // Close button
     document.getElementById('ctrl-close').addEventListener('click', function() {
       var currentRetros = (params.get('retros') || params.get('retro') || '').split(',').map(function(r) {
         return r.trim();
       }).filter(Boolean);
 
       if (currentRetros.indexOf('control-panel') !== -1) {
-        // control-panel is in URL, remove it and reload
         var newParams = new URLSearchParams(window.location.search);
-        var filteredRetros = currentRetros.filter(function(r) {
-          return r !== 'control-panel';
-        });
+        var filteredRetros = currentRetros.filter(function(r) { return r !== 'control-panel'; });
         newParams.delete('retro');
         newParams.set('retros', filteredRetros.length > 0 ? filteredRetros.join(',') : 'none');
         window.location.search = newParams.toString();
       } else {
-        // Just hide it
         panel.style.display = 'none';
       }
     });
 
-    // Helper to pick random option from a select (excluding 'none' options)
-    function randomizeSelect(select, includeNone) {
-      if (!select) return;
-      var options = Array.from(select.options).filter(function(opt) {
-        return includeNone || (opt.value !== 'none');
-      });
-      if (options.length > 0) {
-        var randomOpt = options[Math.floor(Math.random() * options.length)];
-        select.value = randomOpt.value;
-      }
-    }
-
-    // Helper to update divider dropdown display
-    function updateDividerDisplay(value) {
-      if (!ctrlDividerSelected) return;
-      if (value === 'none') {
-        ctrlDividerSelected.innerHTML = '<span>Default</span>';
-      } else if (value === '') {
-        ctrlDividerSelected.innerHTML = '<span>Random</span>';
-      } else {
-        var idx = parseInt(value) - 1;
-        if (config.dividers[idx]) {
-          ctrlDividerSelected.innerHTML = '<div class="divider-preview" style="background-image: url(' + config.dividers[idx] + ')"></div>';
-        }
-      }
-      ctrlDividerSelected.dataset.value = value;
-    }
-
+    // Random button
     document.getElementById('ctrl-random').addEventListener('click', function() {
-      // Randomize checkboxes
       RETROS.forEach(function(retro) {
         var cb = document.getElementById('ctrl-retro-' + retro.name);
         if (cb) cb.checked = Math.random() < 0.5;
       });
 
-      // Randomize all dropdowns
-      randomizeSelect(ctrlSong, true);
-      randomizeSelect(ctrlViz, true);
-      randomizeSelect(ctrlWordart, true);
-      randomizeSelect(ctrlCursor, true);
-      randomizeSelect(ctrlTrail, true);
-      randomizeSelect(ctrlTheme, true);
+      ['ctrl-song', 'ctrl-viz', 'ctrl-wordart', 'ctrl-cursor', 'ctrl-trail', 'ctrl-theme'].forEach(function(id) {
+        randomizeSelect(document.getElementById(id), true);
+      });
 
-      // Randomize divider (custom dropdown)
       if (ctrlDivider && config.dividers.length > 0) {
         var dividerOptions = ['none', ''].concat(config.dividers.map(function(_, i) { return (i + 1).toString(); }));
-        var randomValue = dividerOptions[Math.floor(Math.random() * dividerOptions.length)];
+        var randomValue = randomFrom(dividerOptions);
         ctrlDivider.value = randomValue;
-        updateDividerDisplay(randomValue);
+        updateDividerDisplay(ctrlDividerSelected, randomValue);
       }
     });
 
+    // Apply button
     document.getElementById('ctrl-apply').addEventListener('click', function() {
       var newParams = new URLSearchParams();
       var selectedRetros = [];
 
       RETROS.forEach(function(retro) {
-        // Skip retros controlled by Themes dropdowns
-        if (themeControlledRetros.indexOf(retro.name) !== -1) return;
+        if (THEME_CONTROLLED_RETROS.indexOf(retro.name) !== -1) return;
         var cb = document.getElementById('ctrl-retro-' + retro.name);
         if (cb && cb.checked) selectedRetros.push(retro.name);
       });
 
-      // Auto-add wordart if a style is selected (not "none")
-      if (ctrlWordart && ctrlWordart.value !== 'none') {
-        selectedRetros.push('wordart');
-      }
+      var dropdownRetros = [
+        { id: 'ctrl-wordart', retro: 'wordart', param: 'wordart-style' },
+        { id: 'ctrl-cursor', retro: 'custom-cursor', param: 'cursor-style' },
+        { id: 'ctrl-trail', retro: 'mouse-trail', param: 'trail-style' },
+        { id: 'ctrl-theme', retro: 'retheme', param: 'theme' },
+        { id: 'ctrl-divider', retro: 'dividers', param: 'divider-style' }
+      ];
 
-      // Auto-add custom-cursor if not "none" (Default)
-      if (ctrlCursor && ctrlCursor.value !== 'none') {
-        selectedRetros.push('custom-cursor');
-      }
-
-      // Auto-add mouse-trail if a style is selected (not "none")
-      if (ctrlTrail && ctrlTrail.value !== 'none') {
-        selectedRetros.push('mouse-trail');
-      }
-
-      // Auto-add retheme if a page theme is selected (not "none")
-      if (ctrlTheme && ctrlTheme.value && ctrlTheme.value !== 'none') {
-        selectedRetros.push('retheme');
-      }
-
-      // Auto-add dividers if a divider is selected (not "none")
-      if (ctrlDivider && ctrlDivider.value !== 'none') {
-        selectedRetros.push('dividers');
-      }
+      dropdownRetros.forEach(function(d) {
+        var el = document.getElementById(d.id);
+        if (el && el.value !== 'none') {
+          selectedRetros.push(d.retro);
+          if (el.value) newParams.set(d.param, el.value);
+        }
+      });
 
       selectedRetros.push('control-panel');
 
       if (selectedRetros.length > 0) newParams.set('retros', selectedRetros.join(','));
-      if (ctrlSong.value) newParams.set('song', ctrlSong.value);
-      if (ctrlViz.value) newParams.set('viz', ctrlViz.value);
-      if (ctrlWordart && ctrlWordart.value && ctrlWordart.value !== 'none') newParams.set('wordart-style', ctrlWordart.value);
-      if (ctrlCursor && ctrlCursor.value && ctrlCursor.value !== 'none') newParams.set('cursor-style', ctrlCursor.value);
-      if (ctrlTrail && ctrlTrail.value && ctrlTrail.value !== 'none') newParams.set('trail-style', ctrlTrail.value);
-      if (ctrlTheme && ctrlTheme.value && ctrlTheme.value !== 'none') newParams.set('theme', ctrlTheme.value);
-      if (ctrlDivider && ctrlDivider.value && ctrlDivider.value !== 'none') newParams.set('divider-style', ctrlDivider.value);
+
+      var ctrlSong = document.getElementById('ctrl-song');
+      var ctrlViz = document.getElementById('ctrl-viz');
+      if (ctrlSong && ctrlSong.value) newParams.set('song', ctrlSong.value);
+      if (ctrlViz && ctrlViz.value) newParams.set('viz', ctrlViz.value);
 
       window.location.search = newParams.toString();
     });
 
+    // Reset button
     document.getElementById('ctrl-reset').addEventListener('click', function() {
       window.location.search = 'retros=control-panel';
     });
+  }
 
-    // Show if control-panel is in retroList
-    if (retroList.indexOf('control-panel') !== -1) {
-      panel.style.display = 'block';
+  function randomizeSelect(select, includeNone) {
+    if (!select) return;
+    var options = Array.from(select.options).filter(function(opt) {
+      return includeNone || (opt.value !== 'none');
+    });
+    if (options.length > 0) {
+      select.value = randomFrom(options).value;
     }
   }
 
@@ -1885,7 +1853,6 @@
     var panel = document.getElementById('control-panel');
     if (!panel) return;
 
-    // Initialize if needed (with current retros from URL)
     var retroParam = params.get('retros') || params.get('retro') || '';
     var retroList = retroParam.split(',').map(function(r) { return r.trim(); }).filter(Boolean);
     initControlPanel(retroList);
@@ -1896,6 +1863,7 @@
   // ============================================
   // Chat Window
   // ============================================
+
   window.openChatWindow = function() {
     document.getElementById('chat-window').style.display = 'flex';
   };
@@ -1906,7 +1874,7 @@
     if (confirm) confirm.style.display = 'none';
 
     if (!container.querySelector('iframe')) {
-      var iframe = document.createElement('iframe');
+      var iframe = createElement('iframe');
       iframe.src = config.chatUrl;
       iframe.width = '100%';
       iframe.height = '100%';
@@ -1919,13 +1887,14 @@
   };
 
   // ============================================
-  // Load HTML Templates
+  // Template Loader
   // ============================================
+
   function loadTemplate(url) {
     return fetch(url)
       .then(function(r) { return r.text(); })
       .then(function(html) {
-        var container = document.createElement('div');
+        var container = createElement('div');
         container.innerHTML = html;
         return container.firstElementChild;
       });
@@ -1934,17 +1903,18 @@
   // ============================================
   // Public API
   // ============================================
+
   window.web90 = {
     config: config,
     getRandomDivider: function() {
-      if (config.dividers.length === 0) return null;
-      return config.dividers[Math.floor(Math.random() * config.dividers.length)];
+      return config.dividers.length === 0 ? null : randomFrom(config.dividers);
     }
   };
 
   // ============================================
   // Konami Code - Shows Control Panel
   // ============================================
+
   (function() {
     var CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
     var ki = 0;
@@ -1965,12 +1935,12 @@
   // ============================================
   // Swipe Up from Bottom - Shows Control Panel (Mobile)
   // ============================================
+
   (function() {
     var touchStartY = 0, touchStartTime = 0;
 
     document.addEventListener('touchstart', function(e) {
       var t = e.touches[0];
-      // Only trigger if starting from bottom 15% of screen
       if (t.clientY > window.innerHeight * 0.85) {
         touchStartY = t.clientY;
         touchStartTime = Date.now();
@@ -1984,7 +1954,6 @@
       var t = e.changedTouches[0];
       var dy = touchStartY - t.clientY;
       var dt = Date.now() - touchStartTime;
-      // Swipe up at least 100px within 500ms
       if (dy > 100 && dt < 500) showControlPanel();
       touchStartY = 0;
     });
@@ -1994,7 +1963,6 @@
   // Initialize
   // ============================================
 
-  // Load retro elements into primary slot (data-retro-slot="0"), then initialize
   var primarySlot = document.querySelector('[data-retro-slot="0"]');
 
   function initAll() {
@@ -2006,7 +1974,6 @@
     initGuestbook();
     enableJsRetros(selectedRetros);
 
-    // Load control panel and chat window templates
     Promise.all([
       loadTemplate(config.basePath + '/control-panel.html'),
       loadTemplate(config.basePath + '/chat-window.html')
