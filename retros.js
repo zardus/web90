@@ -604,7 +604,7 @@
       flashSidebar.appendChild(sideBtn);
     });
 
-    // Add external links to sidebar
+    // Add external links to sidebar and top nav
     if (navLinks.length > 0) {
       var divider = document.createElement('div');
       divider.className = 'flash-sidebar-divider';
@@ -615,12 +615,25 @@
       linksHeader.textContent = '✦ LINKS ✦';
       flashSidebar.appendChild(linksHeader);
 
+      // Add divider to top nav for external links (visible on mobile)
+      var navDivider = document.createElement('span');
+      navDivider.className = 'flash-nav-divider';
+      navDivider.textContent = '|';
+      flashNav.appendChild(navDivider);
+
       navLinks.forEach(function(link) {
         var sideLink = document.createElement('a');
         sideLink.className = 'flash-sidebar-link';
         sideLink.href = link.href;
         sideLink.innerHTML = '› ' + link.text;
         flashSidebar.appendChild(sideLink);
+
+        // Also add to top nav for mobile visibility
+        var navLink = document.createElement('a');
+        navLink.className = 'flash-nav-link';
+        navLink.href = link.href;
+        navLink.textContent = link.text;
+        flashNav.appendChild(navLink);
       });
     }
 

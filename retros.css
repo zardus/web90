@@ -1585,6 +1585,12 @@ h1.wordart {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+/* External nav links (hidden on desktop, shown on mobile) */
+.flash-nav-divider,
+.flash-nav-link {
+  display: none;
+}
+
 /* Flash Main Content Area */
 .flash-main {
   flex: 1;
@@ -2473,6 +2479,30 @@ h1.wordart {
     font-size: 10px;
     padding: 8px 12px;
     letter-spacing: 1px;
+  }
+
+  /* Show external nav links on mobile since sidebar is hidden */
+  .flash-nav-divider {
+    display: inline;
+    color: #555;
+    margin: 0 4px;
+    align-self: center;
+  }
+
+  .flash-nav-link {
+    display: inline-block;
+    color: #00d4ff;
+    font-size: 10px;
+    padding: 6px 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+  }
+
+  .flash-nav-link:hover {
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
   }
 
   .flash-footer {
