@@ -394,10 +394,30 @@
     if (h1) h1.innerHTML = '<marquee>' + h1.textContent + '</marquee>';
   }
 
+  // Cursor styles - selectable via ?cursor-style=xxx
+  var CURSOR_STYLES = {
+    'custom': null, // Uses config.cursorUrl
+    'hourglass': '/cursors/hourglass.png'
+  };
+
   function initCustomCursor() {
-    if (!config.cursorUrl) return;
+    var cursorParam = params.get('cursor-style');
+    var cursorUrl;
+
+    if (cursorParam && CURSOR_STYLES.hasOwnProperty(cursorParam)) {
+      if (cursorParam === 'custom') {
+        cursorUrl = config.cursorUrl;
+      } else {
+        cursorUrl = config.basePath + CURSOR_STYLES[cursorParam];
+      }
+    } else {
+      // Default to config.cursorUrl for backwards compatibility
+      cursorUrl = config.cursorUrl;
+    }
+
+    if (!cursorUrl) return;
     var style = document.createElement('style');
-    style.textContent = 'body, body * { cursor: url(' + config.cursorUrl + '), auto !important; }';
+    style.textContent = 'body, body * { cursor: url(' + cursorUrl + '), auto !important; }';
     document.head.appendChild(style);
   }
 
@@ -1461,11 +1481,18 @@
       }
     }
 
-    // Cursor: if custom-cursor retro is active, show "Custom"
+    // Cursor: if custom-cursor retro is active, check cursor-style param
     // Otherwise default to "none" (Default)
     if (ctrlCursor) {
+      var cursorParam = params.get('cursor-style');
       var hasCursor = retroList.indexOf('custom-cursor') !== -1;
-      ctrlCursor.value = hasCursor ? 'custom' : 'none';
+      if (cursorParam !== null) {
+        ctrlCursor.value = cursorParam;
+      } else if (hasCursor) {
+        ctrlCursor.value = 'custom'; // Default to custom if retro is active but no param
+      } else {
+        ctrlCursor.value = 'none'; // Default
+      }
     }
 
     // Trail: if mouse-trail retro is active but no style param, show "Random"
@@ -1546,8 +1573,8 @@
         selectedRetros.push('wordart');
       }
 
-      // Auto-add custom-cursor if "Custom" is selected
-      if (ctrlCursor && ctrlCursor.value === 'custom') {
+      // Auto-add custom-cursor if not "none" (Default)
+      if (ctrlCursor && ctrlCursor.value !== 'none') {
         selectedRetros.push('custom-cursor');
       }
 
@@ -1567,6 +1594,7 @@
       if (ctrlSong.value) newParams.set('song', ctrlSong.value);
       if (ctrlViz.value) newParams.set('viz', ctrlViz.value);
       if (ctrlWordart && ctrlWordart.value && ctrlWordart.value !== 'none') newParams.set('wordart-style', ctrlWordart.value);
+      if (ctrlCursor && ctrlCursor.value && ctrlCursor.value !== 'none') newParams.set('cursor-style', ctrlCursor.value);
       if (ctrlTrail && ctrlTrail.value && ctrlTrail.value !== 'none') newParams.set('trail-style', ctrlTrail.value);
       if (ctrlTheme && ctrlTheme.value && ctrlTheme.value !== 'none') newParams.set('theme', ctrlTheme.value);
 
