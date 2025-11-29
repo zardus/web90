@@ -2525,3 +2525,44 @@ h1.wordart {
     letter-spacing: 5px;
   }
 }
+
+/* ============================================
+   Matrix Rain Background Effect
+   ============================================ */
+#matrix-bg {
+  background: #000;
+}
+
+body.matrix-mode {
+  background-image: none !important;
+}
+
+body.matrix-mode main {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+}
+
+body.matrix-mode a {
+  color: #0f0;
+}
+
+body.matrix-mode a:hover {
+  color: #0f0;
+  text-shadow: 0 0 10px #0f0;
+}
+
+body.matrix-mode,
+body.matrix-mode h1,
+body.matrix-mode h2,
+body.matrix-mode h3 {
+  color: #0f0;
+}
+
+body.matrix-mode h1 {
+  font-family: 'VT323', monospace;
+  font-size: 2.5em;
+  text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+  letter-spacing: 2px;
+}

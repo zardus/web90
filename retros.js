@@ -95,7 +95,8 @@
     { name: 'custom-cursor', type: 'js', emoji: '🖱️', label: 'Custom Cursor', init: initCustomCursor },
     { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers },
     { name: 'flash', type: 'js', emoji: '⚡', label: 'Flash Site', init: initFlash },
-    { name: 'image-rotate', type: 'js', emoji: '🔄', label: 'Image Rotate', init: initImageRotate }
+    { name: 'image-rotate', type: 'js', emoji: '🔄', label: 'Image Rotate', init: initImageRotate },
+    { name: 'matrix', type: 'js', emoji: '🟢', label: 'Matrix Rain', init: initMatrix }
   ];
 
   // Slots are detected from DOM via data-retro-slot attribute
@@ -352,6 +353,48 @@
       };
       img.src = src;
     });
+  }
+
+  // ============================================
+  // Matrix Rain Background Effect
+  // ============================================
+  function initMatrix() {
+    var canvas = document.createElement('canvas');
+    canvas.id = 'matrix-bg';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0;transition:opacity 1s ease;background:#000;';
+    document.body.insertBefore(canvas, document.body.firstChild);
+
+    var ctx = canvas.getContext('2d');
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()+-=[]{}|;:,.<>?~`\u30A0\u30A1\u30A2\u30A3\u30A4\u30A5\u30A6\u30A7\u30A8\u30A9\u30AA\u30AB\u30AC\u30AD\u30AE\u30AF';
+    var fontSize = 16;
+    var columns, drops;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(1);
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0,0,0,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = fontSize + 'px monospace';
+      for (var i = 0; i < drops.length; i++) {
+        ctx.fillStyle = Math.random() > 0.98 ? '#fff' : '#0f0';
+        ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(function() { canvas.style.opacity = '1'; });
+    setInterval(draw, 50);
+
+    // Add matrix-mode class to body for CSS styling
+    document.body.classList.add('matrix-mode');
   }
 
   // ============================================
@@ -1083,11 +1126,12 @@
   // ============================================
   // Control Panel
   // ============================================
+  var controlPanelInitialized = false;
+
   function initControlPanel(retroList) {
     var panel = document.getElementById('control-panel');
-    if (!panel || retroList.indexOf('control-panel') === -1) return;
-
-    panel.style.display = 'block';
+    if (!panel || controlPanelInitialized) return;
+    controlPanelInitialized = true;
 
     // Generate checkboxes from RETROS array
     var checkboxGrid = document.getElementById('retro-checkboxes');
@@ -1133,13 +1177,23 @@
     ctrlWordart.value = params.get('wordart-style') || '';
 
     document.getElementById('ctrl-close').addEventListener('click', function() {
-      var newParams = new URLSearchParams(window.location.search);
-      var currentRetros = (newParams.get('retros') || newParams.get('retro') || '').split(',').filter(function(r) {
-        return r.trim() && r.trim() !== 'control-panel';
-      });
-      newParams.delete('retro');
-      newParams.set('retros', currentRetros.length > 0 ? currentRetros.join(',') : 'none');
-      window.location.search = newParams.toString();
+      var currentRetros = (params.get('retros') || params.get('retro') || '').split(',').map(function(r) {
+        return r.trim();
+      }).filter(Boolean);
+
+      if (currentRetros.indexOf('control-panel') !== -1) {
+        // control-panel is in URL, remove it and reload
+        var newParams = new URLSearchParams(window.location.search);
+        var filteredRetros = currentRetros.filter(function(r) {
+          return r !== 'control-panel';
+        });
+        newParams.delete('retro');
+        newParams.set('retros', filteredRetros.length > 0 ? filteredRetros.join(',') : 'none');
+        window.location.search = newParams.toString();
+      } else {
+        // Just hide it
+        panel.style.display = 'none';
+      }
     });
 
     document.getElementById('ctrl-select-all').addEventListener('click', function() {
@@ -1178,6 +1232,22 @@
       window.location.search = 'retros=control-panel';
     });
 
+    // Show if control-panel is in retroList
+    if (retroList.indexOf('control-panel') !== -1) {
+      panel.style.display = 'block';
+    }
+  }
+
+  function showControlPanel() {
+    var panel = document.getElementById('control-panel');
+    if (!panel) return;
+
+    // Initialize if needed (with current retros from URL)
+    var retroParam = params.get('retros') || params.get('retro') || '';
+    var retroList = retroParam.split(',').map(function(r) { return r.trim(); }).filter(Boolean);
+    initControlPanel(retroList);
+
+    panel.style.display = 'block';
   }
 
   // ============================================
@@ -1228,6 +1298,54 @@
       return config.dividers[Math.floor(Math.random() * config.dividers.length)];
     }
   };
+
+  // ============================================
+  // Konami Code - Shows Control Panel
+  // ============================================
+  (function() {
+    var CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+    var ki = 0;
+
+    document.addEventListener('keydown', function(e) {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.code === CODE[ki]) {
+        if (++ki === CODE.length) {
+          ki = 0;
+          showControlPanel();
+        }
+      } else {
+        ki = 0;
+      }
+    });
+  })();
+
+  // ============================================
+  // Swipe Up from Bottom - Shows Control Panel (Mobile)
+  // ============================================
+  (function() {
+    var touchStartY = 0, touchStartTime = 0;
+
+    document.addEventListener('touchstart', function(e) {
+      var t = e.touches[0];
+      // Only trigger if starting from bottom 15% of screen
+      if (t.clientY > window.innerHeight * 0.85) {
+        touchStartY = t.clientY;
+        touchStartTime = Date.now();
+      } else {
+        touchStartY = 0;
+      }
+    });
+
+    document.addEventListener('touchend', function(e) {
+      if (!touchStartY) return;
+      var t = e.changedTouches[0];
+      var dy = touchStartY - t.clientY;
+      var dt = Date.now() - touchStartTime;
+      // Swipe up at least 100px within 500ms
+      if (dy > 100 && dt < 500) showControlPanel();
+      touchStartY = 0;
+    });
+  })();
 
   // ============================================
   // Initialize
