@@ -2,6 +2,17 @@
   display: inline;
 }
 
+/* 3D Y-axis rotation for images */
+.retro-image-rotate {
+  animation: retro-image-rotate-y 4s linear infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes retro-image-rotate-y {
+  0% { transform: perspective(500px) rotateY(0deg); }
+  100% { transform: perspective(500px) rotateY(360deg); }
+}
+
 #retro-badges { flex-direction: column; }
 .badges { height: 31px; margin: 2px; }
 .media-player { height: 50px; }

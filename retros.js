@@ -92,7 +92,8 @@
     { name: 'hampsterdance', type: 'js', emoji: '🐹', label: 'Hampster Dance', init: initHampsterDance },
     { name: 'custom-cursor', type: 'js', emoji: '🖱️', label: 'Custom Cursor', init: initCustomCursor },
     { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers },
-    { name: 'flash', type: 'js', emoji: '⚡', label: 'Flash Site', init: initFlash }
+    { name: 'flash', type: 'js', emoji: '⚡', label: 'Flash Site', init: initFlash },
+    { name: 'image-rotate', type: 'js', emoji: '🔄', label: 'Image Rotate', init: initImageRotate }
   ];
 
   // Slots are detected from DOM via data-retro-slot attribute
@@ -325,6 +326,12 @@
     if (iframe && config.guestbookUrl) {
       iframe.src = config.guestbookUrl;
     }
+  }
+
+  function initImageRotate() {
+    document.querySelectorAll('img[data-image-rotate="true"]').forEach(function(img) {
+      img.classList.add('retro-image-rotate');
+    });
   }
 
   function initDividers() {
