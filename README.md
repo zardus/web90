@@ -194,3 +194,5 @@ web90/
 ## License
 
 BSD 3-Clause License. Copyright (c) 2025 Yan Shoshitaishvili. See [LICENSE](LICENSE) for details.
+
+Honestly? AI stuff doesn't seem to be copywritable, so this is probably basically public domain in practice.
