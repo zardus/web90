@@ -1398,9 +1398,14 @@
     controlPanelInitialized = true;
 
     // Generate checkboxes from RETROS array
+    // Skip retros controlled by Themes dropdowns: retheme, wordart, mouse-trail, custom-cursor
     var checkboxGrid = document.getElementById('retro-checkboxes');
+    var themeControlledRetros = ['retheme', 'wordart', 'mouse-trail', 'custom-cursor'];
     if (checkboxGrid) {
       RETROS.forEach(function(retro) {
+        // Skip retros controlled by Themes dropdowns
+        if (themeControlledRetros.indexOf(retro.name) !== -1) return;
+
         var row = document.createElement('div');
         row.className = 'win95-checkbox-row';
 
@@ -1423,6 +1428,7 @@
     var ctrlSong = document.getElementById('ctrl-song');
     var ctrlViz = document.getElementById('ctrl-viz');
     var ctrlWordart = document.getElementById('ctrl-wordart');
+    var ctrlCursor = document.getElementById('ctrl-cursor');
     var ctrlTrail = document.getElementById('ctrl-trail');
     var ctrlTheme = document.getElementById('ctrl-theme');
 
@@ -1440,9 +1446,55 @@
 
     ctrlSong.value = params.get('song') || '';
     ctrlViz.value = params.get('viz') || '';
-    ctrlWordart.value = params.get('wordart-style') || '';
-    if (ctrlTrail) ctrlTrail.value = params.get('trail-style') || '';
-    if (ctrlTheme) ctrlTheme.value = params.get('theme') || '';
+
+    // WordArt: if wordart retro is active but no style param, show "Random"
+    // Otherwise default to "none"
+    if (ctrlWordart) {
+      var wordartParam = params.get('wordart-style');
+      var hasWordart = retroList.indexOf('wordart') !== -1;
+      if (wordartParam !== null) {
+        ctrlWordart.value = wordartParam;
+      } else if (hasWordart) {
+        ctrlWordart.value = ''; // Random
+      } else {
+        ctrlWordart.value = 'none'; // None
+      }
+    }
+
+    // Cursor: if custom-cursor retro is active, show "Custom"
+    // Otherwise default to "none" (Default)
+    if (ctrlCursor) {
+      var hasCursor = retroList.indexOf('custom-cursor') !== -1;
+      ctrlCursor.value = hasCursor ? 'custom' : 'none';
+    }
+
+    // Trail: if mouse-trail retro is active but no style param, show "Random"
+    // Otherwise default to "none"
+    if (ctrlTrail) {
+      var trailParam = params.get('trail-style');
+      var hasTrail = retroList.indexOf('mouse-trail') !== -1;
+      if (trailParam !== null) {
+        ctrlTrail.value = trailParam;
+      } else if (hasTrail) {
+        ctrlTrail.value = ''; // Random
+      } else {
+        ctrlTrail.value = 'none'; // None
+      }
+    }
+
+    // Page theme: if retheme is active but no theme param, show "Random"
+    // Otherwise default to "none" (Default)
+    if (ctrlTheme) {
+      var themeParam = params.get('theme');
+      var hasRetheme = retroList.indexOf('retheme') !== -1;
+      if (themeParam !== null) {
+        ctrlTheme.value = themeParam;
+      } else if (hasRetheme) {
+        ctrlTheme.value = ''; // Random
+      } else {
+        ctrlTheme.value = 'none'; // Default
+      }
+    }
 
     document.getElementById('ctrl-close').addEventListener('click', function() {
       var currentRetros = (params.get('retros') || params.get('retro') || '').split(',').map(function(r) {
@@ -1483,17 +1535,40 @@
       var selectedRetros = [];
 
       RETROS.forEach(function(retro) {
+        // Skip retros controlled by Themes dropdowns
+        if (themeControlledRetros.indexOf(retro.name) !== -1) return;
         var cb = document.getElementById('ctrl-retro-' + retro.name);
         if (cb && cb.checked) selectedRetros.push(retro.name);
       });
+
+      // Auto-add wordart if a style is selected (not "none")
+      if (ctrlWordart && ctrlWordart.value !== 'none') {
+        selectedRetros.push('wordart');
+      }
+
+      // Auto-add custom-cursor if "Custom" is selected
+      if (ctrlCursor && ctrlCursor.value === 'custom') {
+        selectedRetros.push('custom-cursor');
+      }
+
+      // Auto-add mouse-trail if a style is selected (not "none")
+      if (ctrlTrail && ctrlTrail.value !== 'none') {
+        selectedRetros.push('mouse-trail');
+      }
+
+      // Auto-add retheme if a page theme is selected (not "none")
+      if (ctrlTheme && ctrlTheme.value && ctrlTheme.value !== 'none') {
+        selectedRetros.push('retheme');
+      }
+
       selectedRetros.push('control-panel');
 
       if (selectedRetros.length > 0) newParams.set('retros', selectedRetros.join(','));
       if (ctrlSong.value) newParams.set('song', ctrlSong.value);
       if (ctrlViz.value) newParams.set('viz', ctrlViz.value);
-      if (ctrlWordart.value) newParams.set('wordart-style', ctrlWordart.value);
-      if (ctrlTrail && ctrlTrail.value) newParams.set('trail-style', ctrlTrail.value);
-      if (ctrlTheme && ctrlTheme.value) newParams.set('theme', ctrlTheme.value);
+      if (ctrlWordart && ctrlWordart.value && ctrlWordart.value !== 'none') newParams.set('wordart-style', ctrlWordart.value);
+      if (ctrlTrail && ctrlTrail.value && ctrlTrail.value !== 'none') newParams.set('trail-style', ctrlTrail.value);
+      if (ctrlTheme && ctrlTheme.value && ctrlTheme.value !== 'none') newParams.set('theme', ctrlTheme.value);
 
       window.location.search = newParams.toString();
     });

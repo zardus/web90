@@ -39,10 +39,11 @@
       </fieldset>
 
       <fieldset class="win95-fieldset">
-        <legend>Styles</legend>
+        <legend>Themes</legend>
         <div class="win95-row">
           <span class="win95-label">WordArt:</span>
           <select id="ctrl-wordart" class="win95-select">
+            <option value="none">None</option>
             <option value="">Random</option>
             <option value="one">Style 1 - Outlined</option>
             <option value="two">Style 2 - Slanted</option>
@@ -69,8 +70,16 @@
           </select>
         </div>
         <div class="win95-row">
+          <span class="win95-label">Cursor:</span>
+          <select id="ctrl-cursor" class="win95-select">
+            <option value="none">Default</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="win95-row">
           <span class="win95-label">Trail:</span>
           <select id="ctrl-trail" class="win95-select">
+            <option value="none">None</option>
             <option value="">Random</option>
             <option value="binary">🔟 Binary</option>
             <option value="sparkles">✨ Sparkles</option>
@@ -85,8 +94,9 @@
           </select>
         </div>
         <div class="win95-row">
-          <span class="win95-label">Theme:</span>
+          <span class="win95-label">Page:</span>
           <select id="ctrl-theme" class="win95-select">
+            <option value="none">Default</option>
             <option value="">Random</option>
             <option value="matrix">🟢 Matrix</option>
             <option value="crt">📺 CRT Monitor</option>
