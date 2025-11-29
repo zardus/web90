@@ -280,15 +280,75 @@
     return allRetros.slice();
   }
 
+  function generateRandomSelections() {
+    var selections = { retros: [], styles: {} };
+
+    // 50% chance for each retro
+    RETROS.forEach(function(retro) {
+      if (Math.random() < 0.5) {
+        selections.retros.push(retro.name);
+      }
+    });
+
+    // Random dropdown selections
+    function randomOption(options) {
+      return randomFrom(options);
+    }
+
+    selections.styles.song = randomOption([''].concat(config.music.map(function(t) {
+      return t.src.split('/').pop().replace(/\.[^.]+$/, '');
+    })));
+    selections.styles.viz = randomOption(['', 'waveform', 'spectrogram', 'spectrum', 'psychedelic', 'radial']);
+    selections.styles.wordart = randomOption(['none', '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+      'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+      'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'twentyone', 'twentytwo']);
+    selections.styles.cursor = randomOption(['none', 'custom', 'hourglass']);
+    selections.styles.trail = randomOption(['none', ''].concat(TRAIL_STYLE_NAMES));
+    selections.styles.theme = randomOption(['none', ''].concat(THEME_NAMES));
+    selections.styles.divider = randomOption(['none', ''].concat(config.dividers.map(function(_, i) {
+      return (i + 1).toString();
+    })));
+
+    return selections;
+  }
+
   function selectAprilFoolsRetros() {
     var pool = selectFromPool(config.aprilFoolsRetros, ALL_FUN_RETROS);
     if (pool.length === 0) return [];
 
-    var allRetros = shuffle(pool);
-    var minRetros = 2;
-    var maxRetros = allRetros.length;
-    var count = Math.floor(Math.sqrt(Math.random()) * (maxRetros - minRetros + 1)) + minRetros;
-    return allRetros.slice(0, count);
+    var selections = generateRandomSelections();
+    var selectedRetros = [];
+
+    // Filter to only retros in the pool
+    selections.retros.forEach(function(name) {
+      if (pool.indexOf(name) !== -1) {
+        selectedRetros.push(name);
+      }
+    });
+
+    // Apply style selections as params
+    var styleMap = {
+      wordart: { retro: 'wordart', param: 'wordart-style' },
+      cursor: { retro: 'custom-cursor', param: 'cursor-style' },
+      trail: { retro: 'mouse-trail', param: 'trail-style' },
+      theme: { retro: 'retheme', param: 'theme' },
+      divider: { retro: 'dividers', param: 'divider-style' }
+    };
+
+    Object.keys(styleMap).forEach(function(key) {
+      var value = selections.styles[key];
+      var mapping = styleMap[key];
+      // Remove from retros if was randomly added (we'll add back based on style selection)
+      var idx = selectedRetros.indexOf(mapping.retro);
+      if (idx !== -1) selectedRetros.splice(idx, 1);
+      // Add back if style isn't 'none' and retro is in pool
+      if (value !== 'none' && pool.indexOf(mapping.retro) !== -1) {
+        selectedRetros.push(mapping.retro);
+        if (value !== '') params.set(mapping.param, value);
+      }
+    });
+
+    return selectedRetros;
   }
 
   // ============================================
@@ -1778,20 +1838,32 @@
 
     // Random button
     document.getElementById('ctrl-random').addEventListener('click', function() {
+      var selections = generateRandomSelections();
+
+      // Apply retro checkboxes
       RETROS.forEach(function(retro) {
         var cb = document.getElementById('ctrl-retro-' + retro.name);
-        if (cb) cb.checked = Math.random() < 0.5;
+        if (cb) cb.checked = selections.retros.indexOf(retro.name) !== -1;
       });
 
-      ['ctrl-song', 'ctrl-viz', 'ctrl-wordart', 'ctrl-cursor', 'ctrl-trail', 'ctrl-theme'].forEach(function(id) {
-        randomizeSelect(document.getElementById(id), true);
+      // Apply dropdown selections
+      var dropdownMap = {
+        'ctrl-song': 'song',
+        'ctrl-viz': 'viz',
+        'ctrl-wordart': 'wordart',
+        'ctrl-cursor': 'cursor',
+        'ctrl-trail': 'trail',
+        'ctrl-theme': 'theme'
+      };
+      Object.keys(dropdownMap).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = selections.styles[dropdownMap[id]];
       });
 
-      if (ctrlDivider && config.dividers.length > 0) {
-        var dividerOptions = ['none', ''].concat(config.dividers.map(function(_, i) { return (i + 1).toString(); }));
-        var randomValue = randomFrom(dividerOptions);
-        ctrlDivider.value = randomValue;
-        updateDividerDisplay(ctrlDividerSelected, randomValue);
+      // Apply divider
+      if (ctrlDivider) {
+        ctrlDivider.value = selections.styles.divider;
+        updateDividerDisplay(ctrlDividerSelected, selections.styles.divider);
       }
     });
 
@@ -1838,16 +1910,6 @@
     document.getElementById('ctrl-reset').addEventListener('click', function() {
       window.location.search = 'retros=control-panel';
     });
-  }
-
-  function randomizeSelect(select, includeNone) {
-    if (!select) return;
-    var options = Array.from(select.options).filter(function(opt) {
-      return includeNone || (opt.value !== 'none');
-    });
-    if (options.length > 0) {
-      select.value = randomFrom(options).value;
-    }
   }
 
   function showControlPanel() {
