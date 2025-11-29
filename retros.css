@@ -748,6 +748,86 @@ h1.wordart {
   font-size: 12px;
 }
 
+.win95-custom-dropdown {
+  flex: 1;
+  position: relative;
+  background: #fff;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.win95-custom-dropdown-selected {
+  padding: 2px 20px 2px 4px;
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.win95-custom-dropdown-selected::after {
+  content: '▼';
+  position: absolute;
+  right: 4px;
+  font-size: 8px;
+  color: #000;
+}
+
+.win95-custom-dropdown-selected .divider-preview {
+  flex: 1;
+  height: 16px;
+  background-repeat: repeat-x;
+  background-position: left center;
+  background-size: auto 100%;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.win95-custom-dropdown-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -2px;
+  right: -2px;
+  background: #fff;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.win95-custom-dropdown.open .win95-custom-dropdown-options {
+  display: block;
+}
+
+.win95-custom-dropdown-option {
+  padding: 2px 4px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.win95-custom-dropdown-option:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.win95-custom-dropdown-option .divider-preview {
+  width: 100%;
+  height: 16px;
+  background-repeat: repeat-x;
+  background-position: left center;
+  background-size: auto 100%;
+  overflow: hidden;
+}
+
+.win95-custom-dropdown-option:hover .divider-preview {
+  filter: invert(1);
+}
+
 .win95-range {
   flex: 1;
   margin-right: 8px;

@@ -11,10 +11,6 @@
       <fieldset class="win95-fieldset">
         <legend>Retros</legend>
         <div id="retro-checkboxes" class="win95-checkbox-grid"></div>
-        <div class="win95-buttons" style="margin-top: 8px;">
-          <button id="ctrl-select-all" class="win95-btn" style="min-width: 50px; padding: 2px 8px;">All</button>
-          <button id="ctrl-select-random" class="win95-btn" style="min-width: 50px; padding: 2px 8px;">Random</button>
-        </div>
       </fieldset>
 
       <fieldset class="win95-fieldset">
@@ -111,9 +107,23 @@
             <option value="snow">📡 TV Snow</option>
           </select>
         </div>
+        <div class="win95-row">
+          <span class="win95-label">Divider:</span>
+          <div id="ctrl-divider-dropdown" class="win95-custom-dropdown">
+            <div class="win95-custom-dropdown-selected" data-value="none">
+              <span>Default</span>
+            </div>
+            <div class="win95-custom-dropdown-options">
+              <div class="win95-custom-dropdown-option" data-value="none">Default</div>
+              <div class="win95-custom-dropdown-option" data-value="">Random</div>
+            </div>
+          </div>
+          <input type="hidden" id="ctrl-divider" value="none">
+        </div>
       </fieldset>
 
       <div class="win95-buttons">
+        <button id="ctrl-random" class="win95-btn">Random</button>
         <button id="ctrl-apply" class="win95-btn">Apply</button>
         <button id="ctrl-reset" class="win95-btn">Reset</button>
       </div>

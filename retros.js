@@ -578,7 +578,15 @@
     // Replace hr elements inside .divider with tiling divider images
     document.querySelectorAll('div.divider hr').forEach(function(hr) {
       if (config.dividers.length === 0) return;
-      var src = config.dividers[Math.floor(Math.random() * config.dividers.length)];
+      // Check for divider-style param (1-indexed number or empty for random)
+      var dividerParam = params.get('divider-style');
+      var src;
+      if (dividerParam && !isNaN(parseInt(dividerParam))) {
+        var idx = parseInt(dividerParam) - 1; // Convert to 0-indexed
+        src = config.dividers[idx] || config.dividers[0];
+      } else {
+        src = config.dividers[Math.floor(Math.random() * config.dividers.length)];
+      }
       var img = new Image();
       img.onload = function() {
         var div = document.createElement('div');
@@ -1553,7 +1561,7 @@
     // Generate checkboxes from RETROS array
     // Skip retros controlled by Themes dropdowns: retheme, wordart, mouse-trail, custom-cursor
     var checkboxGrid = document.getElementById('retro-checkboxes');
-    var themeControlledRetros = ['retheme', 'wordart', 'mouse-trail', 'custom-cursor'];
+    var themeControlledRetros = ['retheme', 'wordart', 'mouse-trail', 'custom-cursor', 'dividers'];
     if (checkboxGrid) {
       RETROS.forEach(function(retro) {
         // Skip retros controlled by Themes dropdowns
@@ -1584,6 +1592,62 @@
     var ctrlCursor = document.getElementById('ctrl-cursor');
     var ctrlTrail = document.getElementById('ctrl-trail');
     var ctrlTheme = document.getElementById('ctrl-theme');
+    var ctrlDivider = document.getElementById('ctrl-divider');
+
+    // Custom dropdown for dividers
+    var ctrlDividerDropdown = document.getElementById('ctrl-divider-dropdown');
+    var ctrlDividerOptions = ctrlDividerDropdown ? ctrlDividerDropdown.querySelector('.win95-custom-dropdown-options') : null;
+    var ctrlDividerSelected = ctrlDividerDropdown ? ctrlDividerDropdown.querySelector('.win95-custom-dropdown-selected') : null;
+
+    // Populate divider options with actual images
+    if (ctrlDividerOptions && config.dividers.length > 0) {
+      config.dividers.forEach(function(dividerSrc, index) {
+        var option = document.createElement('div');
+        option.className = 'win95-custom-dropdown-option';
+        option.dataset.value = (index + 1).toString();
+
+        var preview = document.createElement('div');
+        preview.className = 'divider-preview';
+        preview.style.backgroundImage = 'url(' + dividerSrc + ')';
+        option.appendChild(preview);
+
+        ctrlDividerOptions.appendChild(option);
+      });
+    }
+
+    // Custom dropdown toggle and selection
+    if (ctrlDividerDropdown) {
+      ctrlDividerSelected.addEventListener('click', function(e) {
+        e.stopPropagation();
+        ctrlDividerDropdown.classList.toggle('open');
+      });
+
+      ctrlDividerOptions.addEventListener('click', function(e) {
+        var option = e.target.closest('.win95-custom-dropdown-option');
+        if (option) {
+          var value = option.dataset.value;
+          ctrlDivider.value = value;
+
+          // Update selected display
+          if (value === 'none') {
+            ctrlDividerSelected.innerHTML = '<span>Default</span>';
+          } else if (value === '') {
+            ctrlDividerSelected.innerHTML = '<span>Random</span>';
+          } else {
+            var idx = parseInt(value) - 1;
+            var src = config.dividers[idx];
+            ctrlDividerSelected.innerHTML = '<div class="divider-preview" style="background-image: url(' + src + ')"></div>';
+          }
+          ctrlDividerSelected.dataset.value = value;
+          ctrlDividerDropdown.classList.remove('open');
+        }
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function() {
+        ctrlDividerDropdown.classList.remove('open');
+      });
+    }
 
     // Populate song options from config
     if (ctrlSong) {
@@ -1656,6 +1720,35 @@
       }
     }
 
+    // Divider: if dividers retro is active but no divider-style param, show "Random"
+    // Otherwise default to "none"
+    if (ctrlDivider && ctrlDividerSelected) {
+      var dividerParam = params.get('divider-style');
+      var hasDividers = retroList.indexOf('dividers') !== -1;
+      var initialValue;
+      if (dividerParam !== null) {
+        initialValue = dividerParam;
+      } else if (hasDividers) {
+        initialValue = ''; // Random
+      } else {
+        initialValue = 'none'; // None
+      }
+      ctrlDivider.value = initialValue;
+
+      // Update the custom dropdown display
+      if (initialValue === 'none') {
+        ctrlDividerSelected.innerHTML = '<span>Default</span>';
+      } else if (initialValue === '') {
+        ctrlDividerSelected.innerHTML = '<span>Random</span>';
+      } else {
+        var idx = parseInt(initialValue) - 1;
+        if (config.dividers[idx]) {
+          ctrlDividerSelected.innerHTML = '<div class="divider-preview" style="background-image: url(' + config.dividers[idx] + ')"></div>';
+        }
+      }
+      ctrlDividerSelected.dataset.value = initialValue;
+    }
+
     document.getElementById('ctrl-close').addEventListener('click', function() {
       var currentRetros = (params.get('retros') || params.get('retro') || '').split(',').map(function(r) {
         return r.trim();
@@ -1676,18 +1769,56 @@
       }
     });
 
-    document.getElementById('ctrl-select-all').addEventListener('click', function() {
-      RETROS.forEach(function(retro) {
-        var cb = document.getElementById('ctrl-retro-' + retro.name);
-        if (cb) cb.checked = true;
+    // Helper to pick random option from a select (excluding 'none' options)
+    function randomizeSelect(select, includeNone) {
+      if (!select) return;
+      var options = Array.from(select.options).filter(function(opt) {
+        return includeNone || (opt.value !== 'none');
       });
-    });
+      if (options.length > 0) {
+        var randomOpt = options[Math.floor(Math.random() * options.length)];
+        select.value = randomOpt.value;
+      }
+    }
 
-    document.getElementById('ctrl-select-random').addEventListener('click', function() {
+    // Helper to update divider dropdown display
+    function updateDividerDisplay(value) {
+      if (!ctrlDividerSelected) return;
+      if (value === 'none') {
+        ctrlDividerSelected.innerHTML = '<span>Default</span>';
+      } else if (value === '') {
+        ctrlDividerSelected.innerHTML = '<span>Random</span>';
+      } else {
+        var idx = parseInt(value) - 1;
+        if (config.dividers[idx]) {
+          ctrlDividerSelected.innerHTML = '<div class="divider-preview" style="background-image: url(' + config.dividers[idx] + ')"></div>';
+        }
+      }
+      ctrlDividerSelected.dataset.value = value;
+    }
+
+    document.getElementById('ctrl-random').addEventListener('click', function() {
+      // Randomize checkboxes
       RETROS.forEach(function(retro) {
         var cb = document.getElementById('ctrl-retro-' + retro.name);
         if (cb) cb.checked = Math.random() < 0.5;
       });
+
+      // Randomize all dropdowns
+      randomizeSelect(ctrlSong, true);
+      randomizeSelect(ctrlViz, true);
+      randomizeSelect(ctrlWordart, true);
+      randomizeSelect(ctrlCursor, true);
+      randomizeSelect(ctrlTrail, true);
+      randomizeSelect(ctrlTheme, true);
+
+      // Randomize divider (custom dropdown)
+      if (ctrlDivider && config.dividers.length > 0) {
+        var dividerOptions = ['none', ''].concat(config.dividers.map(function(_, i) { return (i + 1).toString(); }));
+        var randomValue = dividerOptions[Math.floor(Math.random() * dividerOptions.length)];
+        ctrlDivider.value = randomValue;
+        updateDividerDisplay(randomValue);
+      }
     });
 
     document.getElementById('ctrl-apply').addEventListener('click', function() {
@@ -1721,6 +1852,11 @@
         selectedRetros.push('retheme');
       }
 
+      // Auto-add dividers if a divider is selected (not "none")
+      if (ctrlDivider && ctrlDivider.value !== 'none') {
+        selectedRetros.push('dividers');
+      }
+
       selectedRetros.push('control-panel');
 
       if (selectedRetros.length > 0) newParams.set('retros', selectedRetros.join(','));
@@ -1730,6 +1866,7 @@
       if (ctrlCursor && ctrlCursor.value && ctrlCursor.value !== 'none') newParams.set('cursor-style', ctrlCursor.value);
       if (ctrlTrail && ctrlTrail.value && ctrlTrail.value !== 'none') newParams.set('trail-style', ctrlTrail.value);
       if (ctrlTheme && ctrlTheme.value && ctrlTheme.value !== 'none') newParams.set('theme', ctrlTheme.value);
+      if (ctrlDivider && ctrlDivider.value && ctrlDivider.value !== 'none') newParams.set('divider-style', ctrlDivider.value);
 
       window.location.search = newParams.toString();
     });
