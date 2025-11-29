@@ -91,14 +91,13 @@
     { name: 'mouse-trail', type: 'js', emoji: '✨', label: 'Mouse Trail', init: initMouseTrail },
     { name: 'blink', type: 'js', emoji: '💡', label: 'Blink', init: initBlink },
     { name: 'marquee', type: 'js', emoji: '📜', label: 'Marquee', init: initMarquee },
-    { name: 'wordart', type: 'js', emoji: '🎨', label: 'WordArt', init: initWordArt },
-    { name: 'table', type: 'js', emoji: '📊', label: 'Table', init: initTable },
-    { name: 'hampsterdance', type: 'js', emoji: '🐹', label: 'Hampster Dance', init: initHampsterDance },
+    { name: 'wordart', type: 'js', emoji: '🔤', label: 'WordArt', init: initWordArt },
     { name: 'custom-cursor', type: 'js', emoji: '🖱️', label: 'Custom Cursor', init: initCustomCursor },
     { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers },
-    { name: 'flash', type: 'js', emoji: '⚡', label: 'Flash Site', init: initFlash },
     { name: 'image-rotate', type: 'js', emoji: '🔄', label: 'Image Rotate', init: initImageRotate },
-    { name: 'matrix', type: 'js', emoji: '🟢', label: 'Matrix Rain', init: initMatrix }
+    { name: 'retheme', type: 'js', emoji: '🎨', label: 'Retheme', init: initRetheme },
+    { name: 'perspective', type: 'js', emoji: '🎲', label: '3D Tilt', init: initPerspective },
+    { name: 'glitch', type: 'js', emoji: '📼', label: 'VHS Glitch', init: initGlitch }
   ];
 
   // Slots are detected from DOM via data-retro-slot attribute
@@ -290,24 +289,80 @@
   // JS Retro Initializers
   // ============================================
 
+  // Mouse trail styles - selectable via ?trail-style=xxx
+  var TRAIL_STYLES = ['binary', 'sparkles', 'fire', 'rainbow', 'stars', 'hearts', 'neon', 'bubbles', 'snow', 'matrix'];
+
   function initMouseTrail() {
+    var trailParam = params.get('trail-style');
+    var trailStyle = TRAIL_STYLES.includes(trailParam) ? trailParam : TRAIL_STYLES[Math.floor(Math.random() * TRAIL_STYLES.length)];
     var lastSpawn = 0;
+    var hue = 0;
 
     function spawnTrail(x, y) {
       var now = Date.now();
-      if (now - lastSpawn < 50) return;
+      var throttle = trailStyle === 'rainbow' ? 30 : 50;
+      if (now - lastSpawn < throttle) return;
       lastSpawn = now;
 
-      var digit = document.createElement('span');
-      digit.className = 'binary-trail';
-      digit.textContent = Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1');
-      digit.style.left = (x + (Math.random() - 0.5) * 10) + 'px';
-      digit.style.top = (y + (Math.random() - 0.5) * 10) + 'px';
-      digit.style.setProperty('--drift-x', (Math.random() - 0.5) * 20 + 'px');
-      document.body.appendChild(digit);
+      var el = document.createElement('span');
+      el.className = 'mouse-trail trail-' + trailStyle;
+      el.style.left = (x + (Math.random() - 0.5) * 10) + 'px';
+      el.style.top = (y + (Math.random() - 0.5) * 10) + 'px';
+      el.style.setProperty('--drift-x', (Math.random() - 0.5) * 30 + 'px');
+      el.style.setProperty('--drift-y', (Math.random() - 0.5) * 30 + 'px');
 
+      switch (trailStyle) {
+        case 'binary':
+          el.textContent = Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1');
+          break;
+        case 'sparkles':
+          el.textContent = ['✦', '✧', '★', '✯', '⋆', '✶', '✴', '✹'][Math.floor(Math.random() * 8)];
+          el.style.color = 'hsl(' + Math.random() * 360 + ', 100%, 70%)';
+          break;
+        case 'fire':
+          el.textContent = ['🔥', '💥', '✨', '⚡'][Math.floor(Math.random() * 4)];
+          el.style.setProperty('--drift-y', -(30 + Math.random() * 40) + 'px');
+          break;
+        case 'rainbow':
+          el.textContent = '●';
+          hue = (hue + 15) % 360;
+          el.style.color = 'hsl(' + hue + ', 100%, 60%)';
+          el.style.textShadow = '0 0 10px hsl(' + hue + ', 100%, 50%)';
+          break;
+        case 'stars':
+          el.textContent = ['⭐', '🌟', '💫', '✨'][Math.floor(Math.random() * 4)];
+          break;
+        case 'hearts':
+          el.textContent = ['❤️', '💖', '💕', '💗', '💜', '💙'][Math.floor(Math.random() * 6)];
+          break;
+        case 'neon':
+          el.textContent = ['◆', '◇', '○', '●', '□', '■'][Math.floor(Math.random() * 6)];
+          var neonColors = ['#ff00ff', '#00ffff', '#ff0080', '#80ff00', '#0080ff'];
+          var neonColor = neonColors[Math.floor(Math.random() * neonColors.length)];
+          el.style.color = neonColor;
+          el.style.textShadow = '0 0 5px ' + neonColor + ', 0 0 10px ' + neonColor + ', 0 0 20px ' + neonColor;
+          break;
+        case 'bubbles':
+          el.textContent = ['○', '◌', '◯', '⬤'][Math.floor(Math.random() * 4)];
+          el.style.color = 'rgba(100, 200, 255, 0.7)';
+          el.style.setProperty('--drift-y', -(20 + Math.random() * 30) + 'px');
+          break;
+        case 'snow':
+          el.textContent = ['❄', '❅', '❆', '✻'][Math.floor(Math.random() * 4)];
+          el.style.color = '#fff';
+          el.style.setProperty('--drift-y', (30 + Math.random() * 20) + 'px');
+          break;
+        case 'matrix':
+          el.textContent = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
+          el.style.color = '#0f0';
+          el.style.textShadow = '0 0 5px #0f0, 0 0 10px #0f0, 0 0 2px #000, 0 0 4px #000';
+          el.style.setProperty('--drift-y', (30 + Math.random() * 50) + 'px');
+          break;
+      }
+
+      document.body.appendChild(el);
       setTimeout(function() {
-        if (digit.parentNode) digit.parentNode.removeChild(digit);
+        if (el.parentNode) el.parentNode.removeChild(el);
       }, 1000);
     }
 
@@ -317,17 +372,16 @@
 
     document.addEventListener('touchstart', function(e) {
       var touch = e.touches[0];
-      if (touch) {
-        spawnTrail(touch.clientX, touch.clientY);
-      }
-    }, { passive: false });
+      if (touch) spawnTrail(touch.clientX, touch.clientY);
+    }, { passive: true });
 
     document.addEventListener('touchmove', function(e) {
       var touch = e.touches[0];
-      if (touch) {
-        spawnTrail(touch.clientX, touch.clientY);
-      }
-    }, { passive: false });
+      if (touch) spawnTrail(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    // Add trail style class to body for CSS
+    document.body.classList.add('trail-style-' + trailStyle);
   }
 
   function initBlink() {
@@ -386,9 +440,46 @@
   }
 
   // ============================================
-  // Matrix Rain Background Effect
+  // Retheme - Unified theming system
+  // Themes: matrix, crt, neon, y2k, hampsterdance, table, flash, snow
   // ============================================
-  function initMatrix() {
+  var RETHEME_STYLES = ['matrix', 'crt', 'neon', 'y2k', 'hampsterdance', 'table', 'flash', 'snow'];
+
+  function initRetheme() {
+    var themeParam = params.get('theme');
+    var theme = RETHEME_STYLES.includes(themeParam) ? themeParam : RETHEME_STYLES[Math.floor(Math.random() * RETHEME_STYLES.length)];
+
+    document.body.classList.add('retheme-' + theme);
+
+    switch (theme) {
+      case 'matrix':
+        initThemeMatrix();
+        break;
+      case 'crt':
+        initThemeCRT();
+        break;
+      case 'neon':
+        initThemeNeon();
+        break;
+      case 'y2k':
+        initThemeY2K();
+        break;
+      case 'hampsterdance':
+        initHampsterDance();
+        break;
+      case 'table':
+        initTable();
+        break;
+      case 'flash':
+        initFlash();
+        break;
+      case 'snow':
+        initThemeTVSnow();
+        break;
+    }
+  }
+
+  function initThemeMatrix() {
     var canvas = document.createElement('canvas');
     canvas.id = 'matrix-bg';
     canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0;transition:opacity 1s ease;background:#000;';
@@ -422,9 +513,133 @@
     window.addEventListener('resize', resize);
     requestAnimationFrame(function() { canvas.style.opacity = '1'; });
     setInterval(draw, 50);
+  }
 
-    // Add matrix-mode class to body for CSS styling
-    document.body.classList.add('matrix-mode');
+  function initThemeCRT() {
+    // Add CRT overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'crt-overlay';
+    document.body.appendChild(overlay);
+
+    // Add screen curvature effect
+    var curvature = document.createElement('div');
+    curvature.className = 'crt-curvature';
+    document.body.appendChild(curvature);
+  }
+
+  function initThemeNeon() {
+    // Add neon glow lines
+    var colors = ['#ff00ff', '#00ffff', '#ff0080', '#80ff00'];
+    for (var i = 0; i < 4; i++) {
+      var line = document.createElement('div');
+      line.className = 'neon-line';
+      line.style.setProperty('--neon-color', colors[i]);
+      line.style.top = (10 + i * 25) + '%';
+      line.style.animationDelay = (i * 0.5) + 's';
+      document.body.appendChild(line);
+    }
+  }
+
+  function initThemeY2K() {
+    // Add floating 3D shapes
+    var shapes = ['💿', '🔮', '💎', '⚪', '🌐'];
+    for (var i = 0; i < 8; i++) {
+      var shape = document.createElement('div');
+      shape.className = 'y2k-shape';
+      shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+      shape.style.left = Math.random() * 100 + '%';
+      shape.style.top = Math.random() * 100 + '%';
+      shape.style.animationDuration = (5 + Math.random() * 10) + 's';
+      shape.style.animationDelay = (Math.random() * 5) + 's';
+      shape.style.fontSize = (20 + Math.random() * 40) + 'px';
+      document.body.appendChild(shape);
+    }
+  }
+
+  // ============================================
+  // TV Snow / Static Effect Theme
+  // ============================================
+  function initThemeTVSnow() {
+    var canvas = document.createElement('canvas');
+    canvas.id = 'tv-snow';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;pointer-events:none;opacity:0.06;mix-blend-mode:overlay;';
+    document.body.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth / 4;
+      canvas.height = window.innerHeight / 4;
+    }
+
+    function draw() {
+      var imageData = ctx.createImageData(canvas.width, canvas.height);
+      var data = imageData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        var val = Math.random() * 255;
+        data[i] = val;
+        data[i + 1] = val;
+        data[i + 2] = val;
+        data[i + 3] = 255;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    draw();
+  }
+
+  // ============================================
+  // 3D Perspective - Tilt whole page on mouse move
+  // ============================================
+  function initPerspective() {
+    // Wrap everything in a perspective container
+    document.body.style.perspective = '1000px';
+    document.body.style.perspectiveOrigin = '50% 50%';
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'perspective-wrapper';
+
+    // Move all body children into wrapper
+    while (document.body.firstChild) {
+      wrapper.appendChild(document.body.firstChild);
+    }
+    document.body.appendChild(wrapper);
+
+    document.addEventListener('mousemove', function(e) {
+      var x = (e.clientX / window.innerWidth - 0.5) * 10;
+      var y = (e.clientY / window.innerHeight - 0.5) * 10;
+      wrapper.style.transform = 'rotateY(' + x + 'deg) rotateX(' + (-y) + 'deg)';
+    });
+
+    document.addEventListener('mouseleave', function() {
+      wrapper.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  }
+
+  // ============================================
+  // VHS Glitch Effect
+  // ============================================
+  function initGlitch() {
+    document.body.classList.add('glitch-mode');
+
+    var overlay = document.createElement('div');
+    overlay.className = 'glitch-overlay';
+    document.body.appendChild(overlay);
+
+    // Random glitch bursts
+    function triggerGlitch() {
+      document.body.classList.add('glitch-active');
+      setTimeout(function() {
+        document.body.classList.remove('glitch-active');
+      }, 100 + Math.random() * 200);
+
+      setTimeout(triggerGlitch, 2000 + Math.random() * 5000);
+    }
+
+    setTimeout(triggerGlitch, 1000);
   }
 
   // ============================================
@@ -512,6 +727,12 @@
     // Hide the original content
     if (main) main.style.display = 'none';
     document.body.appendChild(flashContainer);
+
+    // Keep control panel visible in flash mode - move it into flash container
+    var controlPanel = document.getElementById('control-panel');
+    if (controlPanel) {
+      flashContainer.appendChild(controlPanel);
+    }
 
     // Populate the Flash site with extracted content
     var flashTitle = flashContainer.querySelector('.flash-site-title');
@@ -1202,6 +1423,8 @@
     var ctrlSong = document.getElementById('ctrl-song');
     var ctrlViz = document.getElementById('ctrl-viz');
     var ctrlWordart = document.getElementById('ctrl-wordart');
+    var ctrlTrail = document.getElementById('ctrl-trail');
+    var ctrlTheme = document.getElementById('ctrl-theme');
 
     // Populate song options from config
     if (ctrlSong) {
@@ -1218,6 +1441,8 @@
     ctrlSong.value = params.get('song') || '';
     ctrlViz.value = params.get('viz') || '';
     ctrlWordart.value = params.get('wordart-style') || '';
+    if (ctrlTrail) ctrlTrail.value = params.get('trail-style') || '';
+    if (ctrlTheme) ctrlTheme.value = params.get('theme') || '';
 
     document.getElementById('ctrl-close').addEventListener('click', function() {
       var currentRetros = (params.get('retros') || params.get('retro') || '').split(',').map(function(r) {
@@ -1267,6 +1492,8 @@
       if (ctrlSong.value) newParams.set('song', ctrlSong.value);
       if (ctrlViz.value) newParams.set('viz', ctrlViz.value);
       if (ctrlWordart.value) newParams.set('wordart-style', ctrlWordart.value);
+      if (ctrlTrail && ctrlTrail.value) newParams.set('trail-style', ctrlTrail.value);
+      if (ctrlTheme && ctrlTheme.value) newParams.set('theme', ctrlTheme.value);
 
       window.location.search = newParams.toString();
     });

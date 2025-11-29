@@ -149,7 +149,43 @@
   animation: glitch 0.1s linear infinite;
 }
 
-/* Binary mouse trail */
+/* ============================================
+   Mouse Trail Styles (multiple variants!)
+   ============================================ */
+.mouse-trail {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 9999;
+  animation: trail-fade 1s ease-out forwards;
+  user-select: none;
+}
+
+.trail-binary { color: #000; }
+.trail-sparkles { font-size: 18px; }
+.trail-fire { font-size: 20px; }
+.trail-rainbow { font-size: 16px; }
+.trail-stars { font-size: 18px; }
+.trail-hearts { font-size: 16px; }
+.trail-neon { font-size: 16px; }
+.trail-bubbles { font-size: 20px; }
+.trail-snow { font-size: 18px; }
+.trail-matrix { font-family: 'MS Gothic', monospace; font-size: 18px; }
+
+@keyframes trail-fade {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift-x, 0), var(--drift-y, 20px)) scale(0.5);
+  }
+}
+
+/* Legacy support */
 .binary-trail {
   position: fixed;
   pointer-events: none;
@@ -158,19 +194,8 @@
   font-weight: bold;
   color: #000;
   z-index: 9999;
-  animation: binary-fade 1s ease-out forwards;
+  animation: trail-fade 1s ease-out forwards;
   user-select: none;
-}
-
-@keyframes binary-fade {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(var(--drift-x, 0), 20px) scale(0.5);
-  }
 }
 
 /* Blink tag retro - bringing back the 90s */
@@ -634,7 +659,7 @@ h1.wordart {
   position: fixed;
   top: 10px;
   right: 10px;
-  z-index: 10000;
+  z-index: 100001; /* Higher than flash-container (99999) */
   font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
   font-size: 12px;
   min-width: 280px;
@@ -2557,42 +2582,391 @@ h1.wordart {
 }
 
 /* ============================================
-   Matrix Rain Background Effect
+   Matrix Rain Background Effect (retheme)
    ============================================ */
 #matrix-bg {
   background: #000;
 }
 
-body.matrix-mode {
+body.retheme-matrix {
   background-image: none !important;
 }
 
-body.matrix-mode main {
+body.retheme-matrix main,
+body.retheme-matrix #main {
   background: rgba(0, 0, 0, 0.7);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
 }
 
-body.matrix-mode a {
+body.retheme-matrix a {
   color: #0f0;
 }
 
-body.matrix-mode a:hover {
+body.retheme-matrix a:hover {
   color: #0f0;
   text-shadow: 0 0 10px #0f0;
 }
 
-body.matrix-mode,
-body.matrix-mode h1,
-body.matrix-mode h2,
-body.matrix-mode h3 {
-  color: #0f0;
+body.retheme-matrix,
+body.retheme-matrix h1,
+body.retheme-matrix h2,
+body.retheme-matrix h3,
+body.retheme-matrix p,
+body.retheme-matrix li,
+body.retheme-matrix span {
+  color: #0f0 !important;
 }
 
-body.matrix-mode h1 {
+body.retheme-matrix h1 {
   font-family: 'VT323', monospace;
   font-size: 2.5em;
   text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
   letter-spacing: 2px;
+}
+
+/* ============================================
+   CRT Monitor Effect - Scanlines + Flicker (retheme)
+   ============================================ */
+body.retheme-crt {
+  animation: crt-flicker 0.1s infinite;
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.98; }
+}
+
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99998;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+.crt-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 255, 0, 0.03) 50%,
+    transparent 100%
+  );
+  animation: crt-scanline 8s linear infinite;
+}
+
+@keyframes crt-scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.crt-curvature {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99997;
+  box-shadow:
+    inset 0 0 100px rgba(0, 0, 0, 0.5),
+    inset 0 0 200px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+}
+
+body.retheme-crt main,
+body.retheme-crt #main {
+  text-shadow: 0.5px 0 0 rgba(255, 0, 0, 0.3), -0.5px 0 0 rgba(0, 255, 255, 0.3);
+}
+
+/* ============================================
+   Neon Glow - Cyberpunk vibes (retheme)
+   ============================================ */
+body.retheme-neon {
+  background: #0a0a0a !important;
+}
+
+body.retheme-neon main,
+body.retheme-neon #main {
+  background: rgba(10, 10, 10, 0.9) !important;
+  border: 2px solid #ff00ff;
+  box-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px #ff00ff,
+    0 0 40px #ff00ff,
+    inset 0 0 20px rgba(255, 0, 255, 0.1);
+}
+
+body.retheme-neon h1 {
+  color: #00ffff !important;
+  text-shadow:
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 40px #00ffff !important;
+  animation: neon-flicker 3s infinite;
+}
+
+body.retheme-neon h2,
+body.retheme-neon h3 {
+  color: #ff00ff !important;
+  text-shadow:
+    0 0 5px #ff00ff,
+    0 0 10px #ff00ff !important;
+}
+
+/* Force all text to be readable on dark background */
+body.retheme-neon,
+body.retheme-neon p,
+body.retheme-neon li,
+body.retheme-neon span,
+body.retheme-neon div,
+body.retheme-neon td,
+body.retheme-neon th,
+body.retheme-neon label {
+  color: #e0e0e0 !important;
+}
+
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow:
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #00ffff;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+body.retheme-neon a {
+  color: #ff0080 !important;
+  text-shadow: 0 0 10px #ff0080;
+}
+
+body.retheme-neon a:hover {
+  color: #80ff00 !important;
+  text-shadow: 0 0 20px #80ff00;
+}
+
+.neon-line {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--neon-color);
+  box-shadow:
+    0 0 5px var(--neon-color),
+    0 0 10px var(--neon-color),
+    0 0 20px var(--neon-color);
+  z-index: -1;
+  animation: neon-line-pulse 2s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes neon-line-pulse {
+  0%, 100% { opacity: 0.4; transform: scaleX(0.8); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+
+/* ============================================
+   Y2K Chrome - Shiny metallic everything (retheme)
+   ============================================ */
+body.retheme-y2k {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+body.retheme-y2k main,
+body.retheme-y2k #main {
+  background: linear-gradient(135deg, #c0c0c0 0%, #ffffff 25%, #c0c0c0 50%, #ffffff 75%, #c0c0c0 100%) !important;
+  background-size: 400% 400%;
+  animation: y2k-chrome-shift 5s ease infinite;
+  border: 4px solid;
+  border-image: linear-gradient(135deg, #ffd700, #ff69b4, #00bfff, #ffd700) 1;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+  color: #333 !important;
+}
+
+body.retheme-y2k p,
+body.retheme-y2k li,
+body.retheme-y2k span,
+body.retheme-y2k div {
+  color: #333 !important;
+}
+
+@keyframes y2k-chrome-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body.retheme-y2k h1 {
+  background: linear-gradient(180deg, #e0e0e0 0%, #ffffff 20%, #a0a0a0 40%, #ffffff 60%, #c0c0c0 80%, #808080 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(2px 2px 0 #333) drop-shadow(-1px -1px 0 #fff);
+  text-shadow: none !important;
+}
+
+.y2k-shape {
+  position: fixed;
+  z-index: -1;
+  animation: y2k-float 10s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+  opacity: 0.6;
+}
+
+@keyframes y2k-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-20px) rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: translateY(-40px) rotate(180deg) scale(1);
+  }
+  75% {
+    transform: translateY(-20px) rotate(270deg) scale(1.1);
+  }
+}
+
+/* ============================================
+   3D Perspective / Tilt Effect
+   ============================================ */
+.perspective-wrapper {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  min-height: 100vh;
+}
+
+/* ============================================
+   VHS Glitch Effect
+   ============================================ */
+body.glitch-mode {
+  position: relative;
+}
+
+.glitch-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 4px
+  );
+  opacity: 0.3;
+}
+
+body.glitch-active {
+  animation: vhs-glitch 0.1s steps(2) infinite;
+}
+
+body.glitch-active .glitch-overlay {
+  opacity: 0.8;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(255, 0, 0, 0.1) 2px,
+      rgba(255, 0, 0, 0.1) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 255, 255, 0.1) 3px,
+      rgba(0, 255, 255, 0.1) 6px
+    );
+}
+
+@keyframes vhs-glitch {
+  0% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: translate(-2px, 1px);
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    transform: translate(2px, -1px);
+    filter: hue-rotate(-90deg);
+  }
+  75% {
+    transform: translate(1px, 2px);
+    filter: hue-rotate(180deg);
+  }
+  100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+}
+
+body.glitch-active main,
+body.glitch-active #main {
+  animation: glitch-text 0.1s steps(2) infinite;
+}
+
+@keyframes glitch-text {
+  0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+  25% { text-shadow: -2px 0 #ff0000, 2px 0 #00ffff; }
+  50% { text-shadow: 2px 2px #ff0000, -2px -2px #00ffff; }
+  75% { text-shadow: -2px 2px #ff0000, 2px -2px #00ffff; }
+  100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+}
+
+/* ============================================
+   TV Snow / Static Effect (retheme)
+   ============================================ */
+#tv-snow {
+  image-rendering: pixelated;
+}
+
+body.retheme-snow {
+  /* Slight desaturation for that old TV feel */
+  filter: saturate(0.9);
 }
