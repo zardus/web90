@@ -76,6 +76,8 @@ Clone this repo into your site, then:
 | `hampsterdance` | Animated background hamsters |
 | `custom-cursor` | Replace the cursor with a custom image |
 | `dividers` | Animated GIF dividers between sections |
+| `flash` | Full Y2K Macromedia Flash-style site takeover with loader, intro, and navigation |
+| `image-rotate` | 3D rotating images (add `data-image-rotate="true"` to img tags) |
 
 ### Special
 

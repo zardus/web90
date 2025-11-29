@@ -2,6 +2,8 @@
  * Retro Features JavaScript
  * Handles all the nostalgic 90s/2000s web elements
  *
+ * https://github.com/zardus/web90
+ *
  * Base path is auto-detected from script location.
  *
  * Usage:
