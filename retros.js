@@ -402,7 +402,17 @@
   // ============================================
   function initCursorTrail(mode) {
     var cursorImg = new Image();
-    cursorImg.src = config.basePath + '/cursors/win95.png';
+
+    // Use the active custom cursor if set, otherwise fall back to win95
+    var cursorParam = params.get('cursor-style');
+    if (cursorParam === 'custom' && config.cursorUrl) {
+      cursorImg.src = config.cursorUrl;
+    } else if (cursorParam && cursorParam !== 'none' && cursorParam !== 'custom') {
+      // Named cursor style (e.g., 'hourglass')
+      cursorImg.src = config.basePath + '/cursors/' + cursorParam + '.png';
+    } else {
+      cursorImg.src = config.basePath + '/cursors/win95.png';
+    }
 
     var canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
