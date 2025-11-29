@@ -137,7 +137,14 @@ Configure web90 by setting `window.WEB90_CONFIG` before loading the script:
     cursorUrl: '/cursor.png',
 
     // Text that glitches on the visitor counter (leave empty to disable)
-    counterGlitchText: 'My Fans'
+    counterGlitchText: 'My Fans',
+
+    // Limit which retros can be randomly selected (when no ?retros= param is set)
+    // null/omitted = all retros; empty array = no retros; array = only these retros
+    randomRetros: ['badges', 'counter', 'wordart', 'dividers'],
+
+    // Limit which retros can appear on April Fools day (same rules as randomRetros)
+    aprilFoolsRetros: null
   };
 </script>
 <script src="web90/retros.js"></script>

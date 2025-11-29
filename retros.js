@@ -60,7 +60,9 @@
     guestbookUrl: '',
     chatUrl: '',
     cursorUrl: '',
-    counterGlitchText: ''
+    counterGlitchText: '',
+    randomRetros: null,      // Array of retro names to randomly choose from (null = all retros)
+    aprilFoolsRetros: null   // Array of retro names for April Fools chaos (null = all retros)
   };
 
   // Merge user config with defaults
@@ -143,7 +145,21 @@
   // Selects a random number of retros for maximum chaos
   // ============================================
   function selectAprilFoolsRetros() {
-    var allRetros = shuffle(ALL_FUN_RETROS.slice());
+    // null/undefined = all retros; empty array = no retros; array = only those retros
+    var pool;
+    if (Array.isArray(config.aprilFoolsRetros)) {
+      if (config.aprilFoolsRetros.length === 0) {
+        return []; // Empty array = no April Fools retros
+      }
+      pool = config.aprilFoolsRetros.filter(function(r) { return ALL_FUN_RETROS.indexOf(r) !== -1; });
+      if (pool.length === 0) {
+        return []; // All specified retros were invalid
+      }
+    } else {
+      pool = ALL_FUN_RETROS.slice();
+    }
+
+    var allRetros = shuffle(pool);
     // Pick random count, weighted toward chaos (sqrt biases toward more)
     var minRetros = 2;
     var maxRetros = allRetros.length;
@@ -191,7 +207,8 @@
       if (isAprilFools()) {
         retroList = selectAprilFoolsRetros();
       } else {
-        return [selectRandomRetro()];
+        var randomRetro = selectRandomRetro();
+        return randomRetro ? [randomRetro] : [];
       }
     }
 
@@ -218,7 +235,20 @@
   // Random Retro Selection
   // ============================================
   function selectRandomRetro() {
-    var selected = ALL_FUN_RETROS[Math.floor(Math.random() * ALL_FUN_RETROS.length)];
+    // null/undefined = all retros; empty array = no retros; array = only those retros
+    if (Array.isArray(config.randomRetros)) {
+      if (config.randomRetros.length === 0) {
+        return null; // Empty array = no random retro
+      }
+      var pool = config.randomRetros.filter(function(r) { return ALL_FUN_RETROS.indexOf(r) !== -1; });
+      if (pool.length === 0) {
+        return null; // All specified retros were invalid
+      }
+    } else {
+      var pool = ALL_FUN_RETROS;
+    }
+
+    var selected = pool[Math.floor(Math.random() * pool.length)];
 
     if (ALL_DOM_RETROS.indexOf(selected) !== -1) {
       var el = document.getElementById('retro-' + selected);
