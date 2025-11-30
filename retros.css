@@ -2308,9 +2308,9 @@ body.retheme-y2k h1 {
 }
 
 /* ============================================
-   VHS Glitch Effect
+   VHS Glitch Effect (retheme)
    ============================================ */
-body.glitch-mode { position: relative; }
+body.retheme-vhs { position: relative; }
 
 .glitch-overlay {
   z-index: 99999;
@@ -2318,9 +2318,9 @@ body.glitch-mode { position: relative; }
   opacity: 0.3;
 }
 
-body.glitch-active { animation: vhs-glitch 0.1s steps(2) infinite; }
+body.retheme-vhs.glitch-active { animation: vhs-glitch 0.1s steps(2) infinite; }
 
-body.glitch-active .glitch-overlay {
+body.retheme-vhs.glitch-active .glitch-overlay {
   opacity: 0.8;
   background:
     repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(255, 0, 0, 0.1) 2px, rgba(255, 0, 0, 0.1) 4px),
@@ -2335,8 +2335,8 @@ body.glitch-active .glitch-overlay {
   100% { transform: translate(0); filter: hue-rotate(0deg); }
 }
 
-body.glitch-active main,
-body.glitch-active #main {
+body.retheme-vhs.glitch-active main,
+body.retheme-vhs.glitch-active #main {
   animation: glitch-text 0.1s steps(2) infinite;
 }
 

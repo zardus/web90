@@ -234,7 +234,8 @@
     hampsterdance: initHampsterDance,
     table: initTable,
     flash: initFlash,
-    snow: initThemeTVSnow
+    snow: initThemeTVSnow,
+    vhs: initThemeVHS
   };
 
   var THEME_NAMES = Object.keys(THEMES);
@@ -273,8 +274,7 @@
     { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers },
     { name: 'image-rotate', type: 'js', emoji: '🔄', label: 'Image Rotate', init: initImageRotate },
     { name: 'retheme', type: 'js', emoji: '🎨', label: 'Retheme', init: initRetheme },
-    { name: 'perspective', type: 'js', emoji: '🎲', label: '3D Tilt', init: initPerspective },
-    { name: 'glitch', type: 'js', emoji: '📼', label: 'VHS Glitch', init: initGlitch }
+    { name: 'perspective', type: 'js', emoji: '🎲', label: '3D Tilt', init: initPerspective }
   ];
 
   // Derived arrays
@@ -923,12 +923,10 @@
   }
 
   // ============================================
-  // VHS Glitch Effect
+  // Theme: VHS Glitch Effect
   // ============================================
 
-  function initGlitch() {
-    document.body.classList.add('glitch-mode');
-
+  function initThemeVHS() {
     var overlay = createElement('div');
     overlay.className = 'glitch-overlay';
     document.documentElement.appendChild(overlay);
