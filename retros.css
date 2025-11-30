@@ -80,9 +80,6 @@
 }
 
 .media-controls button {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
   padding: 0 10px;
   font-size: 22px;
   cursor: pointer;
@@ -152,7 +149,8 @@
 /* ============================================
    Mouse Trail Styles (multiple variants!)
    ============================================ */
-.mouse-trail {
+.mouse-trail,
+.binary-trail {
   position: fixed;
   pointer-events: none;
   font-family: 'Courier New', monospace;
@@ -163,7 +161,8 @@
   user-select: none;
 }
 
-.trail-binary { color: #000; }
+.trail-binary,
+.binary-trail { color: #000; }
 .trail-sparkles { font-size: 18px; }
 .trail-fire { font-size: 20px; }
 .trail-rainbow { font-size: 16px; }
@@ -183,19 +182,6 @@
     opacity: 0;
     transform: translate(var(--drift-x, 0), var(--drift-y, 20px)) scale(0.5);
   }
-}
-
-/* Legacy support */
-.binary-trail {
-  position: fixed;
-  pointer-events: none;
-  font-family: 'Courier New', monospace;
-  font-size: 14px;
-  font-weight: bold;
-  color: #000;
-  z-index: 9999;
-  animation: trail-fade 1s ease-out forwards;
-  user-select: none;
 }
 
 /* Blink tag retro - bringing back the 90s */
@@ -287,31 +273,71 @@ h1.wordart {
   margin: 0;
 }
 
+/* WordArt font-weight: 900 (bold styles) */
+.wordart-style-one h1.wordart,
+.wordart-style-two h1.wordart,
+.wordart-style-five h1.wordart,
+.wordart-style-six h1.wordart,
+.wordart-style-eleven h1.wordart,
+.wordart-style-thirteen h1.wordart,
+.wordart-style-fifteen h1.wordart,
+.wordart-style-sixteen h1.wordart,
+.wordart-style-seventeen h1.wordart,
+.wordart-style-nineteen h1.wordart,
+.wordart-style-twentytwo h1.wordart {
+  font-weight: 900;
+}
+
+/* WordArt Impact font styles */
+.wordart-style-seven h1.wordart,
+.wordart-style-eight h1.wordart,
+.wordart-style-nine h1.wordart,
+.wordart-style-sixteen h1.wordart,
+.wordart-style-twenty h1.wordart,
+.wordart-style-twentyone h1.wordart {
+  font-family: Impact, sans-serif;
+}
+
+/* WordArt Times New Roman font styles */
+.wordart-style-four h1.wordart,
+.wordart-style-ten h1.wordart,
+.wordart-style-twelve h1.wordart,
+.wordart-style-fourteen h1.wordart,
+.wordart-style-eighteen h1.wordart {
+  font-family: Times New Roman, serif;
+}
+
+/* WordArt container transform: scaleY(1.65) */
+.wordart-style-two .wordart-container,
+.wordart-style-three .wordart-container,
+.wordart-style-eleven .wordart-container {
+  transform: scaleY(1.65);
+}
+
+/* WordArt container transform: scaleY(1.25) */
+.wordart-style-five .wordart-container,
+.wordart-style-seven .wordart-container,
+.wordart-style-eight .wordart-container {
+  transform: scaleY(1.25);
+}
+
 /* Style 1 - Outlined white */
 .wordart-style-one .wordart-container {
   transform: scale(1.05, 1.25);
 }
 .wordart-style-one h1.wordart {
-  font-weight: 900;
   color: #fff;
   -webkit-text-fill-color: #fff;
   -webkit-text-stroke: 1px #000;
 }
 
 /* Style 2 - Slanted black */
-.wordart-style-two .wordart-container {
-  transform: scaleY(1.65);
-}
 .wordart-style-two h1.wordart {
-  font-weight: 900;
   color: #000;
   transform: rotate(-3deg) skewY(-10deg);
 }
 
 /* Style 3 - Italic outline with shadow */
-.wordart-style-three .wordart-container {
-  transform: scaleY(1.65);
-}
 .wordart-style-three h1.wordart {
   font-style: italic;
   color: #fff;
@@ -322,18 +348,13 @@ h1.wordart {
 
 /* Style 4 - Classic blue serif */
 .wordart-style-four h1.wordart {
-  font-family: Times New Roman, serif;
   font-weight: 400;
   color: #336699;
   text-shadow: 2px 1px 0 #c1c1c1;
 }
 
 /* Style 5 - 3D purple outline */
-.wordart-style-five .wordart-container {
-  transform: scaleY(1.25);
-}
 .wordart-style-five h1.wordart {
-  font-weight: 900;
   color: #d8d8d8;
   -webkit-text-fill-color: #d8d8d8;
   -webkit-text-stroke: 1px #3333cc;
@@ -353,12 +374,7 @@ h1.wordart {
   transform: scaleX(0.85) translateZ(0);
 }
 .wordart-style-six h1.wordart {
-  font-weight: 900;
-  color: transparent;
   background: linear-gradient(#adadad, #fff);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
   letter-spacing: 0.25rem;
 }
 .wordart-style-six h1.wordart::before {
@@ -366,11 +382,7 @@ h1.wordart {
 }
 
 /* Style 7 - Impact blue with red shadow */
-.wordart-style-seven .wordart-container {
-  transform: scaleY(1.25);
-}
 .wordart-style-seven h1.wordart {
-  font-family: Impact, sans-serif;
   color: #0066cc;
   -webkit-text-fill-color: #0066cc;
   -webkit-text-stroke: 0.016em #99ccff;
@@ -382,16 +394,8 @@ h1.wordart {
 }
 
 /* Style 8 - Sunset gradient */
-.wordart-style-eight .wordart-container {
-  transform: scaleY(1.25);
-}
 .wordart-style-eight h1.wordart {
-  font-family: Impact, sans-serif;
-  color: transparent;
   background: radial-gradient(ellipse at center, #fff812, #ff9a32);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-eight h1.wordart::before {
   text-shadow: 0.094em 0.063em #cdcdcd;
@@ -402,14 +406,9 @@ h1.wordart {
   transform: scale(0.9, 1.65) rotate(-3deg) skewY(-3deg) translateZ(0);
 }
 .wordart-style-nine h1.wordart {
-  font-family: Impact, sans-serif;
   font-weight: 700;
-  color: transparent;
   background: linear-gradient(#6900cc, #cb00cc);
-  -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 0.016em #d2a2fe;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-nine h1.wordart::before {
   -webkit-text-stroke: transparent;
@@ -421,7 +420,6 @@ h1.wordart {
   transform: scale(0.85, 1.25);
 }
 .wordart-style-ten h1.wordart {
-  font-family: Times New Roman, serif;
   font-weight: 400;
   color: #1a4b28;
   -webkit-text-fill-color: #1a4b28;
@@ -436,17 +434,9 @@ h1.wordart {
 }
 
 /* Style 11 - Blue-purple gradient with 3D shadow */
-.wordart-style-eleven .wordart-container {
-  transform: scaleY(1.65);
-}
 .wordart-style-eleven h1.wordart {
-  font-weight: 900;
-  color: transparent;
   background: linear-gradient(to left, #00c6ff, #0072ff, #7c3aed, #c026d3, #7c3aed, #0072ff);
-  -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 0.016em #eaeaea;
-  -webkit-background-clip: text;
-  background-clip: text;
   letter-spacing: 0.1rem;
 }
 .wordart-style-eleven h1.wordart::before {
@@ -458,13 +448,8 @@ h1.wordart {
 
 /* Style 12 - Teal gradient serif */
 .wordart-style-twelve h1.wordart {
-  font-family: Times New Roman, serif;
   font-weight: 400;
-  color: transparent;
   background: linear-gradient(#999cfc, #1b999c);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-twelve h1.wordart::before {
   text-shadow: 0.031em 0.031em #cdcdcd;
@@ -475,7 +460,6 @@ h1.wordart {
   transform: scale(0.65, 1.65);
 }
 .wordart-style-thirteen h1.wordart {
-  font-weight: 900;
   color: #896640;
 }
 .wordart-style-thirteen h1.wordart::before {
@@ -487,12 +471,8 @@ h1.wordart {
   transform: scale(0.85, 1.3) translateZ(0);
 }
 .wordart-style-fourteen h1.wordart {
-  font-family: Times New Roman, serif;
   font-weight: 400;
   background: linear-gradient(#fffecb, #ff9999);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
   letter-spacing: -0.1vw;
 }
 .wordart-style-fourteen h1.wordart::before {
@@ -504,13 +484,8 @@ h1.wordart {
   transform: perspective(200px) rotateX(30deg) scaleY(1.65);
 }
 .wordart-style-fifteen h1.wordart {
-  font-weight: 900;
-  color: transparent;
   background: linear-gradient(#551700, #fecb00);
-  -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 1px #b2b2b2;
-  -webkit-background-clip: text;
-  background-clip: text;
   letter-spacing: 0.1vw;
 }
 .wordart-style-fifteen h1.wordart::before {
@@ -525,8 +500,6 @@ h1.wordart {
   transform: scale(0.8, 1.2);
 }
 .wordart-style-sixteen h1.wordart {
-  font-family: Impact, sans-serif;
-  font-weight: 900;
   color: #33ccff;
   -webkit-text-stroke: 1.25px #000099;
   text-shadow: 0.35rem -0.35rem 0 #000099;
@@ -538,13 +511,8 @@ h1.wordart {
   transform: scale(1.05, 1.25);
 }
 .wordart-style-seventeen h1.wordart {
-  font-weight: 900;
-  color: transparent;
   background: repeating-linear-gradient(180deg, transparent, transparent 1px, #ffff00 1px, #ffff00 4px), repeating-linear-gradient(-50deg, #808080, #808080 5px, #ffff00 5px, #ffff00 8px);
-  -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 1px #000;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-seventeen h1.wordart::before {
   text-shadow: 3px 2px 0 #999;
@@ -555,12 +523,8 @@ h1.wordart {
   transform: scaleY(1.5) translateZ(0);
 }
 .wordart-style-eighteen h1.wordart {
-  font-family: Times New Roman, serif;
   font-weight: 400;
   background: linear-gradient(#b6b6b6 0%, #5f5f5f 20%, #b1b1b1 30%, #fff 64%, #6c6c6c 65%, #373737 66%, #515151 67%, #787878 75%, #d2d2d2 80%, #d2d2d2 100%);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-eighteen h1.wordart::before {
   text-shadow: -1px 0 0 #4a4a4a, 0 -1px 0 #8b8b8b, -2px -1px 0.125px #4a4a4a, -1px -1px 0.125px #8b8b8b, -3px -2px 0.125px #4a4a4a, -2px -2px 0.125px #8b8b8b, -4px -3px 0.125px #4a4a4a, -3px -3px 0.125px #8b8b8b, -5px -4px 0.125px #4a4a4a, -4px -4px 0.125px #8b8b8b, -5px -5px 0 #4a4a4a, -5px -5px 0 #8b8b8b;
@@ -571,7 +535,6 @@ h1.wordart {
   transform: scale(0.65, 1.75);
 }
 .wordart-style-nineteen h1.wordart {
-  font-weight: 900;
   color: #0f3a1a;
   transform: perspective(100px) rotateY(6deg) rotateZ(-7deg);
 }
@@ -584,12 +547,7 @@ h1.wordart {
   transform: perspective(100px) rotateY(6deg) rotateZ(-3deg) skewY(15deg) scale(0.8, 1.25);
 }
 .wordart-style-twenty h1.wordart {
-  font-family: Impact, sans-serif;
-  color: transparent;
   background: linear-gradient(to left, #747474, #fff, #747474);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-twenty h1.wordart::before {
   text-shadow: -1px 0 0 #72745b, 0 1px 0 #2c2d23, -2px 1px 0.5px #72745b, -1px 2px 0.5px #2c2d23, -3px 2px 0.5px #72745b, -2px 3px 0.5px #2c2d23, -4px 3px 0.5px #72745b, -3px 4px 0.5px #2c2d23, -5px 4px 0.5px #72745b, -4px 5px 0.5px #2c2d23, -6px 5px 0.5px #72745b, -5px 6px 0.5px #2c2d23, -7px 6px 0.5px #72745b, -6px 7px 0.5px #2c2d23, -8px 7px 0.5px #72745b, -7px 8px 0.5px #2c2d23, -9px 8px 0.5px #72745b, -8px 9px 0.5px #2c2d23, -10px 9px 0.5px #72745b, -9px 10px 0.5px #2c2d23, -11px 10px 0.5px #72745b, -10px 11px 0.5px #2c2d23, -12px 11px 0.5px #72745b, -11px 12px 0.5px #2c2d23, -13px 12px 0.5px #72745b, -12px 13px 0.5px #2c2d23, -14px 13px 0.5px #72745b, -13px 14px 0.5px #2c2d23, -15px 14px 0.5px #72745b, -14px 15px 0.5px #2c2d23, -16px 15px 0.5px #72745b, -15px 16px 0.5px #2c2d23, -17px 16px 0.5px #72745b, -16px 17px 0.5px #2c2d23, -18px 17px 0 #72745b, -17px 18px 0 #2c2d23;
@@ -600,12 +558,7 @@ h1.wordart {
   transform: scaleY(1.5) skewY(-8deg) rotateZ(-3deg) translateZ(0);
 }
 .wordart-style-twentyone h1.wordart {
-  font-family: Impact, sans-serif;
-  color: transparent;
   background: linear-gradient(to bottom left, #fee601, #fee601 15%, #fe4201);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-twentyone h1.wordart::before {
   text-shadow: 1px 0 0 #813300, 0 1px 0 #c14d00, 2px 1px 0.35px #813300, 1px 2px 0.35px #c14d00, 3px 2px 0.35px #813300, 2px 3px 0.35px #c14d00, 4px 3px 0.35px #813300, 3px 4px 0.35px #c14d00, 5px 4px 0.35px #813300, 4px 5px 0.35px #c14d00, 6px 5px 0.35px #813300, 5px 6px 0.35px #c14d00, 7px 6px 0.35px #813300, 6px 7px 0.35px #c14d00;
@@ -616,18 +569,60 @@ h1.wordart {
   transform: scale(0.75, 1.65) translateZ(0);
 }
 .wordart-style-twentytwo h1.wordart {
-  font-weight: 900;
   background: linear-gradient(#ccdfec 0%, #7a97bc 20%, #8aacc6 30%, #fff 50%, #b8908f 51%, #80302d 52%, #b84d4a 55%, #e7cfc9 75%, #916e66 100%);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
   letter-spacing: -0.2vw;
 }
 .wordart-style-twentytwo h1.wordart::before {
   text-shadow: 1px 0 0 #000, 0 1px 1px #a1a1a1, 2px 1px 1px #000, 1px 2px 1px #a1a1a1, 3px 2px 1px #000, 2px 3px 1px #a1a1a1, 4px 3px 1px #000, 3px 4px 1px #a1a1a1, 5px 4px 1px #000, 4px 5px 1px #a1a1a1, 6px 5px 1px #000, 5px 6px 1px #a1a1a1, 7px 6px 1px #000, 6px 7px 1px #a1a1a1, 8px 7px 1px #000, 7px 8px 1px #a1a1a1, 9px 8px 1px #000, 8px 9px 1px #a1a1a1, 10px 9px 0 #000;
 }
 
+/* WordArt gradient text clipping (must come after background definitions) */
+.wordart-style-six h1.wordart,
+.wordart-style-eight h1.wordart,
+.wordart-style-nine h1.wordart,
+.wordart-style-eleven h1.wordart,
+.wordart-style-twelve h1.wordart,
+.wordart-style-fourteen h1.wordart,
+.wordart-style-fifteen h1.wordart,
+.wordart-style-seventeen h1.wordart,
+.wordart-style-eighteen h1.wordart,
+.wordart-style-twenty h1.wordart,
+.wordart-style-twentyone h1.wordart,
+.wordart-style-twentytwo h1.wordart {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 /* Windows 95 Control Panel */
+
+/* Win95 raised border (buttons, windows) */
+.media-controls button,
+.win95-window,
+.win95-btn-close,
+.win95-btn {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+}
+
+/* Win95 sunken border (inputs, fieldsets) */
+.win95-fieldset,
+.win95-select,
+.win95-custom-dropdown,
+.win95-custom-dropdown-options {
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+/* Win95 sunken inputs with white background */
+.win95-select,
+.win95-custom-dropdown,
+.win95-custom-dropdown-options {
+  background: #fff;
+}
+
 #control-panel {
   position: fixed;
   top: 10px;
@@ -639,9 +634,6 @@ h1.wordart {
 }
 
 .win95-window {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
   box-shadow: 1px 1px 0 #000;
 }
 
@@ -662,9 +654,6 @@ h1.wordart {
 }
 
 .win95-btn-close {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
   width: 16px;
   height: 14px;
   font-size: 10px;
@@ -685,8 +674,6 @@ h1.wordart {
 }
 
 .win95-fieldset {
-  border: 2px solid;
-  border-color: #808080 #fff #fff #808080;
   padding: 8px;
   margin-bottom: 8px;
 }
@@ -713,9 +700,6 @@ h1.wordart {
 
 .win95-select {
   flex: 1;
-  background: #fff;
-  border: 2px solid;
-  border-color: #808080 #fff #fff #808080;
   padding: 2px;
   font-family: inherit;
   font-size: 12px;
@@ -724,9 +708,6 @@ h1.wordart {
 .win95-custom-dropdown {
   flex: 1;
   position: relative;
-  background: #fff;
-  border: 2px solid;
-  border-color: #808080 #fff #fff #808080;
   font-family: inherit;
   font-size: 12px;
   cursor: pointer;
@@ -764,9 +745,6 @@ h1.wordart {
   top: 100%;
   left: -2px;
   right: -2px;
-  background: #fff;
-  border: 2px solid;
-  border-color: #808080 #fff #fff #808080;
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
@@ -863,9 +841,6 @@ h1.wordart {
 }
 
 .win95-btn {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
   padding: 4px 16px;
   font-family: inherit;
   font-size: 12px;
@@ -2682,6 +2657,19 @@ body.retheme-matrix h1 {
 /* ============================================
    CRT Monitor Effect - Scanlines + Flicker (retheme)
    ============================================ */
+
+/* Full-screen overlay base */
+.crt-overlay,
+.crt-curvature,
+.glitch-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 body.retheme-crt {
   animation: crt-flicker 0.1s infinite;
 }
@@ -2692,12 +2680,6 @@ body.retheme-crt {
 }
 
 .crt-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
   z-index: 99998;
   background: repeating-linear-gradient(
     0deg,
@@ -2744,12 +2726,6 @@ body.retheme-crt {
 }
 
 .crt-curvature {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
   z-index: 99997;
   box-shadow:
     inset 0 0 100px rgba(0, 0, 0, 0.5),
@@ -2936,12 +2912,6 @@ body.glitch-mode {
 }
 
 .glitch-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
   z-index: 99999;
   background: repeating-linear-gradient(
     0deg,
