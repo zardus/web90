@@ -168,17 +168,21 @@
 
   var TRAIL_STYLES = {
     binary: {
+      emoji: '🔟', label: 'Binary',
       chars: function() { return Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1'); }
     },
     sparkles: {
+      emoji: '✨', label: 'Sparkles',
       chars: ['✦', '✧', '★', '✯', '⋆', '✶', '✴', '✹'],
       color: function() { return 'hsl(' + Math.random() * 360 + ', 100%, 70%)'; }
     },
     fire: {
+      emoji: '🔥', label: 'Fire',
       chars: ['🔥', '💥', '✨', '⚡'],
       driftY: function() { return -(30 + Math.random() * 40) + 'px'; }
     },
     rainbow: {
+      emoji: '🌈', label: 'Rainbow',
       chars: ['●'],
       throttle: 30,
       color: function(hue) { return 'hsl(' + hue + ', 100%, 60%)'; },
@@ -186,12 +190,15 @@
       hueStep: 15
     },
     stars: {
+      emoji: '⭐', label: 'Stars',
       chars: ['⭐', '🌟', '💫', '✨']
     },
     hearts: {
+      emoji: '💖', label: 'Hearts',
       chars: ['❤️', '💖', '💕', '💗', '💜', '💙']
     },
     neon: {
+      emoji: '💜', label: 'Neon',
       chars: ['◆', '◇', '○', '●', '□', '■'],
       color: function() {
         var colors = ['#ff00ff', '#00ffff', '#ff0080', '#80ff00', '#0080ff'];
@@ -202,40 +209,49 @@
       }
     },
     bubbles: {
+      emoji: '○', label: 'Bubbles',
       chars: ['○', '◌', '◯', '⬤'],
       color: function() { return 'rgba(100, 200, 255, 0.7)'; },
       driftY: function() { return -(20 + Math.random() * 30) + 'px'; }
     },
     snow: {
+      emoji: '❄', label: 'Snow',
       chars: ['❄', '❅', '❆', '✻'],
       color: function() { return '#fff'; },
       textShadow: function() { return '0 0 3px #08f, 0 0 6px #08f, 0 0 2px #000'; },
       driftY: function() { return (30 + Math.random() * 20) + 'px'; }
     },
     matrix: {
+      emoji: '🕴️', label: 'Matrix',
       chars: function() { return String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)); },
       color: function() { return '#0f0'; },
       textShadow: function() { return '0 0 5px #0f0, 0 0 10px #0f0, 0 0 2px #000, 0 0 4px #000'; },
       driftY: function() { return (30 + Math.random() * 50) + 'px'; }
+    },
+    ghost: {
+      emoji: '👻', label: 'Ghost Pointer'
+    },
+    elastic: {
+      emoji: '🪀', label: 'Elastic Pointer'
     }
   };
 
-  var TRAIL_STYLE_NAMES = Object.keys(TRAIL_STYLES).concat(['ghost', 'elastic']);
+  var TRAIL_STYLE_NAMES = Object.keys(TRAIL_STYLES);
 
   // ============================================
   // Theme Definitions
   // ============================================
 
   var THEMES = {
-    matrix: initThemeMatrix,
-    crt: initThemeCRT,
-    neon: initThemeNeon,
-    y2k: initThemeY2K,
-    hampsterdance: initHampsterDance,
-    table: initTable,
-    flash: initFlash,
-    snow: initThemeTVSnow,
-    vhs: initThemeVHS
+    matrix: { emoji: '🕴️', label: 'Matrix', init: initThemeMatrix },
+    crt: { emoji: '📺', label: 'CRT Monitor', init: initThemeCRT },
+    neon: { emoji: '💜', label: 'Neon Cyberpunk', init: initThemeNeon },
+    y2k: { emoji: '💿', label: 'Y2K Chrome', init: initThemeY2K },
+    hampsterdance: { emoji: '🐹', label: 'Hampster Dance', init: initHampsterDance },
+    table: { emoji: '📊', label: 'Table Mode', init: initTable },
+    flash: { emoji: '⚡', label: 'Flash Site', init: initFlash },
+    snow: { emoji: '📡', label: 'TV Snow', init: initThemeTVSnow },
+    vhs: { emoji: '📼', label: 'VHS Glitch', init: initThemeVHS }
   };
 
   var THEME_NAMES = Object.keys(THEMES);
@@ -245,14 +261,45 @@
   // ============================================
 
   var VIZ_MODES = {
-    waveform: { dataType: 'time', draw: drawWaveform },
-    spectrogram: { dataType: 'freq', draw: drawSpectrogram },
-    spectrum: { dataType: 'freq', draw: drawSpectrum },
-    psychedelic: { dataType: 'freq', draw: drawPsychedelic },
-    radial: { dataType: 'freq', draw: drawRadial }
+    waveform: { label: 'Waveform', dataType: 'time', draw: drawWaveform },
+    spectrogram: { label: 'Spectrogram', dataType: 'freq', draw: drawSpectrogram },
+    spectrum: { label: 'Spectrum', dataType: 'freq', draw: drawSpectrum },
+    psychedelic: { label: 'Psychedelic', dataType: 'freq', draw: drawPsychedelic },
+    radial: { label: 'Radial', dataType: 'freq', draw: drawRadial }
   };
 
   var VIZ_MODE_NAMES = Object.keys(VIZ_MODES);
+
+  // ============================================
+  // WordArt Style Definitions
+  // ============================================
+
+  var WORDART_STYLES = {
+    one: { label: 'Style 1 - Outlined' },
+    two: { label: 'Style 2 - Slanted' },
+    three: { label: 'Style 3 - Italic Shadow' },
+    four: { label: 'Style 4 - Blue Serif' },
+    five: { label: 'Style 5 - 3D Purple' },
+    six: { label: 'Style 6 - Silver' },
+    seven: { label: 'Style 7 - Impact Blue' },
+    eight: { label: 'Style 8 - Sunset' },
+    nine: { label: 'Style 9 - Purple Skew' },
+    ten: { label: 'Style 10 - Green Echo' },
+    eleven: { label: 'Style 11 - Blue 3D' },
+    twelve: { label: 'Style 12 - Teal Serif' },
+    thirteen: { label: 'Style 13 - Western' },
+    fourteen: { label: 'Style 14 - Pink Depth' },
+    fifteen: { label: 'Style 15 - Gold' },
+    sixteen: { label: 'Style 16 - Cyan Navy' },
+    seventeen: { label: 'Style 17 - Striped' },
+    eighteen: { label: 'Style 18 - Chrome' },
+    nineteen: { label: 'Style 19 - Green 3D' },
+    twenty: { label: 'Style 20 - Silver 3D' },
+    twentyone: { label: 'Style 21 - Fire' },
+    twentytwo: { label: 'Style 22 - Ice & Fire' }
+  };
+
+  var WORDART_STYLE_NAMES = Object.keys(WORDART_STYLES);
 
   // ============================================
   // Retro Definitions - Single Source of Truth
@@ -334,11 +381,9 @@
     selections.styles.song = randomOption([''].concat(config.music.map(function(t) {
       return t.src.split('/').pop().replace(/\.[^.]+$/, '');
     })));
-    selections.styles.viz = randomOption(['', 'waveform', 'spectrogram', 'spectrum', 'psychedelic', 'radial']);
-    selections.styles.wordart = randomOption(['none', '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-      'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
-      'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'twentyone', 'twentytwo']);
-    selections.styles.cursor = randomOption(['none', 'custom', 'hourglass']);
+    selections.styles.viz = randomOption([''].concat(VIZ_MODE_NAMES));
+    selections.styles.wordart = randomOption(['none', ''].concat(WORDART_STYLE_NAMES));
+    selections.styles.cursor = randomOption(['none'].concat(CURSOR_STYLE_NAMES));
     selections.styles.trail = randomOption(['none', ''].concat(TRAIL_STYLE_NAMES));
     selections.styles.theme = randomOption(['none', ''].concat(THEME_NAMES));
     selections.styles.divider = randomOption(['none', ''].concat(config.dividers.map(function(_, i) {
@@ -688,16 +733,19 @@
   // ============================================
 
   var CURSOR_STYLES = {
-    'custom': null,
-    'hourglass': '/cursors/hourglass.png'
+    'custom': { emoji: '🎯', label: 'Custom', path: null },
+    'hourglass': { emoji: '⏳', label: 'Hourglass', path: '/cursors/hourglass.png' }
   };
+
+  var CURSOR_STYLE_NAMES = Object.keys(CURSOR_STYLES);
 
   function initCustomCursor() {
     var cursorParam = params.get('cursor-style');
     var cursorUrl;
 
     if (cursorParam && CURSOR_STYLES.hasOwnProperty(cursorParam)) {
-      cursorUrl = cursorParam === 'custom' ? config.cursorUrl : config.basePath + CURSOR_STYLES[cursorParam];
+      var cursorDef = CURSOR_STYLES[cursorParam];
+      cursorUrl = cursorDef.path === null ? config.cursorUrl : config.basePath + cursorDef.path;
     } else {
       cursorUrl = config.cursorUrl;
     }
@@ -768,8 +816,8 @@
 
     document.body.classList.add('retheme-' + theme);
 
-    var initFn = THEMES[theme];
-    if (initFn) initFn();
+    var themeDef = THEMES[theme];
+    if (themeDef && themeDef.init) themeDef.init();
   }
 
   // ============================================
@@ -1416,14 +1464,8 @@
     var h1 = document.querySelector('h1');
     if (!h1) return;
 
-    var styles = [
-      'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-      'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
-      'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'twentyone', 'twentytwo'
-    ];
-
     var styleParam = params.get('wordart-style');
-    var selectedStyle = styles.includes(styleParam) ? styleParam : randomFrom(styles);
+    var selectedStyle = WORDART_STYLE_NAMES.includes(styleParam) ? styleParam : randomFrom(WORDART_STYLE_NAMES);
 
     var container = createElement('div');
     container.className = 'wordart-container';
@@ -1751,6 +1793,21 @@
     }
   }
 
+  function populateDropdown(selectEl, items, options) {
+    if (!selectEl) return;
+    options = options || {};
+
+    // Add options from items object
+    Object.keys(items).forEach(function(key) {
+      var item = items[key];
+      var option = createElement('option');
+      option.value = key;
+      var label = item.label || key;
+      option.textContent = item.emoji ? item.emoji + ' ' + label : label;
+      selectEl.appendChild(option);
+    });
+  }
+
   function initControlDropdowns(retroList) {
     var ctrlSong = document.getElementById('ctrl-song');
     var ctrlViz = document.getElementById('ctrl-viz');
@@ -1771,11 +1828,24 @@
       ctrlSong.value = params.get('song') || '';
     }
 
+    // Populate visualization options
+    populateDropdown(ctrlViz, VIZ_MODES);
     if (ctrlViz) ctrlViz.value = params.get('viz') || '';
 
+    // Populate wordart options
+    populateDropdown(ctrlWordart, WORDART_STYLES);
     initDropdownValue(ctrlWordart, 'wordart-style', retroList, 'wordart', '');
+
+    // Populate cursor options
+    populateDropdown(ctrlCursor, CURSOR_STYLES);
     initDropdownValue(ctrlCursor, 'cursor-style', retroList, 'custom-cursor', 'custom');
+
+    // Populate trail options
+    populateDropdown(ctrlTrail, TRAIL_STYLES);
     initDropdownValue(ctrlTrail, 'trail-style', retroList, 'mouse-trail', '');
+
+    // Populate theme options
+    populateDropdown(ctrlTheme, THEMES);
     initDropdownValue(ctrlTheme, 'theme', retroList, 'retheme', '');
   }
 
