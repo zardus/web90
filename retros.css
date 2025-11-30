@@ -681,8 +681,6 @@ h1.wordart {
   top: 100%;
   left: 0;
   right: 0;
-  max-height: 200px;
-  overflow-y: auto;
   z-index: 1001;
   background: #fff;
   border: 1px solid #000;
