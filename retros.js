@@ -384,6 +384,9 @@
       }
     });
 
+    // Always include control-panel during April Fools
+    selectedRetros.push('control-panel');
+
     return selectedRetros;
   }
 
