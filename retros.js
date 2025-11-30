@@ -96,7 +96,7 @@
   }
 
   function createFullscreenCanvas(zIndex, opacity, pointerEvents) {
-    var styles = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:' + (zIndex || 9999) + ';';
+    var styles = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:' + (zIndex || 100002) + ';';
     if (opacity !== undefined) styles += 'opacity:' + opacity + ';';
     if (pointerEvents === false) styles += 'pointer-events:none;';
     // Use documentElement to avoid perspective-wrapper transform breaking position:fixed
@@ -595,7 +595,7 @@
       cursorImg.src = config.basePath + '/cursors/win95.png';
     }
 
-    var result = createFullscreenCanvas(9999, undefined, false);
+    var result = createFullscreenCanvas(100002, undefined, false);
     var canvas = result.canvas;
     var ctx = result.ctx;
     var particles = [];
@@ -704,7 +704,7 @@
 
     if (!cursorUrl) return;
     var style = createElement('style');
-    style.textContent = 'body, body * { cursor: url(' + cursorUrl + '), auto !important; }';
+    style.textContent = '*, *::before, *::after { cursor: url(' + cursorUrl + '), auto !important; }';
     document.head.appendChild(style);
   }
 

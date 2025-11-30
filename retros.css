@@ -249,7 +249,7 @@
   font-family: 'Courier New', monospace;
   font-size: 14px;
   font-weight: bold;
-  z-index: 9999;
+  z-index: 100002;
   animation: trail-fade 1s ease-out forwards;
   user-select: none;
 }
