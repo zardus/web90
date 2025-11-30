@@ -1,6 +1,57 @@
-.retro {
-  display: inline;
+/* ============================================
+   CSS Custom Properties - Centralized Design Tokens
+   ============================================ */
+:root {
+  /* Primary Colors */
+  --gold: #ffd700;
+  --gold-dark: #aa8800;
+  --gold-darker: #775500;
+  --gold-light: #ddaa00;
+  --orange: #ff8c00;
+  --orange-red: #ff4500;
+  --magenta: #ff00ff;
+  --cyan: #00d4ff;
+  --cyan-bright: #00ffff;
+  --matrix-green: #0f0;
+  --neon-pink: #ff0080;
+
+  /* Win95 Colors */
+  --win95-bg: #c0c0c0;
+  --win95-dark: #808080;
+  --win95-light: #fff;
+  --win95-shadow: #000;
+  --win95-titlebar: #000080;
+  --win95-titlebar-end: #1084d0;
+
+  /* Dark Theme Colors */
+  --dark-bg: #0a0a0a;
+  --dark-surface: #1a1a1a;
+  --dark-deep: #0d0d0d;
+
+  /* Common Gradients */
+  --gradient-gold: linear-gradient(180deg, var(--gold) 0%, var(--orange) 50%, var(--orange-red) 100%);
+  --gradient-gold-bg: linear-gradient(180deg, #5a4a00 0%, #3a3000 30%, #2a2000 70%, #1a1000 100%);
+  --gradient-chrome: linear-gradient(180deg, #b6b6b6 0%, #5f5f5f 20%, #b1b1b1 30%, #fff 64%, #6c6c6c 65%, #373737 66%, #515151 67%, #787878 75%, #d2d2d2 80%, #d2d2d2 100%);
+
+  /* Common Shadows */
+  --glow-gold: 0 0 10px rgba(255, 215, 0, 0.5);
+  --glow-gold-strong: 0 0 20px rgba(255, 215, 0, 0.7), 0 0 40px rgba(255, 140, 0, 0.4);
+  --glow-cyan: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+  --glow-matrix: 0 0 10px var(--matrix-green), 0 0 20px var(--matrix-green);
+
+  /* Win95 Border Patterns */
+  --win95-raised: #fff #808080 #808080 #fff;
+  --win95-sunken: #808080 #fff #fff #808080;
+
+  /* Common Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
 }
+
+/* ============================================
+   Base Retro Styles
+   ============================================ */
+.retro { display: inline; }
 
 /* 3D Y-axis rotation for images */
 .retro-image-rotate {
@@ -15,16 +66,19 @@
 
 #retro-badges { flex-direction: column; }
 .badges { height: 31px; margin: 2px; }
-.media-player { height: 50px; }
 
+/* ============================================
+   Media Player
+   ============================================ */
 .media-player {
-  background: #c0c0c0;
-  border: 2px solid #808080;
+  background: var(--win95-bg);
+  border: 2px solid var(--win95-dark);
   padding: 2px;
   display: inline-flex;
   gap: 2px;
   align-items: stretch;
   box-sizing: border-box;
+  height: 50px;
 }
 
 .media-display-container {
@@ -47,7 +101,7 @@
 
 .media-display {
   background: transparent;
-  color: #0f0;
+  color: var(--matrix-green);
   padding: 2px 10px;
   font: 18px/38px 'Courier New', monospace;
   border: 2px solid;
@@ -71,7 +125,7 @@
 
 .media-display option {
   background: #000;
-  color: #0f0;
+  color: var(--matrix-green);
 }
 
 .media-controls {
@@ -90,12 +144,13 @@
 
 .media-controls button:active {
   border: 3px solid;
-  border-color: #808080 #fff #fff #808080;
+  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
 }
 
-.visitor-container {
-  font-family: 'Courier New', monospace;
-}
+/* ============================================
+   Visitor Counter
+   ============================================ */
+.visitor-container { font-family: 'Courier New', monospace; }
 
 .visitor-display {
   background: #000;
@@ -120,8 +175,8 @@
   margin-top: -3px;
   font-size: 32px;
   font-weight: bold;
-  color: #0f0;
-  text-shadow: 0 0 10px #0f0, 0 0 20px #0f0, 0 0 30px #0f0;
+  color: var(--matrix-green);
+  text-shadow: var(--glow-matrix), 0 0 30px var(--matrix-green);
   letter-spacing: 4px;
   font-family: 'Courier New', monospace;
   line-height: 1;
@@ -142,12 +197,10 @@
   100% { transform: translate(0); opacity: 1; }
 }
 
-.glitch-active {
-  animation: glitch 0.1s linear infinite;
-}
+.glitch-active { animation: glitch 0.1s linear infinite; }
 
 /* ============================================
-   Mouse Trail Styles (multiple variants!)
+   Mouse Trail Styles
    ============================================ */
 .mouse-trail,
 .binary-trail {
@@ -174,28 +227,19 @@
 .trail-matrix { font-family: 'MS Gothic', monospace; font-size: 18px; }
 
 @keyframes trail-fade {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(var(--drift-x, 0), var(--drift-y, 20px)) scale(0.5);
-  }
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--drift-x, 0), var(--drift-y, 20px)) scale(0.5); }
 }
 
-/* Blink tag retro - bringing back the 90s */
-blink {
-  animation: blink-animation 1s steps(2, start) infinite;
-}
+/* ============================================
+   Blink & Marquee Tags (90s revival)
+   ============================================ */
+blink { animation: blink-animation 1s steps(2, start) infinite; }
 
 @keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
+  to { visibility: hidden; }
 }
 
-/* Marquee tag retro - CSS fallback for browsers that dropped support */
 marquee {
   display: inline-block;
   white-space: nowrap;
@@ -203,47 +247,48 @@ marquee {
 }
 
 @keyframes marquee-scroll {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 
-/* WordArt retro - MS Word 97 vibes (22 authentic styles!) */
-/* CREDIT: https://codepen.io/kathykato/pen/omxPap */
+/* ============================================
+   WordArt Retro - MS Word 97 vibes
+   CREDIT: https://codepen.io/kathykato/pen/omxPap
+   ============================================ */
 .wordart-container {
   position: relative;
   display: block;
-  margin-bottom: 1.5em; /* Compensate for transforms that don't affect layout */
+  margin-bottom: 1.5em;
   z-index: -1;
   pointer-events: none;
 }
 
-/* Extra space for styles with tall transforms (scaleY 1.5+) */
+/* Extra space for tall transforms/shadows */
 .wordart-style-three .wordart-container,
 .wordart-style-nine .wordart-container,
+.wordart-style-eleven .wordart-container,
 .wordart-style-thirteen .wordart-container,
+.wordart-style-fifteen .wordart-container,
 .wordart-style-eighteen .wordart-container,
 .wordart-style-twentytwo .wordart-container {
   margin-bottom: 2.5em;
 }
 
-/* Extra space for styles with tall transforms + skew/rotation */
 .wordart-style-two .wordart-container,
 .wordart-style-nineteen .wordart-container,
 .wordart-style-twentyone .wordart-container {
   margin-bottom: 5.0em;
 }
 
-/* Even more space for styles with floor shadows/reflections */
-.wordart-style-eleven .wordart-container,
-.wordart-style-fifteen .wordart-container {
-  margin-bottom: 2.5em;
+/* WordArt base h1 */
+h1.wordart {
+  font-family: Arial, sans-serif;
+  font-size: 2.5em;
+  white-space: nowrap;
+  margin: 0;
 }
 
-/* Base pseudo-element for WordArt shadow/echo effects */
+/* WordArt ::before pseudo-element for shadow/echo effects */
 .wordart-style-five h1.wordart::before,
 .wordart-style-six h1.wordart::before,
 .wordart-style-seven h1.wordart::before,
@@ -266,11 +311,13 @@ marquee {
   z-index: -1;
 }
 
-h1.wordart {
-  font-family: Arial, sans-serif;
-  font-size: 2.5em;
-  white-space: nowrap;
-  margin: 0;
+/* Reset text-stroke on ::before for stroked parents */
+.wordart-style-five h1.wordart::before,
+.wordart-style-nine h1.wordart::before,
+.wordart-style-ten h1.wordart::before,
+.wordart-style-eleven h1.wordart::before,
+.wordart-style-fifteen h1.wordart::before {
+  -webkit-text-stroke: transparent;
 }
 
 /* WordArt font-weight: 900 (bold styles) */
@@ -298,7 +345,7 @@ h1.wordart {
   font-family: Impact, sans-serif;
 }
 
-/* WordArt Times New Roman font styles */
+/* WordArt Times New Roman styles */
 .wordart-style-four h1.wordart,
 .wordart-style-ten h1.wordart,
 .wordart-style-twelve h1.wordart,
@@ -307,29 +354,30 @@ h1.wordart {
   font-family: Times New Roman, serif;
 }
 
-/* WordArt container transform: scaleY(1.65) */
+/* WordArt container scaleY(1.65) */
 .wordart-style-two .wordart-container,
 .wordart-style-three .wordart-container,
 .wordart-style-eleven .wordart-container {
   transform: scaleY(1.65);
 }
 
-/* WordArt container transform: scaleY(1.25) */
+/* WordArt container scaleY(1.25) */
 .wordart-style-five .wordart-container,
 .wordart-style-seven .wordart-container,
 .wordart-style-eight .wordart-container {
   transform: scaleY(1.25);
 }
 
-/* Style 1 - Outlined white */
-.wordart-style-one .wordart-container {
-  transform: scale(1.05, 1.25);
-}
-.wordart-style-one h1.wordart {
+/* WordArt white outlined text */
+.wordart-style-one h1.wordart,
+.wordart-style-three h1.wordart {
   color: #fff;
   -webkit-text-fill-color: #fff;
   -webkit-text-stroke: 1px #000;
 }
+
+/* Style 1 - Outlined white */
+.wordart-style-one .wordart-container { transform: scale(1.05, 1.25); }
 
 /* Style 2 - Slanted black */
 .wordart-style-two h1.wordart {
@@ -340,9 +388,6 @@ h1.wordart {
 /* Style 3 - Italic outline with shadow */
 .wordart-style-three h1.wordart {
   font-style: italic;
-  color: #fff;
-  -webkit-text-fill-color: #fff;
-  -webkit-text-stroke: 1px #000;
   text-shadow: 3px 2px 0 #999;
 }
 
@@ -358,67 +403,45 @@ h1.wordart {
   color: #d8d8d8;
   -webkit-text-fill-color: #d8d8d8;
   -webkit-text-stroke: 1px #3333cc;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 .wordart-style-five h1.wordart::before {
   color: #9999ff;
   -webkit-text-fill-color: #9999ff;
-  -webkit-text-stroke: transparent;
   transform: translate(0.4vw, 0.25vw);
   mix-blend-mode: darken;
 }
 
 /* Style 6 - Silver gradient with shadow */
-.wordart-style-six .wordart-container {
-  transform: scaleX(0.85) translateZ(0);
-}
+.wordart-style-six .wordart-container { transform: scaleX(0.85) translateZ(0); }
 .wordart-style-six h1.wordart {
   background: linear-gradient(#adadad, #fff);
   letter-spacing: 0.25rem;
 }
-.wordart-style-six h1.wordart::before {
-  text-shadow: 0.125em 0.125em #717171;
-}
+.wordart-style-six h1.wordart::before { text-shadow: 0.125em 0.125em #717171; }
 
 /* Style 7 - Impact blue with red shadow */
 .wordart-style-seven h1.wordart {
   color: #0066cc;
   -webkit-text-fill-color: #0066cc;
   -webkit-text-stroke: 0.016em #99ccff;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
-.wordart-style-seven h1.wordart::before {
-  text-shadow: 0.094em 0.078em #990000;
-}
+.wordart-style-seven h1.wordart::before { text-shadow: 0.094em 0.078em #990000; }
 
 /* Style 8 - Sunset gradient */
-.wordart-style-eight h1.wordart {
-  background: radial-gradient(ellipse at center, #fff812, #ff9a32);
-}
-.wordart-style-eight h1.wordart::before {
-  text-shadow: 0.094em 0.063em #cdcdcd;
-}
+.wordart-style-eight h1.wordart { background: radial-gradient(ellipse at center, #fff812, #ff9a32); }
+.wordart-style-eight h1.wordart::before { text-shadow: 0.094em 0.063em #cdcdcd; }
 
 /* Style 9 - Purple gradient skewed */
-.wordart-style-nine .wordart-container {
-  transform: scale(0.9, 1.65) rotate(-3deg) skewY(-3deg) translateZ(0);
-}
+.wordart-style-nine .wordart-container { transform: scale(0.9, 1.65) rotate(-3deg) skewY(-3deg) translateZ(0); }
 .wordart-style-nine h1.wordart {
   font-weight: 700;
   background: linear-gradient(#6900cc, #cb00cc);
   -webkit-text-stroke: 0.016em #d2a2fe;
 }
-.wordart-style-nine h1.wordart::before {
-  -webkit-text-stroke: transparent;
-  text-shadow: 0.094em 0.063em #adadff;
-}
+.wordart-style-nine h1.wordart::before { text-shadow: 0.094em 0.063em #adadff; }
 
 /* Style 10 - Green serif with echo */
-.wordart-style-ten .wordart-container {
-  transform: scale(0.85, 1.25);
-}
+.wordart-style-ten .wordart-container { transform: scale(0.85, 1.25); }
 .wordart-style-ten h1.wordart {
   font-weight: 400;
   color: #1a4b28;
@@ -429,7 +452,6 @@ h1.wordart {
   font-size: 110%;
   color: #d2e5dc;
   -webkit-text-fill-color: #d2e5dc;
-  -webkit-text-stroke: transparent;
   transform: translate(-0.15em, -0.2em);
 }
 
@@ -442,7 +464,6 @@ h1.wordart {
 .wordart-style-eleven h1.wordart::before {
   color: #cdcdcd;
   -webkit-text-fill-color: #cdcdcd;
-  -webkit-text-stroke: transparent;
   transform: rotateX(63deg) skew(60deg) scaleY(0.65) translate3d(2em, -2.15em, -1em);
 }
 
@@ -451,25 +472,17 @@ h1.wordart {
   font-weight: 400;
   background: linear-gradient(#999cfc, #1b999c);
 }
-.wordart-style-twelve h1.wordart::before {
-  text-shadow: 0.031em 0.031em #cdcdcd;
-}
+.wordart-style-twelve h1.wordart::before { text-shadow: 0.031em 0.031em #cdcdcd; }
 
 /* Style 13 - Brown western */
-.wordart-style-thirteen .wordart-container {
-  transform: scale(0.65, 1.65);
-}
-.wordart-style-thirteen h1.wordart {
-  color: #896640;
-}
+.wordart-style-thirteen .wordart-container { transform: scale(0.65, 1.65); }
+.wordart-style-thirteen h1.wordart { color: #896640; }
 .wordart-style-thirteen h1.wordart::before {
   text-shadow: 1px 0 #1b0d00, 2px 0 #1b0d00, 3px 0 #1b0d00, 4px 0 #1b0d00, 5px 0 #1b0d00, 6px 0 #1b0d00, 7px 0 #1b0d00;
 }
 
 /* Style 14 - Pink sunset with blue depth */
-.wordart-style-fourteen .wordart-container {
-  transform: scale(0.85, 1.3) translateZ(0);
-}
+.wordart-style-fourteen .wordart-container { transform: scale(0.85, 1.3) translateZ(0); }
 .wordart-style-fourteen h1.wordart {
   font-weight: 400;
   background: linear-gradient(#fffecb, #ff9999);
@@ -480,9 +493,7 @@ h1.wordart {
 }
 
 /* Style 15 - Gold perspective */
-.wordart-style-fifteen .wordart-container {
-  transform: perspective(200px) rotateX(30deg) scaleY(1.65);
-}
+.wordart-style-fifteen .wordart-container { transform: perspective(200px) rotateX(30deg) scaleY(1.65); }
 .wordart-style-fifteen h1.wordart {
   background: linear-gradient(#551700, #fecb00);
   -webkit-text-stroke: 1px #b2b2b2;
@@ -491,14 +502,11 @@ h1.wordart {
 .wordart-style-fifteen h1.wordart::before {
   color: #ab8d56;
   -webkit-text-fill-color: #ab8d56;
-  -webkit-text-stroke: transparent;
   transform: perspective(250px) translateY(-0.643em) rotateX(70deg) scale(1) translateZ(-1em);
 }
 
 /* Style 16 - Cyan with navy shadow */
-.wordart-style-sixteen .wordart-container {
-  transform: scale(0.8, 1.2);
-}
+.wordart-style-sixteen .wordart-container { transform: scale(0.8, 1.2); }
 .wordart-style-sixteen h1.wordart {
   color: #33ccff;
   -webkit-text-stroke: 1.25px #000099;
@@ -507,33 +515,25 @@ h1.wordart {
 }
 
 /* Style 17 - Yellow striped */
-.wordart-style-seventeen .wordart-container {
-  transform: scale(1.05, 1.25);
-}
+.wordart-style-seventeen .wordart-container { transform: scale(1.05, 1.25); }
 .wordart-style-seventeen h1.wordart {
   background: repeating-linear-gradient(180deg, transparent, transparent 1px, #ffff00 1px, #ffff00 4px), repeating-linear-gradient(-50deg, #808080, #808080 5px, #ffff00 5px, #ffff00 8px);
   -webkit-text-stroke: 1px #000;
 }
-.wordart-style-seventeen h1.wordart::before {
-  text-shadow: 3px 2px 0 #999;
-}
+.wordart-style-seventeen h1.wordart::before { text-shadow: 3px 2px 0 #999; }
 
 /* Style 18 - Chrome metallic */
-.wordart-style-eighteen .wordart-container {
-  transform: scaleY(1.5) translateZ(0);
-}
+.wordart-style-eighteen .wordart-container { transform: scaleY(1.5) translateZ(0); }
 .wordart-style-eighteen h1.wordart {
   font-weight: 400;
-  background: linear-gradient(#b6b6b6 0%, #5f5f5f 20%, #b1b1b1 30%, #fff 64%, #6c6c6c 65%, #373737 66%, #515151 67%, #787878 75%, #d2d2d2 80%, #d2d2d2 100%);
+  background: var(--gradient-chrome);
 }
 .wordart-style-eighteen h1.wordart::before {
   text-shadow: -1px 0 0 #4a4a4a, 0 -1px 0 #8b8b8b, -2px -1px 0.125px #4a4a4a, -1px -1px 0.125px #8b8b8b, -3px -2px 0.125px #4a4a4a, -2px -2px 0.125px #8b8b8b, -4px -3px 0.125px #4a4a4a, -3px -3px 0.125px #8b8b8b, -5px -4px 0.125px #4a4a4a, -4px -4px 0.125px #8b8b8b, -5px -5px 0 #4a4a4a, -5px -5px 0 #8b8b8b;
 }
 
 /* Style 19 - Deep green extruded */
-.wordart-style-nineteen .wordart-container {
-  transform: scale(0.65, 1.75);
-}
+.wordart-style-nineteen .wordart-container { transform: scale(0.65, 1.75); }
 .wordart-style-nineteen h1.wordart {
   color: #0f3a1a;
   transform: perspective(100px) rotateY(6deg) rotateZ(-7deg);
@@ -543,31 +543,21 @@ h1.wordart {
 }
 
 /* Style 20 - Silver 3D extruded */
-.wordart-style-twenty .wordart-container {
-  transform: perspective(100px) rotateY(6deg) rotateZ(-3deg) skewY(15deg) scale(0.8, 1.25);
-}
-.wordart-style-twenty h1.wordart {
-  background: linear-gradient(to left, #747474, #fff, #747474);
-}
+.wordart-style-twenty .wordart-container { transform: perspective(100px) rotateY(6deg) rotateZ(-3deg) skewY(15deg) scale(0.8, 1.25); }
+.wordart-style-twenty h1.wordart { background: linear-gradient(to left, #747474, #fff, #747474); }
 .wordart-style-twenty h1.wordart::before {
   text-shadow: -1px 0 0 #72745b, 0 1px 0 #2c2d23, -2px 1px 0.5px #72745b, -1px 2px 0.5px #2c2d23, -3px 2px 0.5px #72745b, -2px 3px 0.5px #2c2d23, -4px 3px 0.5px #72745b, -3px 4px 0.5px #2c2d23, -5px 4px 0.5px #72745b, -4px 5px 0.5px #2c2d23, -6px 5px 0.5px #72745b, -5px 6px 0.5px #2c2d23, -7px 6px 0.5px #72745b, -6px 7px 0.5px #2c2d23, -8px 7px 0.5px #72745b, -7px 8px 0.5px #2c2d23, -9px 8px 0.5px #72745b, -8px 9px 0.5px #2c2d23, -10px 9px 0.5px #72745b, -9px 10px 0.5px #2c2d23, -11px 10px 0.5px #72745b, -10px 11px 0.5px #2c2d23, -12px 11px 0.5px #72745b, -11px 12px 0.5px #2c2d23, -13px 12px 0.5px #72745b, -12px 13px 0.5px #2c2d23, -14px 13px 0.5px #72745b, -13px 14px 0.5px #2c2d23, -15px 14px 0.5px #72745b, -14px 15px 0.5px #2c2d23, -16px 15px 0.5px #72745b, -15px 16px 0.5px #2c2d23, -17px 16px 0.5px #72745b, -16px 17px 0.5px #2c2d23, -18px 17px 0 #72745b, -17px 18px 0 #2c2d23;
 }
 
 /* Style 21 - Fire gradient */
-.wordart-style-twentyone .wordart-container {
-  transform: scaleY(1.5) skewY(-8deg) rotateZ(-3deg) translateZ(0);
-}
-.wordart-style-twentyone h1.wordart {
-  background: linear-gradient(to bottom left, #fee601, #fee601 15%, #fe4201);
-}
+.wordart-style-twentyone .wordart-container { transform: scaleY(1.5) skewY(-8deg) rotateZ(-3deg) translateZ(0); }
+.wordart-style-twentyone h1.wordart { background: linear-gradient(to bottom left, #fee601, #fee601 15%, #fe4201); }
 .wordart-style-twentyone h1.wordart::before {
   text-shadow: 1px 0 0 #813300, 0 1px 0 #c14d00, 2px 1px 0.35px #813300, 1px 2px 0.35px #c14d00, 3px 2px 0.35px #813300, 2px 3px 0.35px #c14d00, 4px 3px 0.35px #813300, 3px 4px 0.35px #c14d00, 5px 4px 0.35px #813300, 4px 5px 0.35px #c14d00, 6px 5px 0.35px #813300, 5px 6px 0.35px #c14d00, 7px 6px 0.35px #813300, 6px 7px 0.35px #c14d00;
 }
 
 /* Style 22 - Ice & fire split */
-.wordart-style-twentytwo .wordart-container {
-  transform: scale(0.75, 1.65) translateZ(0);
-}
+.wordart-style-twentytwo .wordart-container { transform: scale(0.75, 1.65) translateZ(0); }
 .wordart-style-twentytwo h1.wordart {
   background: linear-gradient(#ccdfec 0%, #7a97bc 20%, #8aacc6 30%, #fff 50%, #b8908f 51%, #80302d 52%, #b84d4a 55%, #e7cfc9 75%, #916e66 100%);
   letter-spacing: -0.2vw;
@@ -595,16 +585,18 @@ h1.wordart {
   background-clip: text;
 }
 
-/* Windows 95 Control Panel */
+/* ============================================
+   Windows 95 Control Panel - Common Patterns
+   ============================================ */
 
 /* Win95 raised border (buttons, windows) */
 .media-controls button,
 .win95-window,
 .win95-btn-close,
 .win95-btn {
-  background: #c0c0c0;
+  background: var(--win95-bg);
   border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
+  border-color: var(--win95-raised);
 }
 
 /* Win95 sunken border (inputs, fieldsets) */
@@ -613,7 +605,7 @@ h1.wordart {
 .win95-custom-dropdown,
 .win95-custom-dropdown-options {
   border: 2px solid;
-  border-color: #808080 #fff #fff #808080;
+  border-color: var(--win95-sunken);
 }
 
 /* Win95 sunken inputs with white background */
@@ -627,18 +619,16 @@ h1.wordart {
   position: fixed;
   top: 10px;
   right: 10px;
-  z-index: 100001; /* Higher than flash-container (99999) */
+  z-index: 100001;
   font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
   font-size: 12px;
   min-width: 280px;
 }
 
-.win95-window {
-  box-shadow: 1px 1px 0 #000;
-}
+.win95-window { box-shadow: 1px 1px 0 #000; }
 
 .win95-titlebar {
-  background: linear-gradient(90deg, #000080, #1084d0);
+  background: linear-gradient(90deg, var(--win95-titlebar), var(--win95-titlebar-end));
   color: #fff;
   font-weight: bold;
   padding: 2px 4px;
@@ -665,13 +655,12 @@ h1.wordart {
   justify-content: center;
 }
 
-.win95-btn-close:active {
-  border-color: #808080 #fff #fff #808080;
+.win95-btn-close:active,
+.win95-btn:active {
+  border-color: var(--win95-sunken);
 }
 
-.win95-content {
-  padding: 8px;
-}
+.win95-content { padding: 8px; }
 
 .win95-fieldset {
   padding: 8px;
@@ -689,9 +678,7 @@ h1.wordart {
   margin-bottom: 6px;
 }
 
-.win95-row:last-child {
-  margin-bottom: 0;
-}
+.win95-row:last-child { margin-bottom: 0; }
 
 .win95-label {
   width: 80px;
@@ -750,9 +737,7 @@ h1.wordart {
   z-index: 1000;
 }
 
-.win95-custom-dropdown.open .win95-custom-dropdown-options {
-  display: block;
-}
+.win95-custom-dropdown.open .win95-custom-dropdown-options { display: block; }
 
 .win95-custom-dropdown-option {
   padding: 2px 4px;
@@ -762,7 +747,7 @@ h1.wordart {
 }
 
 .win95-custom-dropdown-option:hover {
-  background: #000080;
+  background: var(--win95-titlebar);
   color: #fff;
 }
 
@@ -775,9 +760,7 @@ h1.wordart {
   overflow: hidden;
 }
 
-.win95-custom-dropdown-option:hover .divider-preview {
-  filter: invert(1);
-}
+.win95-custom-dropdown-option:hover .divider-preview { filter: invert(1); }
 
 .win95-range {
   flex: 1;
@@ -803,9 +786,7 @@ h1.wordart {
   gap: 6px;
 }
 
-.win95-checkbox-row label {
-  cursor: pointer;
-}
+.win95-checkbox-row label { cursor: pointer; }
 
 #control-panel input[type="checkbox"] {
   all: unset !important;
@@ -816,7 +797,7 @@ h1.wordart {
   min-height: 13px !important;
   background: #fff !important;
   border: 2px solid !important;
-  border-color: #808080 #fff #fff #808080 !important;
+  border-color: var(--win95-sunken) !important;
   cursor: pointer !important;
   flex-shrink: 0 !important;
   position: relative !important;
@@ -848,18 +829,12 @@ h1.wordart {
   min-width: 70px;
 }
 
-.win95-btn:active {
-  border-color: #808080 #fff #fff #808080;
-}
-
 .win95-btn:focus {
   outline: 1px dotted #000;
   outline-offset: -4px;
 }
 
-#control-panel.minimized .win95-content {
-  display: none;
-}
+#control-panel.minimized .win95-content { display: none; }
 
 /* Table mode - 90s table cell look */
 .table-cell {
@@ -869,11 +844,11 @@ h1.wordart {
   margin: 0 !important;
 }
 
-.table-cell .table-cell {
-  background: transparent;
-}
+.table-cell .table-cell { background: transparent; }
 
-/* Chat Window */
+/* ============================================
+   Chat Window
+   ============================================ */
 #chat-window {
   position: fixed;
   top: 0;
@@ -917,12 +892,10 @@ h1.wordart {
   padding: 20px;
 }
 
-#chat-confirm p {
-  margin: 0 0 12px 0;
-}
+#chat-confirm p { margin: 0 0 12px 0; }
 
 #chat-confirm a {
-  color: #000080;
+  color: var(--win95-titlebar);
   font-weight: bold;
 }
 
@@ -931,28 +904,38 @@ h1.wordart {
   color: #444;
 }
 
-/* Custom cursor is now injected via JS based on config.cursorUrl */
-
 /* ============================================
-   FLASH MODE - Y2K Macromedia Flash Experience
-   PEAK FLASH EDITION - Maximum early 2000s energy
+   FLASH MODE - Full-Screen Overlay Base
    ============================================ */
 
-.flash-mode {
-  overflow: hidden;
-}
-
-#flash-container {
+/* Shared full-screen fixed overlay pattern */
+#flash-container,
+#flash-loader,
+#flash-intro,
+#flash-site,
+#matrix-bg,
+#tv-snow,
+.flash-headshot-freakout,
+.crt-overlay,
+.crt-curvature,
+.glitch-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 99999;
-  font-family: 'Trebuchet MS', 'Comic Sans MS', Arial, sans-serif;
+  width: 100%;
+  height: 100%;
 }
 
-/* Scanlines overlay for that CRT feel */
+.flash-mode { overflow: hidden; }
+
+#flash-container {
+  z-index: 99999;
+  font-family: 'Trebuchet MS', 'Comic Sans MS', Arial, sans-serif;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Scanlines overlay for CRT feel */
 #flash-container::before {
   content: '';
   position: fixed;
@@ -960,24 +943,16 @@ h1.wordart {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.1) 0px,
-    rgba(0, 0, 0, 0.1) 1px,
-    transparent 1px,
-    transparent 2px
-  );
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px);
   pointer-events: none;
   z-index: 100000;
 }
 
-/* Loading Screen */
+/* ============================================
+   Flash Loading Screen
+   ============================================ */
 #flash-loader {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 100%);
   display: flex;
   align-items: center;
@@ -1013,9 +988,7 @@ h1.wordart {
   100% { transform: translate(-350px, -250px); }
 }
 
-#flash-loader.fade-out {
-  opacity: 0;
-}
+#flash-loader.fade-out { opacity: 0; }
 
 .flash-loader-content {
   text-align: center;
@@ -1027,7 +1000,7 @@ h1.wordart {
 .flash-logo {
   font-size: 100px;
   animation: flash-logo-spin 3s ease-in-out infinite;
-  text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff, 0 0 60px #00d4ff;
+  text-shadow: var(--glow-cyan), 0 0 40px var(--cyan), 0 0 60px var(--cyan);
   position: relative;
 }
 
@@ -1040,7 +1013,7 @@ h1.wordart {
   right: -10px;
   color: #fff;
   animation: flash-lens-flare 2s ease-in-out infinite;
-  text-shadow: 0 0 20px #fff, 0 0 40px #00d4ff;
+  text-shadow: 0 0 20px #fff, 0 0 40px var(--cyan);
 }
 
 @keyframes flash-logo-spin {
@@ -1060,7 +1033,7 @@ h1.wordart {
   letter-spacing: 12px;
   text-transform: uppercase;
   margin: 30px 0;
-  color: #00d4ff;
+  color: var(--cyan);
   animation: flash-text-glow 1.5s ease-in-out infinite;
   position: relative;
 }
@@ -1073,7 +1046,7 @@ h1.wordart {
   left: 50%;
   width: 0%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #00d4ff, #fff, #00d4ff, transparent);
+  background: linear-gradient(90deg, transparent, var(--cyan), #fff, var(--cyan), transparent);
   animation: flash-swoosh 2s ease-in-out infinite;
   transform: translateX(-50%);
 }
@@ -1084,8 +1057,8 @@ h1.wordart {
 }
 
 @keyframes flash-text-glow {
-  0%, 100% { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; }
-  50% { text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff, 0 0 60px #00d4ff; }
+  0%, 100% { text-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan); }
+  50% { text-shadow: var(--glow-cyan), 0 0 40px var(--cyan), 0 0 60px var(--cyan); }
 }
 
 .flash-progress-container {
@@ -1093,7 +1066,7 @@ h1.wordart {
   height: 25px;
   background: linear-gradient(180deg, #000 0%, #111 100%);
   border: 3px solid;
-  border-color: #00d4ff #006688 #004455 #00aadd;
+  border-color: var(--cyan) #006688 #004455 #00aadd;
   border-radius: 12px;
   overflow: hidden;
   margin: 25px auto;
@@ -1116,10 +1089,9 @@ h1.wordart {
 .flash-progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(180deg, #00ffff 0%, #00d4ff 30%, #0088aa 70%, #006688 100%);
-  background-size: 100% 100%;
+  background: linear-gradient(180deg, var(--cyan-bright) 0%, var(--cyan) 30%, #0088aa 70%, #006688 100%);
   transition: width 0.2s ease;
-  box-shadow: 0 0 20px #00d4ff, inset 0 -3px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 0 20px var(--cyan), inset 0 -3px 5px rgba(0,0,0,0.3);
   position: relative;
 }
 
@@ -1167,13 +1139,11 @@ h1.wordart {
   50% { opacity: 0.8; }
 }
 
-/* Intro Screen */
+/* ============================================
+   Flash Intro Screen
+   ============================================ */
 #flash-intro {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: radial-gradient(ellipse at center, #2d1b4e 0%, #1a0a2e 50%, #0d0015 100%);
   display: flex;
   align-items: center;
@@ -1191,15 +1161,7 @@ h1.wordart {
   left: 50%;
   width: 200vmax;
   height: 200vmax;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    rgba(255, 215, 0, 0.03) 10deg,
-    transparent 20deg,
-    transparent 30deg,
-    rgba(255, 140, 0, 0.03) 40deg,
-    transparent 50deg
-  );
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(255, 215, 0, 0.03) 10deg, transparent 20deg, transparent 30deg, rgba(255, 140, 0, 0.03) 40deg, transparent 50deg);
   animation: flash-starburst 20s linear infinite;
   transform: translate(-50%, -50%);
 }
@@ -1233,13 +1195,8 @@ h1.wordart {
   100% { transform: translateY(-100%) rotate(10deg); opacity: 0; }
 }
 
-#flash-intro.fade-in {
-  opacity: 1;
-}
-
-#flash-intro.fade-out {
-  opacity: 0;
-}
+#flash-intro.fade-in { opacity: 1; }
+#flash-intro.fade-out { opacity: 0; }
 
 .flash-intro-content {
   text-align: center;
@@ -1257,42 +1214,39 @@ h1.wordart {
   height: 180px;
   border-radius: 50%;
   border: 5px solid transparent;
-  background: linear-gradient(#1a0a2e, #1a0a2e) padding-box,
-              linear-gradient(135deg, #ffd700, #ff4500, #ff00ff, #00d4ff, #ffd700) border-box;
+  background: linear-gradient(#1a0a2e, #1a0a2e) padding-box, linear-gradient(135deg, var(--gold), var(--orange-red), var(--magenta), var(--cyan), var(--gold)) border-box;
   box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), 0 0 80px rgba(255, 140, 0, 0.4), 0 0 120px rgba(255, 0, 255, 0.2);
   animation: flash-headshot-mega 4s ease-in-out infinite;
 }
 
-/* Orbiting ring around headshot */
-.flash-intro-headshot::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 220px;
-  height: 220px;
-  border: 2px solid transparent;
-  border-top-color: #ffd700;
-  border-right-color: #ff4500;
-  border-radius: 50%;
-  animation: flash-orbit 3s linear infinite;
-  transform: translate(-50%, -50%);
-}
-
-/* Second orbiting ring */
+/* Orbiting rings around headshot */
+.flash-intro-headshot::before,
 .flash-intro-headshot::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  animation: flash-orbit 3s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+.flash-intro-headshot::before {
+  width: 220px;
+  height: 220px;
+  border-top-color: var(--gold);
+  border-right-color: var(--orange-red);
+}
+
+.flash-intro-headshot::after {
   width: 250px;
   height: 250px;
-  border: 1px solid transparent;
-  border-bottom-color: #00d4ff;
-  border-left-color: #ff00ff;
-  border-radius: 50%;
-  animation: flash-orbit 4s linear infinite reverse;
-  transform: translate(-50%, -50%);
+  border-width: 1px;
+  border-bottom-color: var(--cyan);
+  border-left-color: var(--magenta);
+  animation-duration: 4s;
+  animation-direction: reverse;
 }
 
 @keyframes flash-orbit {
@@ -1314,7 +1268,7 @@ h1.wordart {
 .flash-intro-title {
   font-size: 80px;
   font-weight: bold;
-  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 30%, #ff4500 60%, #ff00aa 100%);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--orange) 30%, var(--orange-red) 60%, #ff00aa 100%);
   background-size: 100% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1340,15 +1294,8 @@ h1.wordart {
   background-clip: text;
 }
 
-.flash-intro-title::before {
-  animation: flash-glitch-1 2s infinite;
-  opacity: 0.8;
-}
-
-.flash-intro-title::after {
-  animation: flash-glitch-2 2s infinite;
-  opacity: 0.8;
-}
+.flash-intro-title::before { animation: flash-glitch-1 2s infinite; opacity: 0.8; }
+.flash-intro-title::after { animation: flash-glitch-2 2s infinite; opacity: 0.8; }
 
 @keyframes flash-glitch-1 {
   0%, 90%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
@@ -1387,21 +1334,18 @@ h1.wordart {
 }
 
 .flash-enter-btn {
-  background: linear-gradient(180deg, #5a4a00 0%, #3a3000 30%, #2a2000 70%, #1a1000 100%);
+  background: var(--gradient-gold-bg);
   border: 4px solid;
-  border-color: #ffd700 #aa8800 #775500 #ddaa00;
-  color: #ffd700;
+  border-color: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
+  color: var(--gold);
   font-size: 24px;
   font-family: 'Trebuchet MS', Arial, sans-serif;
   padding: 20px 50px;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 6px;
-  box-shadow:
-    0 0 30px rgba(255, 215, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-fast);
   animation: flash-btn-mega 1.5s ease-in-out infinite;
   position: relative;
   overflow: hidden;
@@ -1444,7 +1388,7 @@ h1.wordart {
 
 .flash-enter-btn:active {
   transform: scale(0.98) !important;
-  border-color: #775500 #ffd700 #ddaa00 #aa8800;
+  border-color: var(--gold-darker) var(--gold) var(--gold-light) var(--gold-dark);
 }
 
 .flash-skip {
@@ -1452,24 +1396,22 @@ h1.wordart {
   font-size: 13px;
   color: #555;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
   letter-spacing: 2px;
 }
 
 .flash-skip:hover {
-  color: #00d4ff;
-  text-shadow: 0 0 10px #00d4ff;
+  color: var(--cyan);
+  text-shadow: 0 0 10px var(--cyan);
   text-decoration: none;
   letter-spacing: 4px;
 }
 
-/* Main Flash Site */
+/* ============================================
+   Main Flash Site
+   ============================================ */
 #flash-site {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background:
     radial-gradient(ellipse at top, rgba(30, 60, 114, 0.8) 0%, transparent 50%),
     radial-gradient(ellipse at bottom, rgba(42, 82, 152, 0.8) 0%, transparent 50%),
@@ -1486,12 +1428,7 @@ h1.wordart {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg,
-    rgba(255, 215, 0, 0.02) 0%,
-    transparent 40%,
-    transparent 60%,
-    rgba(0, 212, 255, 0.02) 100%
-  );
+  background: linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0%, transparent 40%, transparent 60%, rgba(0, 212, 255, 0.02) 100%);
   animation: flash-site-gradient 10s ease-in-out infinite alternate;
   pointer-events: none;
 }
@@ -1501,9 +1438,7 @@ h1.wordart {
   100% { opacity: 1; }
 }
 
-#flash-site.flash-site-enter {
-  animation: flash-site-reveal 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
+#flash-site.flash-site-enter { animation: flash-site-reveal 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
 @keyframes flash-site-reveal {
   0% { opacity: 0; transform: scale(0.8) rotateX(10deg); filter: blur(10px); }
@@ -1511,11 +1446,13 @@ h1.wordart {
   100% { opacity: 1; transform: scale(1) rotateX(0deg); filter: blur(0); }
 }
 
-/* Flash Header */
+/* ============================================
+   Flash Header
+   ============================================ */
 .flash-header {
-  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+  background: linear-gradient(180deg, var(--dark-surface) 0%, var(--dark-deep) 100%);
   border-bottom: 4px solid;
-  border-image: linear-gradient(90deg, transparent, #ffd700, #ff4500, #ff00ff, #00d4ff, #ffd700, transparent) 1;
+  border-image: linear-gradient(90deg, transparent, var(--gold), var(--orange-red), var(--magenta), var(--cyan), var(--gold), transparent) 1;
   padding: 15px 25px;
   display: flex;
   justify-content: space-between;
@@ -1533,7 +1470,7 @@ h1.wordart {
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #ffd700, #ff4500, #ff00ff, #00d4ff, #ffd700, transparent);
+  background: linear-gradient(90deg, transparent, var(--gold), var(--orange-red), var(--magenta), var(--cyan), var(--gold), transparent);
   background-size: 200% 100%;
   animation: flash-header-glow 3s linear infinite;
 }
@@ -1554,8 +1491,7 @@ h1.wordart {
   height: 55px;
   border-radius: 50%;
   border: 3px solid transparent;
-  background: linear-gradient(#0d0d0d, #0d0d0d) padding-box,
-              linear-gradient(135deg, #ffd700, #ff4500) border-box;
+  background: linear-gradient(var(--dark-deep), var(--dark-deep)) padding-box, linear-gradient(135deg, var(--gold), var(--orange-red)) border-box;
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 140, 0, 0.3);
   animation: flash-header-headshot-pulse 2s ease-in-out infinite;
 }
@@ -1568,7 +1504,7 @@ h1.wordart {
 .flash-site-title {
   font-size: 36px;
   font-weight: bold;
-  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 50%, #ff4500 100%);
+  background: var(--gradient-gold);
   background-size: 100% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1589,7 +1525,7 @@ h1.wordart {
 }
 
 .flash-nav-btn {
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  background: linear-gradient(180deg, #2a2a2a 0%, var(--dark-surface) 50%, var(--dark-bg) 100%);
   border: 2px solid;
   border-color: #555 #222 #111 #444;
   color: #aaa;
@@ -1599,7 +1535,7 @@ h1.wordart {
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 2px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   position: relative;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -1614,23 +1550,21 @@ h1.wordart {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-  transition: left 0.3s ease;
+  transition: left var(--transition-normal);
 }
 
-.flash-nav-btn:hover::before {
-  left: 100%;
-}
+.flash-nav-btn:hover::before { left: 100%; }
 
 .flash-nav-btn:hover {
-  background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, #1a1a1a 100%);
-  color: #ffd700;
-  border-color: #ffd700 #aa8800 #775500 #ddaa00;
+  background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, var(--dark-surface) 100%);
+  color: var(--gold);
+  border-color: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
   box-shadow: 0 2px 15px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
 
 .flash-nav-btn.active {
-  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 50%, #cc6600 100%);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--orange) 50%, #cc6600 100%);
   color: #000;
   font-weight: bold;
   border-color: #ffee00 #cc7000 #aa5500 #ffdd00;
@@ -1644,7 +1578,9 @@ h1.wordart {
   display: none;
 }
 
-/* Flash Main Content Area */
+/* ============================================
+   Flash Main Content Area
+   ============================================ */
 .flash-main {
   flex: 1;
   display: flex;
@@ -1655,7 +1591,7 @@ h1.wordart {
   width: 200px;
   background: linear-gradient(180deg, #0d0d1a 0%, #050510 100%);
   border-right: 3px solid;
-  border-image: linear-gradient(180deg, #ffd700, #ff4500, #ff00ff, transparent) 1;
+  border-image: linear-gradient(180deg, var(--gold), var(--orange-red), var(--magenta), transparent) 1;
   padding: 25px 15px;
   display: flex;
   flex-direction: column;
@@ -1670,7 +1606,7 @@ h1.wordart {
   position: absolute;
   top: 15px;
   left: 15px;
-  color: #ffd700;
+  color: var(--gold);
   font-size: 12px;
   opacity: 0.5;
   animation: flash-corner-pulse 2s ease-in-out infinite;
@@ -1686,7 +1622,7 @@ h1.wordart {
   font-size: 14px;
   padding: 12px 18px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   border-left: 4px solid transparent;
   background: transparent;
   position: relative;
@@ -1700,26 +1636,24 @@ h1.wordart {
   left: 18px;
   width: 0;
   height: 1px;
-  background: linear-gradient(90deg, #ffd700, #ff4500);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--gold), var(--orange-red));
+  transition: width var(--transition-normal);
 }
 
-.flash-sidebar-btn:hover::after {
-  width: calc(100% - 36px);
-}
+.flash-sidebar-btn:hover::after { width: calc(100% - 36px); }
 
 .flash-sidebar-btn:hover {
-  color: #ffd700;
+  color: var(--gold);
   background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%);
-  border-left-color: #ffd700;
+  border-left-color: var(--gold);
   padding-left: 25px;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  text-shadow: var(--glow-gold);
 }
 
 .flash-sidebar-btn.active {
-  color: #ffd700;
+  color: var(--gold);
   background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 140, 0, 0.1) 50%, transparent 100%);
-  border-left-color: #ffd700;
+  border-left-color: var(--gold);
   font-weight: bold;
   padding-left: 25px;
   text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
@@ -1729,12 +1663,12 @@ h1.wordart {
 .flash-sidebar-divider {
   height: 2px;
   margin: 15px 10px;
-  background: linear-gradient(90deg, transparent, #ffd700, #ff4500, transparent);
+  background: linear-gradient(90deg, transparent, var(--gold), var(--orange-red), transparent);
   opacity: 0.5;
 }
 
 .flash-sidebar-header {
-  color: #ff4500;
+  color: var(--orange-red);
   font-size: 11px;
   letter-spacing: 3px;
   text-align: center;
@@ -1749,19 +1683,19 @@ h1.wordart {
 }
 
 .flash-sidebar-link {
-  color: #00d4ff;
+  color: var(--cyan);
   font-size: 12px;
   padding: 8px 15px;
   text-decoration: none;
   display: block;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   border-left: 3px solid transparent;
 }
 
 .flash-sidebar-link:hover {
   color: #fff;
   background: linear-gradient(90deg, rgba(0, 212, 255, 0.15) 0%, transparent 100%);
-  border-left-color: #00d4ff;
+  border-left-color: var(--cyan);
   padding-left: 20px;
   text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
 }
@@ -1787,16 +1721,8 @@ h1.wordart {
   animation: flash-content-star 3s ease-in-out infinite;
 }
 
-.flash-content::before {
-  top: 20px;
-  right: 20px;
-}
-
-.flash-content::after {
-  bottom: 20px;
-  left: 20px;
-  animation-delay: 1.5s;
-}
+.flash-content::before { top: 20px; right: 20px; }
+.flash-content::after { bottom: 20px; left: 20px; animation-delay: 1.5s; }
 
 @keyframes flash-content-star {
   0%, 100% { opacity: 0.2; transform: scale(1) rotate(0deg); }
@@ -1814,42 +1740,15 @@ h1.wordart {
   animation: flash-section-mega-entrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* INSANE multi-stage entrance animation */
+/* Multi-stage entrance animation */
 @keyframes flash-section-mega-entrance {
-  0% {
-    opacity: 0;
-    transform: perspective(1000px) translateZ(-500px) rotateY(-15deg) scale(0.5);
-    filter: blur(20px) brightness(3) saturate(0);
-  }
-  15% {
-    opacity: 0.3;
-    transform: perspective(1000px) translateZ(-200px) rotateY(-10deg) scale(0.7);
-    filter: blur(15px) brightness(2.5) saturate(0.5);
-  }
-  30% {
-    opacity: 0.6;
-    transform: perspective(1000px) translateZ(-50px) rotateY(-5deg) scale(0.85);
-    filter: blur(8px) brightness(2) saturate(0.8);
-  }
-  50% {
-    opacity: 0.9;
-    transform: perspective(1000px) translateZ(30px) rotateY(3deg) scale(1.05);
-    filter: blur(2px) brightness(1.5) saturate(1.2);
-  }
-  70% {
-    opacity: 1;
-    transform: perspective(1000px) translateZ(10px) rotateY(-2deg) scale(1.02);
-    filter: blur(0) brightness(1.2) saturate(1.1);
-  }
-  85% {
-    transform: perspective(1000px) translateZ(-5px) rotateY(1deg) scale(0.99);
-    filter: blur(0) brightness(1.1) saturate(1);
-  }
-  100% {
-    opacity: 1;
-    transform: perspective(1000px) translateZ(0) rotateY(0) scale(1);
-    filter: blur(0) brightness(1) saturate(1);
-  }
+  0% { opacity: 0; transform: perspective(1000px) translateZ(-500px) rotateY(-15deg) scale(0.5); filter: blur(20px) brightness(3) saturate(0); }
+  15% { opacity: 0.3; transform: perspective(1000px) translateZ(-200px) rotateY(-10deg) scale(0.7); filter: blur(15px) brightness(2.5) saturate(0.5); }
+  30% { opacity: 0.6; transform: perspective(1000px) translateZ(-50px) rotateY(-5deg) scale(0.85); filter: blur(8px) brightness(2) saturate(0.8); }
+  50% { opacity: 0.9; transform: perspective(1000px) translateZ(30px) rotateY(3deg) scale(1.05); filter: blur(2px) brightness(1.5) saturate(1.2); }
+  70% { opacity: 1; transform: perspective(1000px) translateZ(10px) rotateY(-2deg) scale(1.02); filter: blur(0) brightness(1.2) saturate(1.1); }
+  85% { transform: perspective(1000px) translateZ(-5px) rotateY(1deg) scale(0.99); filter: blur(0) brightness(1.1) saturate(1); }
+  100% { opacity: 1; transform: perspective(1000px) translateZ(0) rotateY(0) scale(1); filter: blur(0) brightness(1) saturate(1); }
 }
 
 /* Lens flare burst on section enter */
@@ -1860,12 +1759,7 @@ h1.wordart {
   left: 50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(ellipse at center,
-    rgba(255, 215, 0, 0.4) 0%,
-    rgba(255, 140, 0, 0.2) 20%,
-    rgba(255, 69, 0, 0.1) 40%,
-    transparent 60%
-  );
+  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.4) 0%, rgba(255, 140, 0, 0.2) 20%, rgba(255, 69, 0, 0.1) 40%, transparent 60%);
   transform: translate(-50%, -50%) scale(0);
   animation: flash-section-flare 0.8s ease-out forwards;
   pointer-events: none;
@@ -1873,18 +1767,9 @@ h1.wordart {
 }
 
 @keyframes flash-section-flare {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(2);
-    opacity: 0;
-  }
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
 }
 
 /* Horizontal light streak */
@@ -1895,30 +1780,18 @@ h1.wordart {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 45%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.1) 55%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 100%);
   animation: flash-section-streak 0.6s ease-out forwards;
   pointer-events: none;
   z-index: 100;
 }
 
 @keyframes flash-section-streak {
-  0% {
-    left: -100%;
-    opacity: 1;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
+  0% { left: -100%; opacity: 1; }
+  100% { left: 100%; opacity: 0; }
 }
 
-/* EXIT animation - section flying away */
+/* Exit animation */
 .flash-section.exiting {
   display: block;
   animation: flash-section-mega-exit 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
@@ -1926,27 +1799,13 @@ h1.wordart {
 }
 
 @keyframes flash-section-mega-exit {
-  0% {
-    opacity: 1;
-    transform: perspective(1000px) translateZ(0) rotateY(0) scale(1);
-    filter: blur(0) brightness(1);
-  }
-  30% {
-    opacity: 0.8;
-    transform: perspective(1000px) translateZ(50px) rotateY(5deg) scale(1.02);
-    filter: blur(2px) brightness(1.3);
-  }
-  100% {
-    opacity: 0;
-    transform: perspective(1000px) translateZ(-300px) rotateY(20deg) translateX(-100px) scale(0.6);
-    filter: blur(15px) brightness(2) saturate(0);
-  }
+  0% { opacity: 1; transform: perspective(1000px) translateZ(0) rotateY(0) scale(1); filter: blur(0) brightness(1); }
+  30% { opacity: 0.8; transform: perspective(1000px) translateZ(50px) rotateY(5deg) scale(1.02); filter: blur(2px) brightness(1.3); }
+  100% { opacity: 0; transform: perspective(1000px) translateZ(-300px) rotateY(20deg) translateX(-100px) scale(0.6); filter: blur(15px) brightness(2) saturate(0); }
 }
 
 /* Screen shake on transition */
-.flash-screen-shake {
-  animation: flash-screen-shake 0.3s ease-out;
-}
+.flash-screen-shake { animation: flash-screen-shake 0.3s ease-out; }
 
 @keyframes flash-screen-shake {
   0%, 100% { transform: translateX(0) translateY(0); }
@@ -1982,7 +1841,7 @@ h1.wordart {
 
 .flash-section-title {
   font-size: 32px;
-  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 50%, #ff4500 100%);
+  background: var(--gradient-gold);
   background-size: 100% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2003,7 +1862,7 @@ h1.wordart {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #ffd700, #ff4500, #ff00ff, transparent);
+  background: linear-gradient(90deg, var(--gold), var(--orange-red), var(--magenta), transparent);
   background-size: 200% 100%;
   animation: flash-title-underline 2s linear infinite;
 }
@@ -2018,11 +1877,13 @@ h1.wordart {
   50% { background-position: 0% 100%; filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.7)); }
 }
 
-/* Style the content inside flash sections */
+/* ============================================
+   Flash Section Content Styling
+   ============================================ */
 .flash-section a {
-  color: #00d4ff;
+  color: var(--cyan);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   position: relative;
 }
 
@@ -2033,23 +1894,21 @@ h1.wordart {
   left: 0;
   width: 0;
   height: 1px;
-  background: #ffd700;
-  transition: width 0.3s ease;
+  background: var(--gold);
+  transition: width var(--transition-normal);
 }
 
 .flash-section a:hover {
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  color: var(--gold);
+  text-shadow: var(--glow-gold);
 }
 
-.flash-section a:hover::after {
-  width: 100%;
-}
+.flash-section a:hover::after { width: 100%; }
 
 .flash-section h2,
 .flash-section h3,
 .flash-section h4 {
-  color: #ffd700;
+  color: var(--gold);
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
@@ -2059,34 +1918,27 @@ h1.wordart {
 }
 
 .flash-section ul,
-.flash-section ol {
-  color: #ccc;
-}
+.flash-section ol { color: #ccc; }
 
-.flash-section li {
-  margin-bottom: 8px;
-}
+.flash-section li { margin-bottom: 8px; }
 
-/* Generic handling for dark content - make it FLASH-y */
+/* Generic handling for dark content */
 .flash-section img:not(.headshot),
 .flash-section svg,
 .flash-section canvas {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(230, 230, 255, 0.95) 100%);
   border: 3px solid;
-  border-color: #ffd700 #aa8800 #775500 #ddaa00;
+  border-color: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
   border-radius: 8px;
   padding: 10px;
-  box-shadow:
-    0 0 20px rgba(255, 215, 0, 0.3),
-    inset 0 2px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
   margin: 10px 0;
 }
 
-/* Tables get the Flash treatment */
+/* Tables */
 .flash-section table {
   background: linear-gradient(180deg, rgba(0, 20, 40, 0.9) 0%, rgba(0, 10, 30, 0.95) 100%);
-  border: 2px solid #ffd700;
+  border: 2px solid var(--gold);
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 8px;
@@ -2096,13 +1948,13 @@ h1.wordart {
 
 .flash-section th {
   background: linear-gradient(180deg, #3a3000 0%, #2a2000 100%);
-  color: #ffd700;
+  color: var(--gold);
   padding: 10px 15px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 12px;
-  border-bottom: 2px solid #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  border-bottom: 2px solid var(--gold);
+  text-shadow: var(--glow-gold);
 }
 
 .flash-section td {
@@ -2111,24 +1963,20 @@ h1.wordart {
   color: #ddd;
 }
 
-.flash-section tr:hover td {
-  background: rgba(255, 215, 0, 0.1);
-}
+.flash-section tr:hover td { background: rgba(255, 215, 0, 0.1); }
 
 /* Code/pre blocks */
 .flash-section code,
 .flash-section pre {
   background: linear-gradient(180deg, #0a0a1a 0%, #050510 100%);
-  border: 1px solid #00d4ff;
+  border: 1px solid var(--cyan);
   border-radius: 4px;
   color: #00ff88;
   font-family: 'Courier New', monospace;
   text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
 }
 
-.flash-section code {
-  padding: 2px 6px;
-}
+.flash-section code { padding: 2px 6px; }
 
 .flash-section pre {
   padding: 15px;
@@ -2138,7 +1986,7 @@ h1.wordart {
 
 /* Blockquotes */
 .flash-section blockquote {
-  border-left: 4px solid #ff4500;
+  border-left: 4px solid var(--orange-red);
   background: linear-gradient(90deg, rgba(255, 69, 0, 0.1) 0%, transparent 100%);
   padding: 15px 20px;
   margin: 15px 0;
@@ -2155,13 +2003,13 @@ h1.wordart {
   border-radius: 4px;
   color: #fff;
   padding: 8px 12px;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
 }
 
 .flash-section input:focus,
 .flash-section textarea:focus,
 .flash-section select:focus {
-  border-color: #ffd700;
+  border-color: var(--gold);
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
   outline: none;
 }
@@ -2169,13 +2017,13 @@ h1.wordart {
 .flash-section button,
 .flash-section input[type="submit"] {
   background: linear-gradient(180deg, #3a3000 0%, #2a2000 100%);
-  border: 2px solid #ffd700;
-  color: #ffd700;
+  border: 2px solid var(--gold);
+  color: var(--gold);
   padding: 10px 20px;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 2px;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
 }
 
 .flash-section button:hover,
@@ -2184,11 +2032,13 @@ h1.wordart {
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
-/* Flash Footer */
+/* ============================================
+   Flash Footer
+   ============================================ */
 .flash-footer {
-  background: linear-gradient(180deg, #0d0d0d 0%, #000 100%);
+  background: linear-gradient(180deg, var(--dark-deep) 0%, #000 100%);
   border-top: 3px solid;
-  border-image: linear-gradient(90deg, transparent, #333, #ffd700, #333, transparent) 1;
+  border-image: linear-gradient(90deg, transparent, #333, var(--gold), #333, transparent) 1;
   padding: 12px 25px;
   display: flex;
   justify-content: space-between;
@@ -2209,13 +2059,8 @@ h1.wordart {
   background: linear-gradient(90deg, transparent 10%, rgba(255, 215, 0, 0.3) 50%, transparent 90%);
 }
 
-.flash-footer span {
-  transition: color 0.3s;
-}
-
-.flash-footer span:hover {
-  color: #888;
-}
+.flash-footer span { transition: color var(--transition-normal); }
+.flash-footer span:hover { color: #888; }
 
 .flash-visitor-count {
   color: #00ff88;
@@ -2225,7 +2070,7 @@ h1.wordart {
 }
 
 #flash-visitors {
-  color: #ffd700;
+  color: var(--gold);
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
   animation: flash-visitor-glow 1s ease-in-out infinite alternate;
 }
@@ -2236,15 +2081,9 @@ h1.wordart {
 }
 
 /* ============================================
-   HEADSHOT FREAKOUT MODE - Click the face!
+   Headshot Freakout Mode
    ============================================ */
-
 .flash-headshot-freakout {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: radial-gradient(ellipse at center, #000033 0%, #000 100%);
   z-index: 999999;
   display: flex;
@@ -2254,9 +2093,7 @@ h1.wordart {
   overflow: hidden;
 }
 
-.flash-headshot-freakout.ending {
-  animation: flash-freakout-end 0.5s ease-in forwards;
-}
+.flash-headshot-freakout.ending { animation: flash-freakout-end 0.5s ease-in forwards; }
 
 @keyframes flash-freakout-bg {
   0% { opacity: 0; background: #fff; }
@@ -2276,32 +2113,16 @@ h1.wordart {
   height: 300px;
   border-radius: 50%;
   border: 8px solid;
-  border-color: #ffd700 #ff4500 #ff00ff #00d4ff;
-  box-shadow:
-    0 0 50px #ffd700,
-    0 0 100px #ff4500,
-    0 0 150px #ff00ff,
-    0 0 200px #00d4ff,
-    inset 0 0 50px rgba(255, 255, 255, 0.3);
-  animation:
-    flash-freakout-head-spin 2s linear infinite,
-    flash-freakout-head-pulse 0.5s ease-in-out infinite alternate,
-    flash-freakout-head-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-color: var(--gold) var(--orange-red) var(--magenta) var(--cyan);
+  box-shadow: 0 0 50px var(--gold), 0 0 100px var(--orange-red), 0 0 150px var(--magenta), 0 0 200px var(--cyan), inset 0 0 50px rgba(255, 255, 255, 0.3);
+  animation: flash-freakout-head-spin 2s linear infinite, flash-freakout-head-pulse 0.5s ease-in-out infinite alternate, flash-freakout-head-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 10;
 }
 
 @keyframes flash-freakout-head-enter {
-  0% {
-    transform: scale(0) rotate(-180deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.3) rotate(20deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  50% { transform: scale(1.3) rotate(20deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 @keyframes flash-freakout-head-spin {
@@ -2310,20 +2131,8 @@ h1.wordart {
 }
 
 @keyframes flash-freakout-head-pulse {
-  0% {
-    box-shadow:
-      0 0 50px #ffd700,
-      0 0 100px #ff4500,
-      0 0 150px #ff00ff,
-      0 0 200px #00d4ff;
-  }
-  100% {
-    box-shadow:
-      0 0 80px #ffd700,
-      0 0 150px #ff4500,
-      0 0 200px #ff00ff,
-      0 0 250px #00d4ff;
-  }
+  0% { box-shadow: 0 0 50px var(--gold), 0 0 100px var(--orange-red), 0 0 150px var(--magenta), 0 0 200px var(--cyan); }
+  100% { box-shadow: 0 0 80px var(--gold), 0 0 150px var(--orange-red), 0 0 200px var(--magenta), 0 0 250px var(--cyan); }
 }
 
 /* Particle explosion */
@@ -2338,14 +2147,8 @@ h1.wordart {
 }
 
 @keyframes flash-freakout-particle-fly {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg) translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--distance)) rotate(720deg);
-    opacity: 0;
-  }
+  0% { transform: translate(-50%, -50%) rotate(0deg) translateX(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--distance)) rotate(720deg); opacity: 0; }
 }
 
 /* Matrix rain */
@@ -2354,8 +2157,8 @@ h1.wordart {
   top: -100%;
   font-family: 'MS Gothic', monospace;
   font-size: 16px;
-  color: #0f0;
-  text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+  color: var(--matrix-green);
+  text-shadow: var(--glow-matrix);
   line-height: 1.2;
   animation: flash-freakout-matrix-fall linear infinite;
   opacity: 0.7;
@@ -2374,12 +2177,7 @@ h1.wordart {
   position: absolute;
   width: 100px;
   height: 100px;
-  background: radial-gradient(ellipse at center,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 215, 0, 0.8) 20%,
-    rgba(255, 140, 0, 0.4) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 1) 0%, rgba(255, 215, 0, 0.8) 20%, rgba(255, 140, 0, 0.4) 40%, transparent 70%);
   border-radius: 50%;
   animation: flash-freakout-flare-burst 0.6s ease-out var(--flare-delay) forwards;
   opacity: 0;
@@ -2388,18 +2186,9 @@ h1.wordart {
 }
 
 @keyframes flash-freakout-flare-burst {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(3);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(5);
-    opacity: 0;
-  }
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(3); opacity: 0.8; }
+  100% { transform: scale(5); opacity: 0; }
 }
 
 /* EPIC text */
@@ -2408,42 +2197,25 @@ h1.wordart {
   font-size: 120px;
   font-weight: 900;
   font-family: Impact, 'Arial Black', sans-serif;
-  background: linear-gradient(180deg, #ffd700 0%, #ff4500 50%, #ff00ff 100%);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--orange-red) 50%, var(--magenta) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-transform: uppercase;
   letter-spacing: 10px;
-  animation:
-    flash-freakout-text-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards,
-    flash-freakout-text-shake 0.1s linear 0.3s infinite;
+  animation: flash-freakout-text-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards, flash-freakout-text-shake 0.1s linear 0.3s infinite;
   opacity: 0;
   transform: scale(0) rotate(-10deg);
   z-index: 20;
   text-shadow: none;
-  filter:
-    drop-shadow(0 0 10px #ffd700)
-    drop-shadow(0 0 20px #ff4500)
-    drop-shadow(0 0 30px #ff00ff)
-    drop-shadow(4px 4px 0 #000);
+  filter: drop-shadow(0 0 10px var(--gold)) drop-shadow(0 0 20px var(--orange-red)) drop-shadow(0 0 30px var(--magenta)) drop-shadow(4px 4px 0 #000);
 }
 
 @keyframes flash-freakout-text-enter {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(-10deg) translateY(100px);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.2) rotate(5deg) translateY(-20px);
-  }
-  80% {
-    transform: scale(0.9) rotate(-3deg) translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg) translateY(0);
-  }
+  0% { opacity: 0; transform: scale(0) rotate(-10deg) translateY(100px); }
+  60% { opacity: 1; transform: scale(1.2) rotate(5deg) translateY(-20px); }
+  80% { transform: scale(0.9) rotate(-3deg) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg) translateY(0); }
 }
 
 @keyframes flash-freakout-text-shake {
@@ -2452,7 +2224,7 @@ h1.wordart {
   75% { transform: translateX(3px) rotate(1deg); }
 }
 
-/* Chromatic aberration on the whole thing */
+/* Chromatic aberration overlay */
 .flash-headshot-freakout::after {
   content: '';
   position: absolute;
@@ -2460,13 +2232,7 @@ h1.wordart {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 255, 0, 0.03) 2px,
-    rgba(0, 255, 0, 0.03) 4px
-  );
+  background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 255, 0, 0.03) 2px, rgba(0, 255, 0, 0.03) 4px);
   pointer-events: none;
   z-index: 100;
   animation: flash-freakout-scanlines 0.1s linear infinite;
@@ -2477,148 +2243,12 @@ h1.wordart {
   100% { transform: translateY(4px); }
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .flash-sidebar {
-    display: none;
-  }
-
-  .flash-intro-title {
-    font-size: 32px;
-    letter-spacing: 2px;
-  }
-
-  .flash-intro-headshot img {
-    width: 120px;
-    height: 120px;
-  }
-
-  .flash-intro-headshot::before {
-    width: 150px;
-    height: 150px;
-  }
-
-  .flash-intro-headshot::after {
-    width: 170px;
-    height: 170px;
-  }
-
-  .flash-intro-subtitle {
-    font-size: 16px;
-    letter-spacing: 8px;
-  }
-
-  .flash-enter-btn {
-    font-size: 16px;
-    padding: 15px 30px;
-    letter-spacing: 3px;
-  }
-
-  .flash-header-headshot {
-    display: none;
-  }
-
-  .flash-site-title {
-    font-size: 22px;
-    letter-spacing: 1px;
-  }
-
-  .flash-nav {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .flash-nav-btn {
-    font-size: 10px;
-    padding: 8px 12px;
-    letter-spacing: 1px;
-  }
-
-  /* Show external nav links on mobile since sidebar is hidden */
-  .flash-nav-divider {
-    display: inline;
-    color: #555;
-    margin: 0 4px;
-    align-self: center;
-  }
-
-  .flash-nav-link {
-    display: inline-block;
-    color: #00d4ff;
-    font-size: 10px;
-    padding: 6px 10px;
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
-  }
-
-  .flash-nav-link:hover {
-    color: #ffd700;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-  }
-
-  .flash-footer {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-    padding: 15px;
-  }
-
-  .flash-header {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px 15px;
-  }
-
-  .flash-header-left {
-    justify-content: center;
-  }
-
-  .flash-section-title {
-    font-size: 24px;
-    letter-spacing: 1px;
-  }
-
-  .flash-content {
-    padding: 20px;
-  }
-
-  .flash-progress-container {
-    width: 250px;
-  }
-
-  .flash-loading-text {
-    font-size: 20px;
-    letter-spacing: 6px;
-  }
-
-  .flash-logo {
-    font-size: 70px;
-  }
-
-  /* Freakout mode on mobile */
-  .flash-freakout-head {
-    width: 200px;
-    height: 200px;
-  }
-
-  .flash-freakout-text {
-    font-size: 60px;
-    letter-spacing: 5px;
-  }
-}
-
 /* ============================================
-   Matrix Rain Background Effect (retheme)
+   Matrix Rain Background (retheme)
    ============================================ */
-#matrix-bg {
-  background: #000;
-}
+#matrix-bg { background: #000; }
 
-body.retheme-matrix {
-  background-image: none !important;
-}
+body.retheme-matrix { background-image: none !important; }
 
 body.retheme-matrix main,
 body.retheme-matrix #main {
@@ -2628,14 +2258,8 @@ body.retheme-matrix #main {
   box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
 }
 
-body.retheme-matrix a {
-  color: #0f0;
-}
-
-body.retheme-matrix a:hover {
-  color: #0f0;
-  text-shadow: 0 0 10px #0f0;
-}
+body.retheme-matrix a { color: var(--matrix-green); }
+body.retheme-matrix a:hover { color: var(--matrix-green); text-shadow: var(--glow-matrix); }
 
 body.retheme-matrix,
 body.retheme-matrix h1,
@@ -2644,35 +2268,27 @@ body.retheme-matrix h3,
 body.retheme-matrix p,
 body.retheme-matrix li,
 body.retheme-matrix span {
-  color: #0f0 !important;
+  color: var(--matrix-green) !important;
 }
 
 body.retheme-matrix h1 {
   font-family: 'VT323', monospace;
   font-size: 2.5em;
-  text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+  text-shadow: var(--glow-matrix);
   letter-spacing: 2px;
 }
 
 /* ============================================
-   CRT Monitor Effect - Scanlines + Flicker (retheme)
+   CRT Monitor Effect (retheme)
    ============================================ */
-
-/* Full-screen overlay base */
+#tv-snow,
 .crt-overlay,
 .crt-curvature,
 .glitch-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
 }
 
-body.retheme-crt {
-  animation: crt-flicker 0.1s infinite;
-}
+body.retheme-crt { animation: crt-flicker 0.1s infinite; }
 
 @keyframes crt-flicker {
   0%, 100% { opacity: 1; }
@@ -2681,13 +2297,7 @@ body.retheme-crt {
 
 .crt-overlay {
   z-index: 99998;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.15) 0px,
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 2px
-  );
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0px, rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px);
 }
 
 .crt-overlay::before {
@@ -2697,11 +2307,7 @@ body.retheme-crt {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    rgba(0, 0, 0, 0.3) 100%
-  );
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
 }
 
 .crt-overlay::after {
@@ -2711,12 +2317,7 @@ body.retheme-crt {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(0, 255, 0, 0.03) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 0, 0.03) 50%, transparent 100%);
   animation: crt-scanline 8s linear infinite;
 }
 
@@ -2727,9 +2328,7 @@ body.retheme-crt {
 
 .crt-curvature {
   z-index: 99997;
-  box-shadow:
-    inset 0 0 100px rgba(0, 0, 0, 0.5),
-    inset 0 0 200px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), inset 0 0 200px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
 }
 
@@ -2739,42 +2338,30 @@ body.retheme-crt #main {
 }
 
 /* ============================================
-   Neon Glow - Cyberpunk vibes (retheme)
+   Neon Glow - Cyberpunk (retheme)
    ============================================ */
-body.retheme-neon {
-  background: #0a0a0a !important;
-}
+body.retheme-neon { background: var(--dark-bg) !important; }
 
 body.retheme-neon main,
 body.retheme-neon #main {
   background: rgba(10, 10, 10, 0.9) !important;
-  border: 2px solid #ff00ff;
-  box-shadow:
-    0 0 10px #ff00ff,
-    0 0 20px #ff00ff,
-    0 0 40px #ff00ff,
-    inset 0 0 20px rgba(255, 0, 255, 0.1);
+  border: 2px solid var(--magenta);
+  box-shadow: 0 0 10px var(--magenta), 0 0 20px var(--magenta), 0 0 40px var(--magenta), inset 0 0 20px rgba(255, 0, 255, 0.1);
 }
 
 body.retheme-neon h1 {
-  color: #00ffff !important;
-  text-shadow:
-    0 0 5px #00ffff,
-    0 0 10px #00ffff,
-    0 0 20px #00ffff,
-    0 0 40px #00ffff !important;
+  color: var(--cyan-bright) !important;
+  text-shadow: 0 0 5px var(--cyan-bright), 0 0 10px var(--cyan-bright), 0 0 20px var(--cyan-bright), 0 0 40px var(--cyan-bright) !important;
   animation: neon-flicker 3s infinite;
 }
 
 body.retheme-neon h2,
 body.retheme-neon h3 {
-  color: #ff00ff !important;
-  text-shadow:
-    0 0 5px #ff00ff,
-    0 0 10px #ff00ff !important;
+  color: var(--magenta) !important;
+  text-shadow: 0 0 5px var(--magenta), 0 0 10px var(--magenta) !important;
 }
 
-/* Force all text to be readable on dark background */
+/* Force text readable on dark background */
 body.retheme-neon,
 body.retheme-neon p,
 body.retheme-neon li,
@@ -2788,26 +2375,13 @@ body.retheme-neon label {
 
 @keyframes neon-flicker {
   0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow:
-      0 0 5px #00ffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff,
-      0 0 40px #00ffff;
+    text-shadow: 0 0 5px var(--cyan-bright), 0 0 10px var(--cyan-bright), 0 0 20px var(--cyan-bright), 0 0 40px var(--cyan-bright);
   }
-  20%, 24%, 55% {
-    text-shadow: none;
-  }
+  20%, 24%, 55% { text-shadow: none; }
 }
 
-body.retheme-neon a {
-  color: #ff0080 !important;
-  text-shadow: 0 0 10px #ff0080;
-}
-
-body.retheme-neon a:hover {
-  color: #80ff00 !important;
-  text-shadow: 0 0 20px #80ff00;
-}
+body.retheme-neon a { color: var(--neon-pink) !important; text-shadow: 0 0 10px var(--neon-pink); }
+body.retheme-neon a:hover { color: #80ff00 !important; text-shadow: 0 0 20px #80ff00; }
 
 .neon-line {
   position: fixed;
@@ -2815,10 +2389,7 @@ body.retheme-neon a:hover {
   width: 100%;
   height: 2px;
   background: var(--neon-color);
-  box-shadow:
-    0 0 5px var(--neon-color),
-    0 0 10px var(--neon-color),
-    0 0 20px var(--neon-color);
+  box-shadow: 0 0 5px var(--neon-color), 0 0 10px var(--neon-color), 0 0 20px var(--neon-color);
   z-index: -1;
   animation: neon-line-pulse 2s ease-in-out infinite;
   opacity: 0.7;
@@ -2830,11 +2401,9 @@ body.retheme-neon a:hover {
 }
 
 /* ============================================
-   Y2K Chrome - Shiny metallic everything (retheme)
+   Y2K Chrome (retheme)
    ============================================ */
-body.retheme-y2k {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-}
+body.retheme-y2k { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
 
 body.retheme-y2k main,
 body.retheme-y2k #main {
@@ -2842,11 +2411,8 @@ body.retheme-y2k #main {
   background-size: 400% 400%;
   animation: y2k-chrome-shift 5s ease infinite;
   border: 4px solid;
-  border-image: linear-gradient(135deg, #ffd700, #ff69b4, #00bfff, #ffd700) 1;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.5),
-    inset 0 2px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+  border-image: linear-gradient(135deg, var(--gold), #ff69b4, #00bfff, var(--gold)) 1;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
   color: #333 !important;
 }
 
@@ -2881,18 +2447,10 @@ body.retheme-y2k h1 {
 }
 
 @keyframes y2k-float {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg) scale(1);
-  }
-  25% {
-    transform: translateY(-20px) rotate(90deg) scale(1.1);
-  }
-  50% {
-    transform: translateY(-40px) rotate(180deg) scale(1);
-  }
-  75% {
-    transform: translateY(-20px) rotate(270deg) scale(1.1);
-  }
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-20px) rotate(90deg) scale(1.1); }
+  50% { transform: translateY(-40px) rotate(180deg) scale(1); }
+  75% { transform: translateY(-20px) rotate(270deg) scale(1.1); }
 }
 
 /* ============================================
@@ -2907,66 +2465,29 @@ body.retheme-y2k h1 {
 /* ============================================
    VHS Glitch Effect
    ============================================ */
-body.glitch-mode {
-  position: relative;
-}
+body.glitch-mode { position: relative; }
 
 .glitch-overlay {
   z-index: 99999;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.1) 2px,
-    rgba(0, 0, 0, 0.1) 4px
-  );
+  background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px);
   opacity: 0.3;
 }
 
-body.glitch-active {
-  animation: vhs-glitch 0.1s steps(2) infinite;
-}
+body.glitch-active { animation: vhs-glitch 0.1s steps(2) infinite; }
 
 body.glitch-active .glitch-overlay {
   opacity: 0.8;
   background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(255, 0, 0, 0.1) 2px,
-      rgba(255, 0, 0, 0.1) 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(0, 255, 255, 0.1) 3px,
-      rgba(0, 255, 255, 0.1) 6px
-    );
+    repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(255, 0, 0, 0.1) 2px, rgba(255, 0, 0, 0.1) 4px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(0, 255, 255, 0.1) 3px, rgba(0, 255, 255, 0.1) 6px);
 }
 
 @keyframes vhs-glitch {
-  0% {
-    transform: translate(0);
-    filter: hue-rotate(0deg);
-  }
-  25% {
-    transform: translate(-2px, 1px);
-    filter: hue-rotate(90deg);
-  }
-  50% {
-    transform: translate(2px, -1px);
-    filter: hue-rotate(-90deg);
-  }
-  75% {
-    transform: translate(1px, 2px);
-    filter: hue-rotate(180deg);
-  }
-  100% {
-    transform: translate(0);
-    filter: hue-rotate(0deg);
-  }
+  0% { transform: translate(0); filter: hue-rotate(0deg); }
+  25% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+  50% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); }
+  75% { transform: translate(1px, 2px); filter: hue-rotate(180deg); }
+  100% { transform: translate(0); filter: hue-rotate(0deg); }
 }
 
 body.glitch-active main,
@@ -2975,21 +2496,138 @@ body.glitch-active #main {
 }
 
 @keyframes glitch-text {
-  0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
-  25% { text-shadow: -2px 0 #ff0000, 2px 0 #00ffff; }
-  50% { text-shadow: 2px 2px #ff0000, -2px -2px #00ffff; }
-  75% { text-shadow: -2px 2px #ff0000, 2px -2px #00ffff; }
-  100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+  0% { text-shadow: 2px 0 #ff0000, -2px 0 var(--cyan-bright); }
+  25% { text-shadow: -2px 0 #ff0000, 2px 0 var(--cyan-bright); }
+  50% { text-shadow: 2px 2px #ff0000, -2px -2px var(--cyan-bright); }
+  75% { text-shadow: -2px 2px #ff0000, 2px -2px var(--cyan-bright); }
+  100% { text-shadow: 2px 0 #ff0000, -2px 0 var(--cyan-bright); }
 }
 
 /* ============================================
    TV Snow / Static Effect (retheme)
    ============================================ */
-#tv-snow {
-  image-rendering: pixelated;
-}
+#tv-snow { image-rendering: pixelated; }
 
-body.retheme-snow {
-  /* Slight desaturation for that old TV feel */
-  filter: saturate(0.9);
+body.retheme-snow { filter: saturate(0.9); }
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 768px) {
+  .flash-sidebar { display: none; }
+
+  .flash-intro-title {
+    font-size: 32px;
+    letter-spacing: 2px;
+  }
+
+  .flash-intro-headshot img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .flash-intro-headshot::before {
+    width: 150px;
+    height: 150px;
+  }
+
+  .flash-intro-headshot::after {
+    width: 170px;
+    height: 170px;
+  }
+
+  .flash-intro-subtitle {
+    font-size: 16px;
+    letter-spacing: 8px;
+  }
+
+  .flash-enter-btn {
+    font-size: 16px;
+    padding: 15px 30px;
+    letter-spacing: 3px;
+  }
+
+  .flash-header-headshot { display: none; }
+
+  .flash-site-title {
+    font-size: 22px;
+    letter-spacing: 1px;
+  }
+
+  .flash-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .flash-nav-btn {
+    font-size: 10px;
+    padding: 8px 12px;
+    letter-spacing: 1px;
+  }
+
+  /* Show external nav links on mobile since sidebar is hidden */
+  .flash-nav-divider {
+    display: inline;
+    color: #555;
+    margin: 0 4px;
+    align-self: center;
+  }
+
+  .flash-nav-link {
+    display: inline-block;
+    color: var(--cyan);
+    font-size: 10px;
+    padding: 6px 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all var(--transition-fast);
+  }
+
+  .flash-nav-link:hover {
+    color: var(--gold);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  }
+
+  .flash-footer {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    padding: 15px;
+  }
+
+  .flash-header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 15px;
+  }
+
+  .flash-header-left { justify-content: center; }
+
+  .flash-section-title {
+    font-size: 24px;
+    letter-spacing: 1px;
+  }
+
+  .flash-content { padding: 20px; }
+
+  .flash-progress-container { width: 250px; }
+
+  .flash-loading-text {
+    font-size: 20px;
+    letter-spacing: 6px;
+  }
+
+  .flash-logo { font-size: 70px; }
+
+  /* Freakout mode on mobile */
+  .flash-freakout-head {
+    width: 200px;
+    height: 200px;
+  }
+
+  .flash-freakout-text {
+    font-size: 60px;
+    letter-spacing: 5px;
+  }
 }

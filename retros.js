@@ -64,7 +64,8 @@
     var styles = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:' + (zIndex || 9999) + ';';
     if (opacity !== undefined) styles += 'opacity:' + opacity + ';';
     if (pointerEvents === false) styles += 'pointer-events:none;';
-    return createCanvas(styles, document.body);
+    // Use documentElement to avoid perspective-wrapper transform breaking position:fixed
+    return createCanvas(styles, document.documentElement);
   }
 
   function setupCanvasResize(canvas, scaleFactor) {
@@ -740,15 +741,11 @@
   function initThemeMatrix() {
     var result = createCanvas(
       'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0;transition:opacity 1s ease;background:#000;',
-      document.body.insertBefore(createElement('div'), document.body.firstChild)
+      document.documentElement
     );
     var canvas = result.canvas;
     var ctx = result.ctx;
     canvas.id = 'matrix-bg';
-
-    // Move canvas from temp div to proper position
-    canvas.parentNode.parentNode.insertBefore(canvas, canvas.parentNode);
-    canvas.previousSibling && canvas.previousSibling.remove();
 
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()+-=[]{}|;:,.<>?~`\u30A0\u30A1\u30A2\u30A3\u30A4\u30A5\u30A6\u30A7\u30A8\u30A9\u30AA\u30AB\u30AC\u30AD\u30AE\u30AF';
     var fontSize = 16;
@@ -786,11 +783,11 @@
   function initThemeCRT() {
     var overlay = createElement('div');
     overlay.className = 'crt-overlay';
-    document.body.appendChild(overlay);
+    document.documentElement.appendChild(overlay);
 
     var curvature = createElement('div');
     curvature.className = 'crt-curvature';
-    document.body.appendChild(curvature);
+    document.documentElement.appendChild(curvature);
   }
 
   // ============================================
@@ -835,7 +832,7 @@
   function initThemeTVSnow() {
     var result = createCanvas(
       'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;pointer-events:none;opacity:0.06;mix-blend-mode:overlay;',
-      document.body
+      document.documentElement // Use documentElement to avoid perspective-wrapper transform issues
     );
     var canvas = result.canvas;
     var ctx = result.ctx;
@@ -896,7 +893,7 @@
 
     var overlay = createElement('div');
     overlay.className = 'glitch-overlay';
-    document.body.appendChild(overlay);
+    document.documentElement.appendChild(overlay);
 
     function triggerGlitch() {
       document.body.classList.add('glitch-active');
@@ -942,7 +939,7 @@
     var overlay = createElement('div',
       'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); pointer-events: none; z-index: 0;'
     );
-    document.body.insertBefore(overlay, document.body.firstChild);
+    document.documentElement.appendChild(overlay);
 
     var main = document.getElementById('main');
     if (main) {
