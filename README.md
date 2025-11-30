@@ -1,6 +1,6 @@
 # web90: Bringing the web back to the 90s!
 
-[Github](https://github.com/zardus/web90)  
+[Github](https://github.com/zardus/web90)
 [Deployment](https://yancomm.net/web90)
 
 ⚠️ **Warning**: This entire project was 100% vibecoded. Proceed with appropriate expectations.
@@ -58,32 +58,66 @@ Clone this repo into your site, then:
 
 | Name | Description |
 |------|-------------|
-| `badges` | 90s-style badge images (under construction, best viewed in, etc.) |
-| `media-player` | Retro media player with visualizer |
+| `badges` | 90s-style badge images (under construction, vim, any browser, AIM) |
+| `media-player` | Retro media player with audio visualizer |
 | `webring` | Remember webrings? Embed one! |
-| `counter` | Animated visitor counter |
+| `counter` | Animated visitor counter with glitch effect |
 | `guestbook` | Embedded guestbook iframe |
 
 ### JS Retros (effects)
 
 | Name | Description |
 |------|-------------|
-| `mouse-trail` | Binary digits follow your cursor |
-| `blink` | Makes text blink (the `<blink>` tag lives on!) |
-| `marquee` | Scrolling marquee text |
+| `mouse-trail` | Characters/emojis follow your cursor (12 styles!) |
+| `blink` | Makes h1 text blink (the `<blink>` tag lives on!) |
+| `marquee` | Scrolling marquee h1 text |
 | `wordart` | Microsoft Word 97-style text effects (22 styles!) |
-| `table` | Classic table-based layout styling |
-| `hampsterdance` | Animated background hamsters |
-| `custom-cursor` | Replace the cursor with a custom image |
-| `dividers` | Animated GIF dividers between sections |
-| `flash` | Full Y2K Macromedia Flash-style site takeover with loader, intro, and navigation |
+| `custom-cursor` | Replace the cursor with a retro image |
+| `dividers` | Animated GIF dividers between sections (8 included) |
 | `image-rotate` | 3D rotating images (add `data-image-rotate="true"` to img tags) |
+| `retheme` | Full page theme transformation (8 themes!) |
+| `perspective` | 3D tilt effect - page follows your mouse |
+| `glitch` | VHS-style glitch overlay effect |
 
 ### Special
 
 | Name | Description |
 |------|-------------|
 | `control-panel` | Windows 95-style control panel to toggle retros |
+
+## Mouse Trail Styles
+
+Use `?trail-style=NAME` to pick a specific style:
+
+| Style | Description |
+|-------|-------------|
+| `binary` | Classic 0s and 1s (with rare 2s) |
+| `sparkles` | Rainbow sparkle characters |
+| `fire` | 🔥 Fire emojis rising up |
+| `rainbow` | Colorful dots with hue cycling |
+| `stars` | ⭐ Star emojis |
+| `hearts` | 💖 Heart emojis |
+| `neon` | Glowing neon shapes |
+| `bubbles` | Rising bubble circles |
+| `snow` | ❄️ Falling snowflakes |
+| `matrix` | Falling Matrix-style katakana |
+| `ghost` | Fading ghost cursor trail |
+| `elastic` | Stretchy cursor trail |
+
+## Page Themes
+
+Use `?theme=NAME` with the `retheme` retro:
+
+| Theme | Description |
+|-------|-------------|
+| `matrix` | Falling green Matrix rain background |
+| `crt` | CRT monitor scanlines and screen curvature |
+| `neon` | Neon cyberpunk lines |
+| `y2k` | Chrome/Y2K floating emoji shapes |
+| `hampsterdance` | Tiled dancing hampster background |
+| `table` | Classic table-based layout styling |
+| `flash` | Full Macromedia Flash-style site takeover with loader, intro, and navigation |
+| `snow` | TV static/snow overlay |
 
 ## URL Parameters
 
@@ -93,14 +127,19 @@ Control retros via URL parameters:
 ?retros=badges,dividers,wordart    # Enable specific retros
 ?retros=all                        # Enable ALL retros (chaos mode)
 ?retros=none                       # Disable all retros
+?retros=april-fools                # Random chaos mode
 ?retro=badges                      # Single retro (legacy param)
 ```
 
-Additional parameters:
+Style parameters:
 ```
 ?song=track_name                   # Select specific music track
-?viz=psychedelic                   # Visualizer mode: waveform, spectrogram, spectrum, psychedelic, radial
+?viz=psychedelic                   # Visualizer: waveform, spectrogram, spectrum, psychedelic, radial
 ?wordart-style=five                # WordArt style (one through twentytwo)
+?cursor-style=hourglass            # Cursor: custom, hourglass
+?trail-style=matrix                # Trail style (see list above)
+?theme=flash                       # Page theme (see list above)
+?divider-style=3                   # Specific divider (1-8)
 ```
 
 ## Configuration
@@ -178,6 +217,8 @@ When the `dividers` retro is enabled, the `<hr>` is replaced with a tiling anima
 
 Enable the Windows 95-style control panel with `?retros=control-panel` (or include it in your retro list). This gives users a GUI to toggle retros on and off.
 
+**Easter eggs**: Enter the Konami code (↑↑↓↓←→←→BA) or swipe up from the bottom of the screen on mobile to open the control panel without URL params.
+
 ## Files
 
 ```
@@ -187,8 +228,10 @@ web90/
 ├── retro-elements.html # HTML templates for DOM retros
 ├── control-panel.html  # Windows 95 control panel template
 ├── chat-window.html    # AIM-style chat window template
-├── badges/             # Badge GIF images
-└── dividers/           # Divider GIF images
+├── hampsters.gif       # Hampster dance animation
+├── badges/             # Badge GIF images (4 included)
+├── cursors/            # Cursor PNG images (win95, hourglass)
+└── dividers/           # Divider GIF images (8 included)
 ```
 
 ## License
