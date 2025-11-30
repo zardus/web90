@@ -668,6 +668,21 @@ h1.wordart {
   filter: invert(1);
 }
 
+/* Selected divider preview overlay */
+.custom-select-preview {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 18px; /* leave room for dropdown arrow */
+  bottom: 3px;
+  background-color: #fff;
+  background-repeat: repeat-x;
+  background-position: left center;
+  background-size: auto 100%;
+  pointer-events: none;
+  display: none;
+}
+
 /* Table mode - 90s table cell look */
 .table-cell {
   border: 0.2em double #000;

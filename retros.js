@@ -1796,6 +1796,14 @@
       select.parentNode.insertBefore(wrapper, select);
       wrapper.appendChild(select);
 
+      // Create selected preview overlay for dividers
+      var selectedPreview = null;
+      if (isDivider) {
+        selectedPreview = createElement('div');
+        selectedPreview.className = 'custom-select-preview';
+        wrapper.appendChild(selectedPreview);
+      }
+
       // Create custom dropdown list
       var dropdown = createElement('div');
       dropdown.className = 'custom-select-dropdown';
@@ -1820,12 +1828,33 @@
           dropdown.appendChild(item);
         });
       }
+
+      function updateSelectedPreview() {
+        if (!selectedPreview) return;
+        var selectedOption = select.options[select.selectedIndex];
+        if (selectedOption && selectedOption.dataset.dividerSrc) {
+          selectedPreview.style.backgroundImage = 'url(' + selectedOption.dataset.dividerSrc + ')';
+          selectedPreview.style.display = 'block';
+        } else {
+          selectedPreview.style.display = 'none';
+        }
+      }
+
       rebuildOptions();
       wrapper.appendChild(dropdown);
 
       // Observe changes to select options (for dynamically populated selects)
-      var observer = new MutationObserver(rebuildOptions);
+      var observer = new MutationObserver(function() {
+        rebuildOptions();
+        updateSelectedPreview();
+      });
       observer.observe(select, { childList: true });
+
+      // Update preview when select value changes
+      select.addEventListener('change', updateSelectedPreview);
+
+      // Initial preview update (delayed to allow options to populate)
+      setTimeout(updateSelectedPreview, 0);
 
       // Prevent native dropdown
       select.addEventListener('mousedown', function(e) {
@@ -1933,6 +1962,7 @@
       // Apply divider
       if (ctrlDivider) {
         ctrlDivider.value = selections.styles.divider;
+        ctrlDivider.dispatchEvent(new Event('change'));
       }
     });
 
