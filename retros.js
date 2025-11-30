@@ -2038,8 +2038,9 @@
       loadTemplate(config.basePath + '/control-panel.html'),
       loadTemplate(config.basePath + '/chat-window.html')
     ]).then(function(templates) {
-      document.body.appendChild(templates[0]);
-      document.body.appendChild(templates[1]);
+      // Use documentElement to avoid stacking context issues with body transforms
+      document.documentElement.appendChild(templates[0]);
+      document.documentElement.appendChild(templates[1]);
       initControlPanel(selectedRetros);
     });
   }
