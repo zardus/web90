@@ -34,6 +34,56 @@
   /* Common Transitions */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
+
+  /* Button borders */
+  --btn-border-raised: #fff #808080 #808080 #fff;
+  --btn-border-pressed: #808080 #fff #fff #808080;
+  --btn-border-gold: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
+}
+
+/* ============================================
+   Utility Patterns - Reusable Base Styles
+   ============================================ */
+
+/* Full-screen overlay base - used by many components */
+.full-overlay,
+#flash-container,
+#flash-loader,
+#flash-intro,
+#flash-site,
+#matrix-bg,
+#tv-snow,
+#chat-window,
+.flash-headshot-freakout,
+.crt-overlay,
+.crt-curvature,
+.glitch-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Gradient text base - utility class for future use */
+.gradient-text {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Pseudo-element full coverage */
+.crt-overlay::before,
+.crt-overlay::after,
+#flash-container::before,
+.flash-headshot-freakout::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* ============================================
@@ -124,7 +174,7 @@
 .media-controls button {
   background: #c0c0c0;
   border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
+  border-color: var(--btn-border-raised);
   padding: 0 10px;
   font-size: 22px;
   cursor: pointer;
@@ -134,7 +184,7 @@
 }
 
 .media-controls button:active {
-  border-color: #808080 #fff #fff #808080;
+  border-color: var(--btn-border-pressed);
 }
 
 /* ============================================
@@ -344,6 +394,15 @@ h1.wordart {
   font-family: Times New Roman, serif;
 }
 
+/* WordArt normal font-weight (400) */
+.wordart-style-four h1.wordart,
+.wordart-style-ten h1.wordart,
+.wordart-style-twelve h1.wordart,
+.wordart-style-fourteen h1.wordart,
+.wordart-style-eighteen h1.wordart {
+  font-weight: 400;
+}
+
 /* WordArt container scaleY(1.65) */
 .wordart-style-two .wordart-container,
 .wordart-style-three .wordart-container,
@@ -383,7 +442,6 @@ h1.wordart {
 
 /* Style 4 - Classic blue serif */
 .wordart-style-four h1.wordart {
-  font-weight: 400;
   color: #336699;
   text-shadow: 2px 1px 0 #c1c1c1;
 }
@@ -433,7 +491,6 @@ h1.wordart {
 /* Style 10 - Green serif with echo */
 .wordart-style-ten .wordart-container { transform: scale(0.85, 1.25); }
 .wordart-style-ten h1.wordart {
-  font-weight: 400;
   color: #1a4b28;
   -webkit-text-fill-color: #1a4b28;
   -webkit-text-stroke: 1.5px #008000;
@@ -458,10 +515,7 @@ h1.wordart {
 }
 
 /* Style 12 - Teal gradient serif */
-.wordart-style-twelve h1.wordart {
-  font-weight: 400;
-  background: linear-gradient(#999cfc, #1b999c);
-}
+.wordart-style-twelve h1.wordart { background: linear-gradient(#999cfc, #1b999c); }
 .wordart-style-twelve h1.wordart::before { text-shadow: 0.031em 0.031em #cdcdcd; }
 
 /* Style 13 - Brown western */
@@ -474,7 +528,6 @@ h1.wordart {
 /* Style 14 - Pink sunset with blue depth */
 .wordart-style-fourteen .wordart-container { transform: scale(0.85, 1.3) translateZ(0); }
 .wordart-style-fourteen h1.wordart {
-  font-weight: 400;
   background: linear-gradient(#fffecb, #ff9999);
   letter-spacing: -0.1vw;
 }
@@ -514,10 +567,7 @@ h1.wordart {
 
 /* Style 18 - Chrome metallic */
 .wordart-style-eighteen .wordart-container { transform: scaleY(1.5) translateZ(0); }
-.wordart-style-eighteen h1.wordart {
-  font-weight: 400;
-  background: var(--gradient-chrome);
-}
+.wordart-style-eighteen h1.wordart { background: var(--gradient-chrome); }
 .wordart-style-eighteen h1.wordart::before {
   text-shadow: -1px 0 0 #4a4a4a, 0 -1px 0 #8b8b8b, -2px -1px 0.125px #4a4a4a, -1px -1px 0.125px #8b8b8b, -3px -2px 0.125px #4a4a4a, -2px -2px 0.125px #8b8b8b, -4px -3px 0.125px #4a4a4a, -3px -3px 0.125px #8b8b8b, -5px -4px 0.125px #4a4a4a, -4px -4px 0.125px #8b8b8b, -5px -5px 0 #4a4a4a, -5px -5px 0 #8b8b8b;
 }
@@ -623,9 +673,7 @@ h1.wordart {
   flex: 1;
 }
 
-.custom-select-wrapper select {
-  width: 100%;
-}
+.custom-select-wrapper select { width: 100%; }
 
 .custom-select-dropdown {
   display: none;
@@ -640,9 +688,7 @@ h1.wordart {
   border: 1px solid #000;
 }
 
-.custom-select-wrapper.open .custom-select-dropdown {
-  display: block;
-}
+.custom-select-wrapper.open .custom-select-dropdown { display: block; }
 
 .custom-select-option {
   padding: 2px 6px;
@@ -664,9 +710,7 @@ h1.wordart {
   background-size: auto 100%;
 }
 
-.custom-select-option:hover .divider-preview {
-  filter: invert(1);
-}
+.custom-select-option:hover .divider-preview { filter: invert(1); }
 
 /* Selected divider preview overlay */
 .custom-select-preview {
@@ -697,11 +741,6 @@ h1.wordart {
    Chat Window
    ============================================ */
 #chat-window {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -754,25 +793,6 @@ h1.wordart {
 /* ============================================
    FLASH MODE - Full-Screen Overlay Base
    ============================================ */
-
-/* Shared full-screen fixed overlay pattern */
-#flash-container,
-#flash-loader,
-#flash-intro,
-#flash-site,
-#matrix-bg,
-#tv-snow,
-.flash-headshot-freakout,
-.crt-overlay,
-.crt-curvature,
-.glitch-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
 .flash-mode { overflow: hidden; }
 
 #flash-container {
@@ -784,12 +804,6 @@ h1.wordart {
 
 /* Scanlines overlay for CRT feel */
 #flash-container::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px);
   pointer-events: none;
   z-index: 100000;
@@ -1180,22 +1194,27 @@ h1.wordart {
   100% { background-position: 200% 0; }
 }
 
+/* Flash button base styles (shared) */
+.flash-enter-btn,
+.flash-nav-btn {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
 .flash-enter-btn {
   background: var(--gradient-gold-bg);
   border: 4px solid;
-  border-color: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
+  border-color: var(--btn-border-gold);
   color: var(--gold);
   font-size: 24px;
-  font-family: 'Trebuchet MS', Arial, sans-serif;
   padding: 20px 50px;
-  cursor: pointer;
-  text-transform: uppercase;
   letter-spacing: 6px;
   box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  transition: all var(--transition-fast);
   animation: flash-btn-mega 1.5s ease-in-out infinite;
-  position: relative;
-  overflow: hidden;
 }
 
 /* Shine sweep on button */
@@ -1377,14 +1396,8 @@ h1.wordart {
   border-color: #555 #222 #111 #444;
   color: #aaa;
   font-size: 13px;
-  font-family: 'Trebuchet MS', Arial, sans-serif;
   padding: 10px 20px;
-  cursor: pointer;
-  text-transform: uppercase;
   letter-spacing: 2px;
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
@@ -1405,7 +1418,7 @@ h1.wordart {
 .flash-nav-btn:hover {
   background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, var(--dark-surface) 100%);
   color: var(--gold);
-  border-color: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
+  border-color: var(--btn-border-gold);
   box-shadow: 0 2px 15px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
@@ -1775,7 +1788,7 @@ h1.wordart {
 .flash-section canvas {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(230, 230, 255, 0.95) 100%);
   border: 3px solid;
-  border-color: var(--gold) var(--gold-dark) var(--gold-darker) var(--gold-light);
+  border-color: var(--btn-border-gold);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
@@ -2073,12 +2086,6 @@ h1.wordart {
 
 /* Chromatic aberration overlay */
 .flash-headshot-freakout::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 255, 0, 0.03) 2px, rgba(0, 255, 0, 0.03) 4px);
   pointer-events: none;
   z-index: 100;
@@ -2109,7 +2116,7 @@ body.retheme-matrix a { color: var(--matrix-green); }
 body.retheme-matrix a:hover { color: var(--matrix-green); text-shadow: var(--glow-matrix); }
 
 body.retheme-matrix,
-body.retheme-matrix h1,
+body.retheme-matrix h1:not(.wordart),
 body.retheme-matrix h2,
 body.retheme-matrix h3,
 body.retheme-matrix p,
@@ -2118,11 +2125,16 @@ body.retheme-matrix span {
   color: var(--matrix-green) !important;
 }
 
-body.retheme-matrix h1 {
+body.retheme-matrix h1:not(.wordart) {
   font-family: 'VT323', monospace;
   font-size: 2.5em;
   text-shadow: var(--glow-matrix);
   letter-spacing: 2px;
+}
+
+/* Prevent WordArt from rendering behind matrix background overlay */
+body.retheme-matrix .wordart-container {
+  z-index: 1;
 }
 
 /* ============================================
@@ -2148,22 +2160,10 @@ body.retheme-crt { animation: crt-flicker 0.1s infinite; }
 }
 
 .crt-overlay::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
 }
 
 .crt-overlay::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 0, 0.03) 50%, transparent 100%);
   animation: crt-scanline 8s linear infinite;
 }
