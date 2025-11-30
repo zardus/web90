@@ -31,6 +31,41 @@
   'use strict';
 
   // ============================================
+  // Inject Scoped 98.css Stylesheet
+  // ============================================
+
+  (function() {
+    var SCOPES = ['#control-panel', '#chat-window'];
+    fetch('https://unpkg.com/98.css@0.1.21/dist/98.css')
+      .then(function(r) { return r.text(); })
+      .then(function(css) {
+        // Prefix all selectors with our scope containers
+        var scoped = css.replace(/([^{}]+)(\{[^{}]*\})/g, function(match, selectorBlock, rules) {
+          // Skip @-rules and font-face
+          var trimmed = selectorBlock.trim();
+          if (trimmed.charAt(0) === '@' || trimmed.indexOf('@font-face') !== -1) {
+            return match;
+          }
+          // Handle each selector
+          var selectors = selectorBlock.split(',');
+          var prefixed = selectors.map(function(sel) {
+            sel = sel.trim();
+            if (!sel || sel.charAt(0) === '@') return sel;
+            // Prefix with each scope
+            return SCOPES.map(function(scope) {
+              return scope + ' ' + sel;
+            }).join(', ');
+          }).join(', ');
+          return prefixed + rules;
+        });
+        var style = document.createElement('style');
+        style.id = 'scoped-98css';
+        style.textContent = scoped;
+        document.head.appendChild(style);
+      });
+  })();
+
+  // ============================================
   // Utility Functions
   // ============================================
 
@@ -1667,6 +1702,7 @@
     initRetroCheckboxes(retroList);
     initControlDropdowns(retroList);
     initDividerDropdown();
+    initCustomSelects();
     initControlButtons(panel, retroList);
 
     if (retroList.indexOf('control-panel') !== -1) {
@@ -1682,7 +1718,7 @@
       if (THEME_CONTROLLED_RETROS.indexOf(retro.name) !== -1) return;
 
       var row = createElement('div');
-      row.className = 'win95-checkbox-row';
+      row.className = 'field-row checkbox-row';
 
       var checkbox = createElement('input');
       checkbox.type = 'checkbox';
@@ -1742,79 +1778,113 @@
     initDropdownValue(ctrlTheme, 'theme', retroList, 'retheme', '');
   }
 
-  function initDividerDropdown() {
-    var ctrlDivider = document.getElementById('ctrl-divider');
-    var ctrlDividerDropdown = document.getElementById('ctrl-divider-dropdown');
-    if (!ctrlDividerDropdown) return;
+  function initCustomSelects() {
+    var panel = document.getElementById('control-panel');
+    if (!panel) return;
 
-    var ctrlDividerOptions = ctrlDividerDropdown.querySelector('.win95-custom-dropdown-options');
-    var ctrlDividerSelected = ctrlDividerDropdown.querySelector('.win95-custom-dropdown-selected');
+    var selects = panel.querySelectorAll('select');
+    selects.forEach(function(select) {
+      var isDivider = select.id === 'ctrl-divider';
 
-    if (ctrlDividerOptions && config.dividers.length > 0) {
-      config.dividers.forEach(function(dividerSrc, index) {
-        var option = createElement('div');
-        option.className = 'win95-custom-dropdown-option';
-        option.dataset.value = (index + 1).toString();
+      // Create wrapper for positioning
+      var wrapper = createElement('div');
+      wrapper.className = 'custom-select-wrapper';
+      if (isDivider) wrapper.classList.add('custom-select-divider');
+      select.parentNode.insertBefore(wrapper, select);
+      wrapper.appendChild(select);
 
-        var preview = createElement('div');
-        preview.className = 'divider-preview';
-        preview.style.backgroundImage = 'url(' + dividerSrc + ')';
-        option.appendChild(preview);
+      // Create custom dropdown list
+      var dropdown = createElement('div');
+      dropdown.className = 'custom-select-dropdown';
 
-        ctrlDividerOptions.appendChild(option);
+      function rebuildOptions() {
+        dropdown.innerHTML = '';
+        Array.prototype.forEach.call(select.options, function(opt) {
+          var item = createElement('div');
+          item.className = 'custom-select-option';
+          item.dataset.value = opt.value;
+
+          // Special rendering for divider options
+          if (isDivider && opt.dataset.dividerSrc) {
+            var preview = createElement('div');
+            preview.className = 'divider-preview';
+            preview.style.backgroundImage = 'url(' + opt.dataset.dividerSrc + ')';
+            item.appendChild(preview);
+          } else {
+            item.textContent = opt.textContent;
+          }
+
+          dropdown.appendChild(item);
+        });
+      }
+      rebuildOptions();
+      wrapper.appendChild(dropdown);
+
+      // Observe changes to select options (for dynamically populated selects)
+      var observer = new MutationObserver(rebuildOptions);
+      observer.observe(select, { childList: true });
+
+      // Prevent native dropdown
+      select.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        select.focus();
+        wrapper.classList.toggle('open');
       });
-    }
 
-    if (ctrlDividerSelected) {
-      ctrlDividerSelected.addEventListener('click', function(e) {
-        e.stopPropagation();
-        ctrlDividerDropdown.classList.toggle('open');
-      });
-    }
-
-    if (ctrlDividerOptions) {
-      ctrlDividerOptions.addEventListener('click', function(e) {
-        var option = e.target.closest('.win95-custom-dropdown-option');
-        if (option) {
-          var value = option.dataset.value;
-          ctrlDivider.value = value;
-          updateDividerDisplay(ctrlDividerSelected, value);
-          ctrlDividerDropdown.classList.remove('open');
+      // Handle keyboard
+      select.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          wrapper.classList.toggle('open');
+        } else if (e.key === 'Escape') {
+          wrapper.classList.remove('open');
         }
       });
-    }
 
-    document.addEventListener('click', function() {
-      if (ctrlDividerDropdown) ctrlDividerDropdown.classList.remove('open');
+      // Option click
+      dropdown.addEventListener('click', function(e) {
+        var item = e.target.closest('.custom-select-option');
+        if (item) {
+          select.value = item.dataset.value;
+          select.dispatchEvent(new Event('change'));
+          rebuildOptions();
+          wrapper.classList.remove('open');
+        }
+      });
+    });
+
+    // Close all dropdowns on outside click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.custom-select-wrapper')) {
+        panel.querySelectorAll('.custom-select-wrapper.open').forEach(function(w) {
+          w.classList.remove('open');
+        });
+      }
     });
   }
 
-  function updateDividerDisplay(selectedEl, value) {
-    if (!selectedEl) return;
-    if (value === 'none') {
-      selectedEl.innerHTML = '<span>Default</span>';
-    } else if (value === '') {
-      selectedEl.innerHTML = '<span>Random</span>';
-    } else {
-      var idx = parseInt(value) - 1;
-      if (config.dividers[idx]) {
-        selectedEl.innerHTML = '<div class="divider-preview" style="background-image: url(' + config.dividers[idx] + ')"></div>';
-      }
-    }
-    selectedEl.dataset.value = value;
+  function initDividerDropdown() {
+    var ctrlDivider = document.getElementById('ctrl-divider');
+    if (!ctrlDivider) return;
+
+    // Populate divider options
+    config.dividers.forEach(function(dividerSrc, index) {
+      var option = createElement('option');
+      option.value = (index + 1).toString();
+      option.textContent = 'Divider ' + (index + 1);
+      option.dataset.dividerSrc = dividerSrc;
+      ctrlDivider.appendChild(option);
+    });
   }
 
   function initControlButtons(panel, retroList) {
     var ctrlDivider = document.getElementById('ctrl-divider');
-    var ctrlDividerDropdown = document.getElementById('ctrl-divider-dropdown');
-    var ctrlDividerSelected = ctrlDividerDropdown ? ctrlDividerDropdown.querySelector('.win95-custom-dropdown-selected') : null;
 
-    // Initialize divider display
+    // Initialize divider value
     var dividerParam = params.get('divider-style');
     var hasDividers = retroList.indexOf('dividers') !== -1;
     var initialValue = dividerParam !== null ? dividerParam : (hasDividers ? '' : 'none');
     if (ctrlDivider) ctrlDivider.value = initialValue;
-    updateDividerDisplay(ctrlDividerSelected, initialValue);
 
     // Close button
     document.getElementById('ctrl-close').addEventListener('click', function() {
@@ -1860,7 +1930,6 @@
       // Apply divider
       if (ctrlDivider) {
         ctrlDivider.value = selections.styles.divider;
-        updateDividerDisplay(ctrlDividerSelected, selections.styles.divider);
       }
     });
 

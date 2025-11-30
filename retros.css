@@ -15,14 +15,6 @@
   --matrix-green: #0f0;
   --neon-pink: #ff0080;
 
-  /* Win95 Colors */
-  --win95-bg: #c0c0c0;
-  --win95-dark: #808080;
-  --win95-light: #fff;
-  --win95-shadow: #000;
-  --win95-titlebar: #000080;
-  --win95-titlebar-end: #1084d0;
-
   /* Dark Theme Colors */
   --dark-bg: #0a0a0a;
   --dark-surface: #1a1a1a;
@@ -38,10 +30,6 @@
   --glow-gold-strong: 0 0 20px rgba(255, 215, 0, 0.7), 0 0 40px rgba(255, 140, 0, 0.4);
   --glow-cyan: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
   --glow-matrix: 0 0 10px var(--matrix-green), 0 0 20px var(--matrix-green);
-
-  /* Win95 Border Patterns */
-  --win95-raised: #fff #808080 #808080 #fff;
-  --win95-sunken: #808080 #fff #fff #808080;
 
   /* Common Transitions */
   --transition-fast: 0.2s ease;
@@ -68,11 +56,11 @@
 .badges { height: 31px; margin: 2px; }
 
 /* ============================================
-   Media Player
+   Media Player - Standalone styling
    ============================================ */
 .media-player {
-  background: var(--win95-bg);
-  border: 2px solid var(--win95-dark);
+  background: #c0c0c0;
+  border: 2px solid #808080;
   padding: 2px;
   display: inline-flex;
   gap: 2px;
@@ -134,6 +122,9 @@
 }
 
 .media-controls button {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
   padding: 0 10px;
   font-size: 22px;
   cursor: pointer;
@@ -143,8 +134,7 @@
 }
 
 .media-controls button:active {
-  border: 3px solid;
-  border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
+  border-color: #808080 #fff #fff #808080;
 }
 
 /* ============================================
@@ -586,255 +576,97 @@ h1.wordart {
 }
 
 /* ============================================
-   Windows 95 Control Panel - Common Patterns
+   Control Panel - 98.css Overrides
    ============================================ */
-
-/* Win95 raised border (buttons, windows) */
-.media-controls button,
-.win95-window,
-.win95-btn-close,
-.win95-btn {
-  background: var(--win95-bg);
-  border: 2px solid;
-  border-color: var(--win95-raised);
-}
-
-/* Win95 sunken border (inputs, fieldsets) */
-.win95-fieldset,
-.win95-select,
-.win95-custom-dropdown,
-.win95-custom-dropdown-options {
-  border: 2px solid;
-  border-color: var(--win95-sunken);
-}
-
-/* Win95 sunken inputs with white background */
-.win95-select,
-.win95-custom-dropdown,
-.win95-custom-dropdown-options {
-  background: #fff;
-}
 
 #control-panel {
   position: fixed;
   top: 10px;
   right: 10px;
   z-index: 100001;
-  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
-  font-size: 12px;
-  min-width: 280px;
+  min-width: 300px;
 }
 
-.win95-window { box-shadow: 1px 1px 0 #000; }
-
-.win95-titlebar {
-  background: linear-gradient(90deg, var(--win95-titlebar), var(--win95-titlebar-end));
-  color: #fff;
-  font-weight: bold;
-  padding: 2px 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  user-select: none;
-}
-
-.win95-titlebar-buttons {
-  display: flex;
-  gap: 2px;
-}
-
-.win95-btn-close {
-  width: 16px;
-  height: 14px;
-  font-size: 10px;
-  font-weight: bold;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.win95-btn-close:active,
-.win95-btn:active {
-  border-color: var(--win95-sunken);
-}
-
-.win95-content { padding: 8px; }
-
-.win95-fieldset {
-  padding: 8px;
+#control-panel fieldset {
   margin-bottom: 8px;
+  border: 2px groove #c0c0c0;
+  padding: 10px;
+  padding-block-start: 8px;
 }
 
-.win95-fieldset legend {
+#control-panel legend {
+  background: #c0c0c0;
   padding: 0 4px;
-  font-weight: normal;
+}
+#control-panel .field-row { margin-bottom: 6px; }
+#control-panel .field-row:last-child { margin-bottom: 0; }
+#control-panel .field-row:not(.checkbox-row) > label { width: 55px; flex-shrink: 0; }
+#control-panel .field-row > select { flex: 1; }
+#control-panel.minimized .window-body { display: none; }
+
+/* Checkbox grid */
+#control-panel .checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 8px;
 }
 
-.win95-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-}
+#control-panel .checkbox-row label { cursor: pointer; }
 
-.win95-row:last-child { margin-bottom: 0; }
+/* Button row */
+#control-panel .button-row { justify-content: center; margin-top: 12px; }
+#control-panel .button-row button { min-width: 70px; }
 
-.win95-label {
-  width: 80px;
-  flex-shrink: 0;
-}
-
-.win95-select {
-  flex: 1;
-  padding: 2px;
-  font-family: inherit;
-  font-size: 12px;
-}
-
-.win95-custom-dropdown {
-  flex: 1;
+/* Custom select dropdowns (override native dark mode) */
+.custom-select-wrapper {
   position: relative;
-  font-family: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.win95-custom-dropdown-selected {
-  padding: 2px 20px 2px 4px;
-  min-height: 18px;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.win95-custom-dropdown-selected::after {
-  content: '▼';
-  position: absolute;
-  right: 4px;
-  font-size: 8px;
-  color: #000;
-}
-
-.win95-custom-dropdown-selected .divider-preview {
   flex: 1;
-  height: 16px;
-  background-repeat: repeat-x;
-  background-position: left center;
-  background-size: auto 100%;
-  overflow: hidden;
-  margin-right: 12px;
 }
 
-.win95-custom-dropdown-options {
+.custom-select-wrapper select {
+  width: 100%;
+}
+
+.custom-select-dropdown {
   display: none;
   position: absolute;
   top: 100%;
-  left: -2px;
-  right: -2px;
+  left: 0;
+  right: 0;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 1001;
+  background: #fff;
+  border: 1px solid #000;
 }
 
-.win95-custom-dropdown.open .win95-custom-dropdown-options { display: block; }
-
-.win95-custom-dropdown-option {
-  padding: 2px 4px;
-  min-height: 20px;
-  display: flex;
-  align-items: center;
+.custom-select-wrapper.open .custom-select-dropdown {
+  display: block;
 }
 
-.win95-custom-dropdown-option:hover {
-  background: var(--win95-titlebar);
+.custom-select-option {
+  padding: 2px 6px;
+  color: #000;
+  cursor: pointer;
+}
+
+.custom-select-option:hover {
+  background: #000080;
   color: #fff;
 }
 
-.win95-custom-dropdown-option .divider-preview {
+/* Divider preview in custom select */
+.custom-select-option .divider-preview {
   width: 100%;
   height: 16px;
   background-repeat: repeat-x;
   background-position: left center;
   background-size: auto 100%;
-  overflow: hidden;
 }
 
-.win95-custom-dropdown-option:hover .divider-preview { filter: invert(1); }
-
-.win95-range {
-  flex: 1;
-  margin-right: 8px;
+.custom-select-option:hover .divider-preview {
+  filter: invert(1);
 }
-
-.win95-range-value {
-  width: 50px;
-  text-align: right;
-  font-family: 'Courier New', monospace;
-}
-
-.win95-checkbox-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px 12px;
-}
-
-.win95-checkbox-row {
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.win95-checkbox-row label { cursor: pointer; }
-
-#control-panel input[type="checkbox"] {
-  all: unset !important;
-  display: inline-block !important;
-  width: 13px !important;
-  height: 13px !important;
-  min-width: 13px !important;
-  min-height: 13px !important;
-  background: #fff !important;
-  border: 2px solid !important;
-  border-color: var(--win95-sunken) !important;
-  cursor: pointer !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  transform: none !important;
-  vertical-align: middle !important;
-}
-
-#control-panel input[type="checkbox"]:checked {
-  background: #fff url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M1 5l3 3 5-6" stroke="%23000" stroke-width="2" fill="none"/></svg>') center/contain no-repeat !important;
-}
-
-.win95-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.win95-btn {
-  padding: 4px 16px;
-  font-family: inherit;
-  font-size: 12px;
-  cursor: pointer;
-  min-width: 70px;
-}
-
-.win95-btn:focus {
-  outline: 1px dotted #000;
-  outline-offset: -4px;
-}
-
-#control-panel.minimized .win95-content { display: none; }
 
 /* Table mode - 90s table cell look */
 .table-cell {
@@ -862,7 +694,7 @@ h1.wordart {
   z-index: 10001;
 }
 
-#chat-window .win95-window {
+#chat-window .window {
   width: 600px;
   max-width: 90vw;
   height: 500px;
@@ -871,13 +703,13 @@ h1.wordart {
   flex-direction: column;
 }
 
-#chat-window .chat-content {
+#chat-window .window-body {
   flex: 1;
   padding: 0;
   display: flex;
 }
 
-#chat-window .chat-content iframe {
+#chat-window .window-body iframe {
   border: none;
   flex: 1;
 }
@@ -895,7 +727,7 @@ h1.wordart {
 #chat-confirm p { margin: 0 0 12px 0; }
 
 #chat-confirm a {
-  color: var(--win95-titlebar);
+  color: #000080;
   font-weight: bold;
 }
 

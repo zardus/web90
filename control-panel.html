@@ -1,29 +1,29 @@
 <div id="control-panel" style="display: none;">
-  <div class="win95-window">
-    <div class="win95-titlebar">
-      <span>⚙ Control Panel</span>
-      <div class="win95-titlebar-buttons">
-        <button class="win95-btn-close" id="ctrl-close">×</button>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">⚙ Control Panel</div>
+      <div class="title-bar-controls">
+        <button id="ctrl-close" aria-label="Close"></button>
       </div>
     </div>
-    <div class="win95-content">
+    <div class="window-body">
 
-      <fieldset class="win95-fieldset">
+      <fieldset>
         <legend>Retros</legend>
-        <div id="retro-checkboxes" class="win95-checkbox-grid"></div>
+        <div id="retro-checkboxes" class="checkbox-grid"></div>
       </fieldset>
 
-      <fieldset class="win95-fieldset">
+      <fieldset>
         <legend>Media Player</legend>
-        <div class="win95-row">
-          <span class="win95-label">Song:</span>
-          <select id="ctrl-song" class="win95-select">
+        <div class="field-row">
+          <label for="ctrl-song">Song:</label>
+          <select id="ctrl-song">
             <option value="">Random</option>
           </select>
         </div>
-        <div class="win95-row">
-          <span class="win95-label">Viz:</span>
-          <select id="ctrl-viz" class="win95-select">
+        <div class="field-row">
+          <label for="ctrl-viz">Viz:</label>
+          <select id="ctrl-viz">
             <option value="">Random</option>
             <option value="waveform">Waveform</option>
             <option value="spectrogram">Spectrogram</option>
@@ -34,11 +34,11 @@
         </div>
       </fieldset>
 
-      <fieldset class="win95-fieldset">
+      <fieldset>
         <legend>Themes</legend>
-        <div class="win95-row">
-          <span class="win95-label">WordArt:</span>
-          <select id="ctrl-wordart" class="win95-select">
+        <div class="field-row">
+          <label for="ctrl-wordart">WordArt:</label>
+          <select id="ctrl-wordart">
             <option value="none">None</option>
             <option value="">Random</option>
             <option value="one">Style 1 - Outlined</option>
@@ -65,17 +65,17 @@
             <option value="twentytwo">Style 22 - Ice & Fire</option>
           </select>
         </div>
-        <div class="win95-row">
-          <span class="win95-label">Cursor:</span>
-          <select id="ctrl-cursor" class="win95-select">
+        <div class="field-row">
+          <label for="ctrl-cursor">Cursor:</label>
+          <select id="ctrl-cursor">
             <option value="none">Default</option>
             <option value="custom">Custom</option>
             <option value="hourglass">⏳ Hourglass</option>
           </select>
         </div>
-        <div class="win95-row">
-          <span class="win95-label">Trail:</span>
-          <select id="ctrl-trail" class="win95-select">
+        <div class="field-row">
+          <label for="ctrl-trail">Trail:</label>
+          <select id="ctrl-trail">
             <option value="none">None</option>
             <option value="">Random</option>
             <option value="binary">🔟 Binary</option>
@@ -92,9 +92,9 @@
             <option value="elastic">🪀 Elastic Pointer</option>
           </select>
         </div>
-        <div class="win95-row">
-          <span class="win95-label">Page:</span>
-          <select id="ctrl-theme" class="win95-select">
+        <div class="field-row">
+          <label for="ctrl-theme">Page:</label>
+          <select id="ctrl-theme">
             <option value="none">Default</option>
             <option value="">Random</option>
             <option value="matrix">🟢 Matrix</option>
@@ -107,25 +107,19 @@
             <option value="snow">📡 TV Snow</option>
           </select>
         </div>
-        <div class="win95-row">
-          <span class="win95-label">Divider:</span>
-          <div id="ctrl-divider-dropdown" class="win95-custom-dropdown">
-            <div class="win95-custom-dropdown-selected" data-value="none">
-              <span>Default</span>
-            </div>
-            <div class="win95-custom-dropdown-options">
-              <div class="win95-custom-dropdown-option" data-value="none">Default</div>
-              <div class="win95-custom-dropdown-option" data-value="">Random</div>
-            </div>
-          </div>
-          <input type="hidden" id="ctrl-divider" value="none">
+        <div class="field-row">
+          <label for="ctrl-divider">Divider:</label>
+          <select id="ctrl-divider">
+            <option value="none">Default</option>
+            <option value="">Random</option>
+          </select>
         </div>
       </fieldset>
 
-      <div class="win95-buttons">
-        <button id="ctrl-random" class="win95-btn">Random</button>
-        <button id="ctrl-apply" class="win95-btn">Apply</button>
-        <button id="ctrl-reset" class="win95-btn">Reset</button>
+      <div class="field-row button-row">
+        <button id="ctrl-random">Random</button>
+        <button id="ctrl-apply">Apply</button>
+        <button id="ctrl-reset">Reset</button>
       </div>
 
     </div>
