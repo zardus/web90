@@ -1,0 +1,275 @@
+/* Clippy Retro Styles */
+
+#clippy-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100001;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+}
+
+#clippy-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Speech Bubble */
+#clippy-bubble {
+  position: relative;
+  background: linear-gradient(180deg, #ffffcc 0%, #ffffaa 100%);
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 12px 16px;
+  max-width: 280px;
+  margin-bottom: 8px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+  animation: clippy-bounce-in 0.4s ease-out;
+}
+
+@keyframes clippy-bounce-in {
+  0% {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+#clippy-bubble-pointer {
+  position: absolute;
+  bottom: -12px;
+  right: 30px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #000;
+}
+
+#clippy-bubble-pointer::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ffffaa;
+}
+
+/* Messages */
+#clippy-message {
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+#clippy-submessage {
+  font-size: 12px;
+  color: #555;
+  margin: 0 0 12px 0;
+}
+
+/* Buttons */
+#clippy-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#clippy-buttons button,
+#clippy-send-btn {
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
+  padding: 4px 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #d4d0c8 100%);
+  border: 2px outset #d4d0c8;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #808080;
+}
+
+#clippy-buttons button:hover,
+#clippy-send-btn:hover {
+  background: linear-gradient(180deg, #e8e8e8 0%, #c0c0c0 100%);
+}
+
+#clippy-buttons button:active,
+#clippy-send-btn:active {
+  border-style: inset;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+#clippy-chat-btn {
+  background: linear-gradient(180deg, #90ee90 0%, #32cd32 100%) !important;
+  border-color: #228b22 !important;
+  font-weight: bold;
+}
+
+#clippy-chat-btn:hover {
+  background: linear-gradient(180deg, #98fb98 0%, #3cb371 100%) !important;
+}
+
+/* Loading State */
+#clippy-loading {
+  text-align: center;
+}
+
+#clippy-loading p {
+  font-size: 12px;
+  color: #333;
+  margin: 4px 0;
+}
+
+#clippy-progress-container {
+  width: 100%;
+  height: 16px;
+  background: #c0c0c0;
+  border: 2px inset #808080;
+  margin: 8px 0;
+  overflow: hidden;
+}
+
+#clippy-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,
+    #000080 0%,
+    #0000cd 25%,
+    #0000ff 50%,
+    #0000cd 75%,
+    #000080 100%
+  );
+  background-size: 20px 100%;
+  animation: progress-shine 1s linear infinite;
+  transition: width 0.3s ease;
+}
+
+@keyframes progress-shine {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 0; }
+}
+
+#clippy-progress-text {
+  font-weight: bold;
+  color: #000080;
+}
+
+/* Chat Interface */
+#clippy-chat {
+  width: 100%;
+}
+
+#clippy-chat-messages {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #fff;
+  border: 2px inset #808080;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.clippy-msg {
+  margin: 6px 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.clippy-msg-user {
+  background: #cce5ff;
+  text-align: right;
+}
+
+.clippy-msg-clippy {
+  background: #e8e8e8;
+}
+
+.clippy-msg-typing {
+  color: #888;
+  font-style: italic;
+}
+
+#clippy-chat-input-row {
+  display: flex;
+  gap: 4px;
+}
+
+#clippy-chat-input {
+  flex: 1;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 2px inset #808080;
+  background: #fff;
+}
+
+#clippy-chat-input:focus {
+  outline: none;
+  border-color: #000080;
+}
+
+/* Clippy Character */
+#clippy-character {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  animation: clippy-idle 3s ease-in-out infinite;
+}
+
+#clippy-character:hover {
+  transform: scale(1.1);
+}
+
+@keyframes clippy-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+#clippy-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* Minimized state */
+#clippy-container.minimized #clippy-bubble {
+  display: none;
+}
+
+#clippy-container.minimized #clippy-character {
+  animation: clippy-peek 0.5s ease-out forwards;
+}
+
+@keyframes clippy-peek {
+  0% { transform: translateX(50px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Thinking animation */
+.clippy-thinking {
+  display: inline-block;
+}
+
+.clippy-thinking::after {
+  content: '';
+  animation: clippy-dots 1.5s infinite;
+}
+
+@keyframes clippy-dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
