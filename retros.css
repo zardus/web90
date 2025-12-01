@@ -158,38 +158,6 @@
 .glitch-active { animation: glitch 0.1s linear infinite; }
 
 /* ============================================
-   Mouse Trail Styles
-   ============================================ */
-.mouse-trail,
-.binary-trail {
-  position: fixed;
-  pointer-events: none;
-  font-family: 'Courier New', monospace;
-  font-size: 14px;
-  font-weight: bold;
-  z-index: 100002;
-  animation: trail-fade 1s ease-out forwards;
-  user-select: none;
-}
-
-.trail-binary,
-.binary-trail { color: #000; }
-.trail-sparkles { font-size: 18px; }
-.trail-fire { font-size: 20px; }
-.trail-rainbow { font-size: 16px; }
-.trail-stars { font-size: 18px; }
-.trail-hearts { font-size: 16px; }
-.trail-neon { font-size: 16px; }
-.trail-bubbles { font-size: 20px; }
-.trail-snow { font-size: 18px; }
-.trail-matrix { font-family: 'MS Gothic', monospace; font-size: 18px; }
-
-@keyframes trail-fade {
-  0% { opacity: 1; transform: translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(var(--drift-x, 0), var(--drift-y, 20px)) scale(0.5); }
-}
-
-/* ============================================
    Blink & Marquee Tags (90s revival)
    ============================================ */
 blink { animation: blink-animation 1s steps(2, start) infinite; }

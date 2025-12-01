@@ -14,7 +14,6 @@
   var createElement = web90.createElement;
   var RETROS = web90.RETROS;
   var THEMES = web90.THEMES;
-  var TRAIL_STYLES = web90.TRAIL_STYLES;
   var CURSOR_STYLES = web90.CURSOR_STYLES;
   var VIZ_MODE_NAMES = web90.VIZ_MODE_NAMES;
   var params = web90.params;
@@ -151,9 +150,16 @@
     populateDropdown(ctrlCursor, CURSOR_STYLES);
     initDropdownValue(ctrlCursor, 'cursor-style', retroList, 'custom-cursor', 'custom');
 
-    // Populate trail options
-    populateDropdown(ctrlTrail, TRAIL_STYLES);
-    initDropdownValue(ctrlTrail, 'trail-style', retroList, 'mouse-trail', '');
+    // Populate trail options (lazy-load resources first)
+    if (ctrlTrail) {
+      var trailRetro = RETROS.find(function(r) { return r.name === 'mouse-trail'; });
+      if (trailRetro && trailRetro.resources) {
+        loadRetroResources(trailRetro).then(function() {
+          populateDropdown(ctrlTrail, window.web90.TRAIL_STYLES);
+          initDropdownValue(ctrlTrail, 'trail-style', retroList, 'mouse-trail', '');
+        });
+      }
+    }
 
     // Populate theme options
     populateDropdown(ctrlTheme, THEMES);
