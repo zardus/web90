@@ -16,7 +16,7 @@
   var THEMES = web90.THEMES;
   var TRAIL_STYLES = web90.TRAIL_STYLES;
   var CURSOR_STYLES = web90.CURSOR_STYLES;
-  var VIZ_MODES = web90.VIZ_MODES;
+  var VIZ_MODE_NAMES = web90.VIZ_MODE_NAMES;
   var params = web90.params;
   var loadRetroResources = web90.loadRetroResources;
   var generateRandomSelections = web90.generateRandomSelections;
@@ -125,9 +125,16 @@
       ctrlSong.value = params.get('song') || '';
     }
 
-    // Populate visualization options
-    populateDropdown(ctrlViz, VIZ_MODES);
-    if (ctrlViz) ctrlViz.value = params.get('viz') || '';
+    // Populate visualization options (lazy-load media-player resources first)
+    if (ctrlViz) {
+      var mediaPlayerRetro = RETROS.find(function(r) { return r.name === 'media-player'; });
+      if (mediaPlayerRetro && mediaPlayerRetro.resources) {
+        loadRetroResources(mediaPlayerRetro).then(function() {
+          populateDropdown(ctrlViz, window.web90.VIZ_MODES);
+          ctrlViz.value = params.get('viz') || '';
+        });
+      }
+    }
 
     // Populate wordart options (lazy-load resources first)
     if (ctrlWordart) {
