@@ -322,37 +322,6 @@
   var VIZ_MODE_NAMES = Object.keys(VIZ_MODES);
 
   // ============================================
-  // WordArt Style Definitions
-  // ============================================
-
-  var WORDART_STYLES = {
-    one: { label: 'Style 1 - Outlined' },
-    two: { label: 'Style 2 - Slanted' },
-    three: { label: 'Style 3 - Italic Shadow' },
-    four: { label: 'Style 4 - Blue Serif' },
-    five: { label: 'Style 5 - 3D Purple' },
-    six: { label: 'Style 6 - Silver' },
-    seven: { label: 'Style 7 - Impact Blue' },
-    eight: { label: 'Style 8 - Sunset' },
-    nine: { label: 'Style 9 - Purple Skew' },
-    ten: { label: 'Style 10 - Green Echo' },
-    eleven: { label: 'Style 11 - Blue 3D' },
-    twelve: { label: 'Style 12 - Teal Serif' },
-    thirteen: { label: 'Style 13 - Western' },
-    fourteen: { label: 'Style 14 - Pink Depth' },
-    fifteen: { label: 'Style 15 - Gold' },
-    sixteen: { label: 'Style 16 - Cyan Navy' },
-    seventeen: { label: 'Style 17 - Striped' },
-    eighteen: { label: 'Style 18 - Chrome' },
-    nineteen: { label: 'Style 19 - Green 3D' },
-    twenty: { label: 'Style 20 - Silver 3D' },
-    twentyone: { label: 'Style 21 - Fire' },
-    twentytwo: { label: 'Style 22 - Ice & Fire' }
-  };
-
-  var WORDART_STYLE_NAMES = Object.keys(WORDART_STYLES);
-
-  // ============================================
   // Retro Definitions - Single Source of Truth
   // ============================================
 
@@ -367,7 +336,7 @@
     { name: 'mouse-trail', type: 'js', emoji: '✨', label: 'Mouse Trail', init: initMouseTrail },
     { name: 'blink', type: 'js', emoji: '💡', label: 'Blink', init: initBlink },
     { name: 'marquee', type: 'js', emoji: '📜', label: 'Marquee', init: initMarquee },
-    { name: 'wordart', type: 'js', emoji: '🔤', label: 'WordArt', init: initWordArt },
+    { name: 'wordart', type: 'js', emoji: '🔤', label: 'WordArt', resources: { js: 'wordart.js', css: 'wordart.css' } },
     { name: 'custom-cursor', type: 'js', emoji: '🖱️', label: 'Custom Cursor', init: initCustomCursor },
     { name: 'dividers', type: 'js', emoji: '〰️', label: 'Dividers', init: initDividers },
     { name: 'image-rotate', type: 'js', emoji: '🔄', label: 'Image Rotate', init: initImageRotate },
@@ -452,7 +421,7 @@
       return t.src.split('/').pop().replace(/\.[^.]+$/, '');
     })));
     selections.styles.viz = randomOption([''].concat(VIZ_MODE_NAMES));
-    selections.styles.wordart = randomOption(['none', ''].concat(WORDART_STYLE_NAMES));
+    // wordart style is handled by wordart.js when loaded
     selections.styles.cursor = randomOption(['none'].concat(CURSOR_STYLE_NAMES));
     selections.styles.trail = randomOption(['none', ''].concat(TRAIL_STYLE_NAMES));
     selections.styles.theme = randomOption(['none', ''].concat(THEME_NAMES));
@@ -479,7 +448,7 @@
 
     // Apply style selections as params
     var styleMap = {
-      wordart: { retro: 'wordart', param: 'wordart-style' },
+      // wordart style is handled by wordart.js when loaded
       cursor: { retro: 'custom-cursor', param: 'cursor-style' },
       trail: { retro: 'mouse-trail', param: 'trail-style' },
       theme: { retro: 'retheme', param: 'theme' },
@@ -1174,24 +1143,10 @@
   }
 
   // ============================================
-  // WordArt
+  // WordArt (lazy-loaded from retros/wordart.js)
   // ============================================
 
-  function initWordArt() {
-    var h1 = document.querySelector('h1');
-    if (!h1) return;
-
-    var styleParam = params.get('wordart-style');
-    var selectedStyle = WORDART_STYLE_NAMES.includes(styleParam) ? styleParam : randomFrom(WORDART_STYLE_NAMES);
-
-    var container = createElement('div');
-    container.className = 'wordart-container';
-    h1.classList.add('wordart');
-    h1.setAttribute('data-content', h1.textContent);
-    h1.parentNode.insertBefore(container, h1);
-    container.appendChild(h1);
-    document.body.classList.add('wordart-style-' + selectedStyle);
-  }
+  // See retros/wordart.js for the implementation.
 
   // ============================================
   // Enable JS Retros
@@ -1199,8 +1154,15 @@
 
   function enableJsRetros(selectedRetros) {
     RETROS.forEach(function(retro) {
-      if (retro.type === 'js' && retro.init && selectedRetros.indexOf(retro.name) !== -1) {
-        retro.init();
+      if (retro.type === 'js' && selectedRetros.indexOf(retro.name) !== -1) {
+        if (retro.resources) {
+          // Lazy-load external resources then init
+          loadRetroResources(retro).then(function(initFn) {
+            if (initFn) initFn();
+          });
+        } else if (retro.init) {
+          retro.init();
+        }
       }
     });
   }
@@ -1551,9 +1513,16 @@
     populateDropdown(ctrlViz, VIZ_MODES);
     if (ctrlViz) ctrlViz.value = params.get('viz') || '';
 
-    // Populate wordart options
-    populateDropdown(ctrlWordart, WORDART_STYLES);
-    initDropdownValue(ctrlWordart, 'wordart-style', retroList, 'wordart', '');
+    // Populate wordart options (lazy-load resources first)
+    if (ctrlWordart) {
+      var wordartRetro = RETROS.find(function(r) { return r.name === 'wordart'; });
+      if (wordartRetro && wordartRetro.resources) {
+        loadRetroResources(wordartRetro).then(function() {
+          populateDropdown(ctrlWordart, window.web90.WORDART_STYLES);
+          initDropdownValue(ctrlWordart, 'wordart-style', retroList, 'wordart', '');
+        });
+      }
+    }
 
     // Populate cursor options
     populateDropdown(ctrlCursor, CURSOR_STYLES);
