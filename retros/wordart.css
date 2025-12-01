@@ -1,0 +1,333 @@
+/* ============================================
+   WordArt Retro - MS Word 97 vibes
+   CREDIT: https://codepen.io/kathykato/pen/omxPap
+   ============================================ */
+.wordart-container {
+  position: relative;
+  display: block;
+  margin-bottom: 1.5em;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Extra space for tall transforms/shadows */
+.wordart-style-three .wordart-container,
+.wordart-style-nine .wordart-container,
+.wordart-style-eleven .wordart-container,
+.wordart-style-thirteen .wordart-container,
+.wordart-style-fifteen .wordart-container,
+.wordart-style-eighteen .wordart-container,
+.wordart-style-twentytwo .wordart-container {
+  margin-bottom: 2.5em;
+}
+
+.wordart-style-two .wordart-container,
+.wordart-style-nineteen .wordart-container,
+.wordart-style-twentyone .wordart-container {
+  margin-bottom: 5.0em;
+}
+
+/* WordArt base h1 */
+h1.wordart {
+  font-family: Arial, sans-serif;
+  font-size: 2.5em;
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* WordArt ::before pseudo-element for shadow/echo effects */
+.wordart-style-five h1.wordart::before,
+.wordart-style-six h1.wordart::before,
+.wordart-style-seven h1.wordart::before,
+.wordart-style-eight h1.wordart::before,
+.wordart-style-nine h1.wordart::before,
+.wordart-style-ten h1.wordart::before,
+.wordart-style-eleven h1.wordart::before,
+.wordart-style-twelve h1.wordart::before,
+.wordart-style-thirteen h1.wordart::before,
+.wordart-style-fourteen h1.wordart::before,
+.wordart-style-fifteen h1.wordart::before,
+.wordart-style-seventeen h1.wordart::before,
+.wordart-style-eighteen h1.wordart::before,
+.wordart-style-nineteen h1.wordart::before,
+.wordart-style-twenty h1.wordart::before,
+.wordart-style-twentyone h1.wordart::before,
+.wordart-style-twentytwo h1.wordart::before {
+  position: absolute;
+  content: attr(data-content);
+  z-index: -1;
+}
+
+/* Reset text-stroke on ::before for stroked parents */
+.wordart-style-five h1.wordart::before,
+.wordart-style-nine h1.wordart::before,
+.wordart-style-ten h1.wordart::before,
+.wordart-style-eleven h1.wordart::before,
+.wordart-style-fifteen h1.wordart::before {
+  -webkit-text-stroke: transparent;
+}
+
+/* WordArt font-weight: 900 (bold styles) */
+.wordart-style-one h1.wordart,
+.wordart-style-two h1.wordart,
+.wordart-style-five h1.wordart,
+.wordart-style-six h1.wordart,
+.wordart-style-eleven h1.wordart,
+.wordart-style-thirteen h1.wordart,
+.wordart-style-fifteen h1.wordart,
+.wordart-style-sixteen h1.wordart,
+.wordart-style-seventeen h1.wordart,
+.wordart-style-nineteen h1.wordart,
+.wordart-style-twentytwo h1.wordart {
+  font-weight: 900;
+}
+
+/* WordArt Impact font styles */
+.wordart-style-seven h1.wordart,
+.wordart-style-eight h1.wordart,
+.wordart-style-nine h1.wordart,
+.wordart-style-sixteen h1.wordart,
+.wordart-style-twenty h1.wordart,
+.wordart-style-twentyone h1.wordart {
+  font-family: Impact, sans-serif;
+}
+
+/* WordArt Times New Roman styles */
+.wordart-style-four h1.wordart,
+.wordart-style-ten h1.wordart,
+.wordart-style-twelve h1.wordart,
+.wordart-style-fourteen h1.wordart,
+.wordart-style-eighteen h1.wordart {
+  font-family: Times New Roman, serif;
+}
+
+/* WordArt normal font-weight (400) */
+.wordart-style-four h1.wordart,
+.wordart-style-ten h1.wordart,
+.wordart-style-twelve h1.wordart,
+.wordart-style-fourteen h1.wordart,
+.wordart-style-eighteen h1.wordart {
+  font-weight: 400;
+}
+
+/* WordArt container scaleY(1.65) */
+.wordart-style-two .wordart-container,
+.wordart-style-three .wordart-container,
+.wordart-style-eleven .wordart-container {
+  transform: scaleY(1.65);
+}
+
+/* WordArt container scaleY(1.25) */
+.wordart-style-five .wordart-container,
+.wordart-style-seven .wordart-container,
+.wordart-style-eight .wordart-container {
+  transform: scaleY(1.25);
+}
+
+/* WordArt white outlined text */
+.wordart-style-one h1.wordart,
+.wordart-style-three h1.wordart {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  -webkit-text-stroke: 1px #000;
+}
+
+/* Style 1 - Outlined white */
+.wordart-style-one .wordart-container { transform: scale(1.05, 1.25); }
+
+/* Style 2 - Slanted black */
+.wordart-style-two h1.wordart {
+  color: #000;
+  transform: rotate(-3deg) skewY(-10deg);
+}
+
+/* Style 3 - Italic outline with shadow */
+.wordart-style-three h1.wordart {
+  font-style: italic;
+  text-shadow: 3px 2px 0 #999;
+}
+
+/* Style 4 - Classic blue serif */
+.wordart-style-four h1.wordart {
+  color: #336699;
+  text-shadow: 2px 1px 0 #c1c1c1;
+}
+
+/* Style 5 - 3D purple outline */
+.wordart-style-five h1.wordart {
+  color: #d8d8d8;
+  -webkit-text-fill-color: #d8d8d8;
+  -webkit-text-stroke: 1px #3333cc;
+}
+.wordart-style-five h1.wordart::before {
+  color: #9999ff;
+  -webkit-text-fill-color: #9999ff;
+  transform: translate(0.4vw, 0.25vw);
+  mix-blend-mode: darken;
+}
+
+/* Style 6 - Silver gradient with shadow */
+.wordart-style-six .wordart-container { transform: scaleX(0.85) translateZ(0); }
+.wordart-style-six h1.wordart {
+  background: linear-gradient(#adadad, #fff);
+  letter-spacing: 0.25rem;
+}
+.wordart-style-six h1.wordart::before { text-shadow: 0.125em 0.125em #717171; }
+
+/* Style 7 - Impact blue with red shadow */
+.wordart-style-seven h1.wordart {
+  color: #0066cc;
+  -webkit-text-fill-color: #0066cc;
+  -webkit-text-stroke: 0.016em #99ccff;
+}
+.wordart-style-seven h1.wordart::before { text-shadow: 0.094em 0.078em #990000; }
+
+/* Style 8 - Sunset gradient */
+.wordart-style-eight h1.wordart { background: radial-gradient(ellipse at center, #fff812, #ff9a32); }
+.wordart-style-eight h1.wordart::before { text-shadow: 0.094em 0.063em #cdcdcd; }
+
+/* Style 9 - Purple gradient skewed */
+.wordart-style-nine .wordart-container { transform: scale(0.9, 1.65) rotate(-3deg) skewY(-3deg) translateZ(0); }
+.wordart-style-nine h1.wordart {
+  font-weight: 700;
+  background: linear-gradient(#6900cc, #cb00cc);
+  -webkit-text-stroke: 0.016em #d2a2fe;
+}
+.wordart-style-nine h1.wordart::before { text-shadow: 0.094em 0.063em #adadff; }
+
+/* Style 10 - Green serif with echo */
+.wordart-style-ten .wordart-container { transform: scale(0.85, 1.25); }
+.wordart-style-ten h1.wordart {
+  color: #1a4b28;
+  -webkit-text-fill-color: #1a4b28;
+  -webkit-text-stroke: 1.5px #008000;
+}
+.wordart-style-ten h1.wordart::before {
+  font-size: 110%;
+  color: #d2e5dc;
+  -webkit-text-fill-color: #d2e5dc;
+  transform: translate(-0.15em, -0.2em);
+}
+
+/* Style 11 - Blue-purple gradient with 3D shadow */
+.wordart-style-eleven h1.wordart {
+  background: linear-gradient(to left, #00c6ff, #0072ff, #7c3aed, #c026d3, #7c3aed, #0072ff);
+  -webkit-text-stroke: 0.016em #eaeaea;
+  letter-spacing: 0.1rem;
+}
+.wordart-style-eleven h1.wordart::before {
+  color: #cdcdcd;
+  -webkit-text-fill-color: #cdcdcd;
+  transform: rotateX(63deg) skew(60deg) scaleY(0.65) translate3d(2em, -2.15em, -1em);
+}
+
+/* Style 12 - Teal gradient serif */
+.wordart-style-twelve h1.wordart { background: linear-gradient(#999cfc, #1b999c); }
+.wordart-style-twelve h1.wordart::before { text-shadow: 0.031em 0.031em #cdcdcd; }
+
+/* Style 13 - Brown western */
+.wordart-style-thirteen .wordart-container { transform: scale(0.65, 1.65); }
+.wordart-style-thirteen h1.wordart { color: #896640; }
+.wordart-style-thirteen h1.wordart::before {
+  text-shadow: 1px 0 #1b0d00, 2px 0 #1b0d00, 3px 0 #1b0d00, 4px 0 #1b0d00, 5px 0 #1b0d00, 6px 0 #1b0d00, 7px 0 #1b0d00;
+}
+
+/* Style 14 - Pink sunset with blue depth */
+.wordart-style-fourteen .wordart-container { transform: scale(0.85, 1.3) translateZ(0); }
+.wordart-style-fourteen h1.wordart {
+  background: linear-gradient(#fffecb, #ff9999);
+  letter-spacing: -0.1vw;
+}
+.wordart-style-fourteen h1.wordart::before {
+  text-shadow: -1px 0 0 #002245, 0 -1px 0 #0050a0, -2px -1px 0.25px #002245, -1px -2px 0.25px #0050a0, -3px -2px 0.25px #002245, -2px -3px 0.25px #0050a0, -4px -3px 0.25px #002245, -3px -4px 0.25px #0050a0, -5px -4px 0px #002245, -4px -5px 0px #0050a0;
+}
+
+/* Style 15 - Gold perspective */
+.wordart-style-fifteen .wordart-container { transform: perspective(200px) rotateX(30deg) scaleY(1.65); }
+.wordart-style-fifteen h1.wordart {
+  background: linear-gradient(#551700, #fecb00);
+  -webkit-text-stroke: 1px #b2b2b2;
+  letter-spacing: 0.1vw;
+}
+.wordart-style-fifteen h1.wordart::before {
+  color: #ab8d56;
+  -webkit-text-fill-color: #ab8d56;
+  transform: perspective(250px) translateY(-0.643em) rotateX(70deg) scale(1) translateZ(-1em);
+}
+
+/* Style 16 - Cyan with navy shadow */
+.wordart-style-sixteen .wordart-container { transform: scale(0.8, 1.2); }
+.wordart-style-sixteen h1.wordart {
+  color: #33ccff;
+  -webkit-text-stroke: 1.25px #000099;
+  text-shadow: 0.35rem -0.35rem 0 #000099;
+  letter-spacing: -0.15vw;
+}
+
+/* Style 17 - Yellow striped */
+.wordart-style-seventeen .wordart-container { transform: scale(1.05, 1.25); }
+.wordart-style-seventeen h1.wordart {
+  background: repeating-linear-gradient(180deg, transparent, transparent 1px, #ffff00 1px, #ffff00 4px), repeating-linear-gradient(-50deg, #808080, #808080 5px, #ffff00 5px, #ffff00 8px);
+  -webkit-text-stroke: 1px #000;
+}
+.wordart-style-seventeen h1.wordart::before { text-shadow: 3px 2px 0 #999; }
+
+/* Style 18 - Chrome metallic */
+.wordart-style-eighteen .wordart-container { transform: scaleY(1.5) translateZ(0); }
+.wordart-style-eighteen h1.wordart { background: var(--gradient-chrome); }
+.wordart-style-eighteen h1.wordart::before {
+  text-shadow: -1px 0 0 #4a4a4a, 0 -1px 0 #8b8b8b, -2px -1px 0.125px #4a4a4a, -1px -1px 0.125px #8b8b8b, -3px -2px 0.125px #4a4a4a, -2px -2px 0.125px #8b8b8b, -4px -3px 0.125px #4a4a4a, -3px -3px 0.125px #8b8b8b, -5px -4px 0.125px #4a4a4a, -4px -4px 0.125px #8b8b8b, -5px -5px 0 #4a4a4a, -5px -5px 0 #8b8b8b;
+}
+
+/* Style 19 - Deep green extruded */
+.wordart-style-nineteen .wordart-container { transform: scale(0.65, 1.75); }
+.wordart-style-nineteen h1.wordart {
+  color: #0f3a1a;
+  transform: perspective(100px) rotateY(6deg) rotateZ(-7deg);
+}
+.wordart-style-nineteen h1.wordart::before {
+  text-shadow: -1px 0 0 #000800, 0 -1px 0 #005600, -2px -1px 0.125px #000800, -1px -2px 0.125px #005600, -3px -2px 0.125px #000800, -2px -3px 0.125px #005600, -4px -3px 0.125px #000800, -3px -4px 0.125px #005600, -5px -4px 0.125px #000800, -4px -5px 0.125px #005600, -6px -5px 0.125px #000800, -5px -6px 0.125px #005600, -7px -6px 0 #000800;
+}
+
+/* Style 20 - Silver 3D extruded */
+.wordart-style-twenty .wordart-container { transform: perspective(100px) rotateY(6deg) rotateZ(-3deg) skewY(15deg) scale(0.8, 1.25); }
+.wordart-style-twenty h1.wordart { background: linear-gradient(to left, #747474, #fff, #747474); }
+.wordart-style-twenty h1.wordart::before {
+  text-shadow: -1px 0 0 #72745b, 0 1px 0 #2c2d23, -2px 1px 0.5px #72745b, -1px 2px 0.5px #2c2d23, -3px 2px 0.5px #72745b, -2px 3px 0.5px #2c2d23, -4px 3px 0.5px #72745b, -3px 4px 0.5px #2c2d23, -5px 4px 0.5px #72745b, -4px 5px 0.5px #2c2d23, -6px 5px 0.5px #72745b, -5px 6px 0.5px #2c2d23, -7px 6px 0.5px #72745b, -6px 7px 0.5px #2c2d23, -8px 7px 0.5px #72745b, -7px 8px 0.5px #2c2d23, -9px 8px 0.5px #72745b, -8px 9px 0.5px #2c2d23, -10px 9px 0.5px #72745b, -9px 10px 0.5px #2c2d23, -11px 10px 0.5px #72745b, -10px 11px 0.5px #2c2d23, -12px 11px 0.5px #72745b, -11px 12px 0.5px #2c2d23, -13px 12px 0.5px #72745b, -12px 13px 0.5px #2c2d23, -14px 13px 0.5px #72745b, -13px 14px 0.5px #2c2d23, -15px 14px 0.5px #72745b, -14px 15px 0.5px #2c2d23, -16px 15px 0.5px #72745b, -15px 16px 0.5px #2c2d23, -17px 16px 0.5px #72745b, -16px 17px 0.5px #2c2d23, -18px 17px 0 #72745b, -17px 18px 0 #2c2d23;
+}
+
+/* Style 21 - Fire gradient */
+.wordart-style-twentyone .wordart-container { transform: scaleY(1.5) skewY(-8deg) rotateZ(-3deg) translateZ(0); }
+.wordart-style-twentyone h1.wordart { background: linear-gradient(to bottom left, #fee601, #fee601 15%, #fe4201); }
+.wordart-style-twentyone h1.wordart::before {
+  text-shadow: 1px 0 0 #813300, 0 1px 0 #c14d00, 2px 1px 0.35px #813300, 1px 2px 0.35px #c14d00, 3px 2px 0.35px #813300, 2px 3px 0.35px #c14d00, 4px 3px 0.35px #813300, 3px 4px 0.35px #c14d00, 5px 4px 0.35px #813300, 4px 5px 0.35px #c14d00, 6px 5px 0.35px #813300, 5px 6px 0.35px #c14d00, 7px 6px 0.35px #813300, 6px 7px 0.35px #c14d00;
+}
+
+/* Style 22 - Ice & fire split */
+.wordart-style-twentytwo .wordart-container { transform: scale(0.75, 1.65) translateZ(0); }
+.wordart-style-twentytwo h1.wordart {
+  background: linear-gradient(#ccdfec 0%, #7a97bc 20%, #8aacc6 30%, #fff 50%, #b8908f 51%, #80302d 52%, #b84d4a 55%, #e7cfc9 75%, #916e66 100%);
+  letter-spacing: -0.2vw;
+}
+.wordart-style-twentytwo h1.wordart::before {
+  text-shadow: 1px 0 0 #000, 0 1px 1px #a1a1a1, 2px 1px 1px #000, 1px 2px 1px #a1a1a1, 3px 2px 1px #000, 2px 3px 1px #a1a1a1, 4px 3px 1px #000, 3px 4px 1px #a1a1a1, 5px 4px 1px #000, 4px 5px 1px #a1a1a1, 6px 5px 1px #000, 5px 6px 1px #a1a1a1, 7px 6px 1px #000, 6px 7px 1px #a1a1a1, 8px 7px 1px #000, 7px 8px 1px #a1a1a1, 9px 8px 1px #000, 8px 9px 1px #a1a1a1, 10px 9px 0 #000;
+}
+
+/* WordArt gradient text clipping (must come after background definitions) */
+.wordart-style-six h1.wordart,
+.wordart-style-eight h1.wordart,
+.wordart-style-nine h1.wordart,
+.wordart-style-eleven h1.wordart,
+.wordart-style-twelve h1.wordart,
+.wordart-style-fourteen h1.wordart,
+.wordart-style-fifteen h1.wordart,
+.wordart-style-seventeen h1.wordart,
+.wordart-style-eighteen h1.wordart,
+.wordart-style-twenty h1.wordart,
+.wordart-style-twentyone h1.wordart,
+.wordart-style-twentytwo h1.wordart {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
