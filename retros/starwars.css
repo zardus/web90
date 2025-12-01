@@ -1,0 +1,275 @@
+/* ============================================
+   Star Wars Crawl Theme
+
+   The secret sauce: content lives on a TILTED PLANE.
+   TranslateY within that plane moves content "into the distance"
+   because the plane itself recedes from viewer.
+
+   CSS perspective handles the shrinking automatically.
+   ============================================ */
+
+body.retheme-starwars {
+  background: #000 !important;
+  overflow: hidden !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide original content */
+body.retheme-starwars #main,
+body.retheme-starwars main {
+  display: none !important;
+}
+
+/* ===== STARFIELD ===== */
+.starwars-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+.starwars-stars::before,
+.starwars-stars::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, white, transparent),
+    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 50px 160px, white, transparent),
+    radial-gradient(1.5px 1.5px at 90px 40px, white, transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 160px 120px, white, transparent),
+    radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 220px 90px, white, transparent),
+    radial-gradient(1.5px 1.5px at 250px 150px, white, transparent),
+    radial-gradient(1px 1px at 280px 30px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 320px 180px, white, transparent),
+    radial-gradient(1px 1px at 350px 60px, white, transparent),
+    radial-gradient(1px 1px at 380px 130px, rgba(255,255,255,0.85), transparent),
+    radial-gradient(1.5px 1.5px at 420px 100px, white, transparent),
+    radial-gradient(1px 1px at 450px 170px, white, transparent),
+    radial-gradient(2px 2px at 500px 80px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 530px 140px, white, transparent),
+    radial-gradient(1px 1px at 570px 50px, white, transparent);
+  background-size: 600px 200px;
+  background-repeat: repeat;
+}
+
+.starwars-stars::after {
+  background-size: 400px 350px;
+  opacity: 0.6;
+  transform: rotate(30deg);
+}
+
+/* ===== THE 3D STAGE ===== */
+.starwars-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* This is the camera! */
+  perspective: 350px;
+  /* Vanishing point: horizontally centered, vertically at ~35% from top */
+  perspective-origin: 50% 35%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ===== THE TILTED PLANE ===== */
+.starwars-plane {
+  position: absolute;
+  /* Center horizontally */
+  left: 50%;
+  /* Start from middle of viewport, extending "into" the screen */
+  top: 50%;
+  width: 90%;
+  max-width: 800px;
+  /* Transform origin at top center of the plane */
+  transform-origin: 50% 0%;
+  /* THE MAGIC: Tilt the plane away from viewer
+     65deg gives a good Star Wars angle */
+  transform: translateX(-50%) rotateX(65deg);
+  transform-style: preserve-3d;
+}
+
+/* ===== THE SCROLLING CONTENT ===== */
+.starwars-content {
+  /* This container scrolls within the tilted plane */
+  /* --crawl-y is set by JavaScript based on scroll input */
+  transform: translateY(var(--crawl-y, 0px));
+  transform-style: preserve-3d;
+  /* Normal flow layout - content stacks naturally */
+  padding: 0 5%;
+}
+
+/* ===== TEXT STYLES ===== */
+.starwars-content * {
+  color: #ffd54f !important;
+  font-family: 'News Cycle', 'Franklin Gothic Medium', 'News Gothic', 'Arial Narrow', sans-serif;
+  text-shadow: 0 0 4px rgba(255, 213, 79, 0.3);
+  /* Ensure text is crisp in 3D space */
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.starwars-content h1 {
+  font-size: 2.8em;
+  text-align: center;
+  margin: 0 0 0.6em 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(255, 213, 79, 0.6);
+}
+
+.starwars-content h2 {
+  font-size: 2em;
+  text-align: center;
+  margin: 0.8em 0 0.5em 0;
+  letter-spacing: 0.08em;
+}
+
+.starwars-content h3 {
+  font-size: 1.5em;
+  margin: 0.6em 0 0.4em 0;
+}
+
+.starwars-content p {
+  font-size: 1.4em;
+  line-height: 1.6;
+  margin: 0 0 1.2em 0;
+  text-align: justify;
+}
+
+.starwars-content ul,
+.starwars-content ol {
+  font-size: 1.3em;
+  line-height: 1.5;
+  margin: 0 0 1em 0;
+  padding-left: 1.5em;
+}
+
+.starwars-content li {
+  margin-bottom: 0.4em;
+}
+
+.starwars-content a {
+  color: #ffe082 !important;
+  text-decoration: underline;
+}
+
+.starwars-content a:hover {
+  color: #fff !important;
+}
+
+.starwars-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+  /* Hologram effect - like R2-D2's projections */
+  filter:
+    brightness(1.2)
+    contrast(1.1)
+    saturate(0.3)
+    sepia(100%)
+    saturate(500%)
+    hue-rotate(180deg);
+  opacity: 0.85;
+  box-shadow:
+    0 0 15px rgba(100, 200, 255, 0.5),
+    0 0 30px rgba(100, 200, 255, 0.3),
+    0 0 45px rgba(100, 200, 255, 0.15);
+  border: 1px solid rgba(100, 200, 255, 0.4);
+  background: transparent;
+}
+
+.starwars-content pre,
+.starwars-content code {
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 213, 79, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+.starwars-content pre {
+  padding: 1em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.starwars-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.starwars-content th,
+.starwars-content td {
+  padding: 0.5em;
+  border: 1px solid rgba(255, 213, 79, 0.3);
+  text-align: left;
+}
+
+.starwars-content blockquote {
+  border-left: 3px solid #ffd54f;
+  margin: 1em 0;
+  padding-left: 1em;
+  font-style: italic;
+}
+
+/* ===== GRADIENT OVERLAY - Fades content toward horizon ===== */
+.starwars-stage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.8) 40%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Hide scrollbars */
+body.retheme-starwars::-webkit-scrollbar { display: none; }
+body.retheme-starwars { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* Hide theme-irrelevant elements */
+body.retheme-starwars [data-retro-slot],
+body.retheme-starwars nav,
+body.retheme-starwars footer {
+  display: none !important;
+}
+
+/* ===== DIVIDERS ===== */
+.starwars-content .divider {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.starwars-content .divider hr {
+  display: none;
+}
+
+.starwars-content .divider img {
+  max-width: 80%;
+  height: auto;
+  opacity: 0.8;
+  filter: sepia(100%) saturate(300%) hue-rotate(10deg) brightness(1.2);
+  border: none !important;
+}
