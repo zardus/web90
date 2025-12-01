@@ -104,64 +104,45 @@
     });
   }
 
+  function initLazyDropdown(selectEl, retroName, stylesKey, paramName, retroList, defaultActive) {
+    if (!selectEl) return;
+    var retro = RETROS.find(function(r) { return r.name === retroName; });
+    if (retro && retro.resources) {
+      loadRetroResources(retro).then(function() {
+        populateDropdown(selectEl, window.web90[stylesKey]);
+        if (defaultActive !== null) {
+          initDropdownValue(selectEl, paramName, retroList, retroName, defaultActive);
+        } else {
+          selectEl.value = params.get(paramName) || '';
+        }
+      });
+    }
+  }
+
   function initControlDropdowns(retroList) {
     var ctrlSong = document.getElementById('ctrl-song');
-    var ctrlViz = document.getElementById('ctrl-viz');
-    var ctrlWordart = document.getElementById('ctrl-wordart');
     var ctrlCursor = document.getElementById('ctrl-cursor');
-    var ctrlTrail = document.getElementById('ctrl-trail');
     var ctrlTheme = document.getElementById('ctrl-theme');
 
-    // Populate song options
+    // Song options
     if (ctrlSong) {
       config.music.forEach(function(track) {
         var option = createElement('option');
-        var filename = track.src.split('/').pop().replace(/\.[^.]+$/, '');
-        option.value = filename;
+        option.value = track.src.split('/').pop().replace(/\.[^.]+$/, '');
         option.textContent = track.label;
         ctrlSong.appendChild(option);
       });
       ctrlSong.value = params.get('song') || '';
     }
 
-    // Populate visualization options (lazy-load media-player resources first)
-    if (ctrlViz) {
-      var mediaPlayerRetro = RETROS.find(function(r) { return r.name === 'media-player'; });
-      if (mediaPlayerRetro && mediaPlayerRetro.resources) {
-        loadRetroResources(mediaPlayerRetro).then(function() {
-          populateDropdown(ctrlViz, window.web90.VIZ_MODES);
-          ctrlViz.value = params.get('viz') || '';
-        });
-      }
-    }
+    // Lazy-loaded dropdowns
+    initLazyDropdown(document.getElementById('ctrl-viz'), 'media-player', 'VIZ_MODES', 'viz', retroList, null);
+    initLazyDropdown(document.getElementById('ctrl-wordart'), 'wordart', 'WORDART_STYLES', 'wordart-style', retroList, '');
+    initLazyDropdown(document.getElementById('ctrl-trail'), 'mouse-trail', 'TRAIL_STYLES', 'trail-style', retroList, '');
 
-    // Populate wordart options (lazy-load resources first)
-    if (ctrlWordart) {
-      var wordartRetro = RETROS.find(function(r) { return r.name === 'wordart'; });
-      if (wordartRetro && wordartRetro.resources) {
-        loadRetroResources(wordartRetro).then(function() {
-          populateDropdown(ctrlWordart, window.web90.WORDART_STYLES);
-          initDropdownValue(ctrlWordart, 'wordart-style', retroList, 'wordart', '');
-        });
-      }
-    }
-
-    // Populate cursor options
+    // Sync dropdowns
     populateDropdown(ctrlCursor, CURSOR_STYLES);
     initDropdownValue(ctrlCursor, 'cursor-style', retroList, 'custom-cursor', 'custom');
-
-    // Populate trail options (lazy-load resources first)
-    if (ctrlTrail) {
-      var trailRetro = RETROS.find(function(r) { return r.name === 'mouse-trail'; });
-      if (trailRetro && trailRetro.resources) {
-        loadRetroResources(trailRetro).then(function() {
-          populateDropdown(ctrlTrail, window.web90.TRAIL_STYLES);
-          initDropdownValue(ctrlTrail, 'trail-style', retroList, 'mouse-trail', '');
-        });
-      }
-    }
-
-    // Populate theme options
     populateDropdown(ctrlTheme, THEMES);
     initDropdownValue(ctrlTheme, 'theme', retroList, 'retheme', '');
   }

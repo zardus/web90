@@ -227,12 +227,6 @@
   // Visualization mode names (full VIZ_MODES with draw functions lazy-loaded from media-player.js)
   var VIZ_MODE_NAMES = ['waveform', 'spectrogram', 'spectrum', 'psychedelic', 'radial'];
 
-  // ============================================
-  // Theme Definitions (merged into RETROS below)
-  // ============================================
-  // Themes are now defined in RETROS with type: 'theme'
-  // This section kept for backwards compatibility helpers
-
   function getThemeByName(name) {
     return RETROS.find(function(r) { return r.type === 'theme' && r.name === name; });
   }
@@ -277,11 +271,11 @@
   var ALL_FUN_RETROS = RETROS.filter(function(r) { return r.type !== 'theme'; }).map(function(r) { return r.name; });
   var THEME_NAMES = RETROS.filter(function(r) { return r.type === 'theme'; }).map(function(r) { return r.name; });
 
-  // Legacy THEMES object for backwards compatibility
-  var THEMES = {};
-  RETROS.filter(function(r) { return r.type === 'theme'; }).forEach(function(r) {
-    THEMES[r.name] = { emoji: r.emoji, label: r.label, init: r.init, resources: r.resources };
-  });
+  // Legacy THEMES object for backwards compatibility (used by control-panel.js)
+  var THEMES = RETROS.filter(function(r) { return r.type === 'theme'; }).reduce(function(acc, r) {
+    acc[r.name] = { emoji: r.emoji, label: r.label, init: r.init, resources: r.resources };
+    return acc;
+  }, {});
 
   // ============================================
   // Slot Management
@@ -323,27 +317,19 @@
     // 50% chance for each retro (excluding themes, which are controlled via dropdown)
     RETROS.forEach(function(retro) {
       if (retro.type === 'theme') return;
-      if (Math.random() < 0.5) {
-        selections.retros.push(retro.name);
-      }
+      if (Math.random() < 0.5) selections.retros.push(retro.name);
     });
 
     // Random dropdown selections
-    function randomOption(options) {
-      return randomFrom(options);
-    }
+    var songNames = config.music.map(function(t) { return t.src.split('/').pop().replace(/\.[^.]+$/, ''); });
+    var dividerNums = config.dividers.map(function(_, i) { return (i + 1).toString(); });
 
-    selections.styles.song = randomOption([''].concat(config.music.map(function(t) {
-      return t.src.split('/').pop().replace(/\.[^.]+$/, '');
-    })));
-    selections.styles.viz = randomOption([''].concat(VIZ_MODE_NAMES));
-    // wordart style is handled by wordart.js when loaded
-    selections.styles.cursor = randomOption(['none'].concat(CURSOR_STYLE_NAMES));
-    selections.styles.trail = randomOption(['none', ''].concat(TRAIL_STYLE_NAMES));
-    selections.styles.theme = randomOption(['none', ''].concat(THEME_NAMES));
-    selections.styles.divider = randomOption(['none', ''].concat(config.dividers.map(function(_, i) {
-      return (i + 1).toString();
-    })));
+    selections.styles.song = randomFrom([''].concat(songNames));
+    selections.styles.viz = randomFrom([''].concat(VIZ_MODE_NAMES));
+    selections.styles.cursor = randomFrom(['none'].concat(CURSOR_STYLE_NAMES));
+    selections.styles.trail = randomFrom(['none', ''].concat(TRAIL_STYLE_NAMES));
+    selections.styles.theme = randomFrom(['none', ''].concat(THEME_NAMES));
+    selections.styles.divider = randomFrom(['none', ''].concat(dividerNums));
 
     return selections;
   }
@@ -362,9 +348,7 @@
       }
     });
 
-    // Apply style selections as params
     var styleMap = {
-      // wordart style is handled by wordart.js when loaded
       cursor: { retro: 'custom-cursor', param: 'cursor-style' },
       trail: { retro: 'mouse-trail', param: 'trail-style' },
       theme: { retro: 'retheme', param: 'theme' },
@@ -827,11 +811,6 @@
     }
   }
 
-  // ============================================
-  // Theme: Flash Mode (lazy-loaded from retros/flash.js)
-  // ============================================
-  // Flash theme is now loaded on-demand via the plugin system.
-  // See retros/flash.js for the implementation.
 
   // ============================================
   // Badges
@@ -884,11 +863,6 @@
     return img;
   }
 
-  // ============================================
-  // WordArt (lazy-loaded from retros/wordart.js)
-  // ============================================
-
-  // See retros/wordart.js for the implementation.
 
   // ============================================
   // Enable JS Retros
@@ -961,11 +935,6 @@
     setTimeout(flicker, Math.random() * 4000 + 2000);
   }
 
-  // ============================================
-  // Control Panel (lazy-loaded from retros/control-panel.js)
-  // ============================================
-  // Control panel code has been moved to retros/control-panel.js
-  // and is loaded on-demand when the control panel is needed.
 
   // ============================================
   // Chat Window

@@ -157,15 +157,12 @@
     overlay.appendChild(bigHead);
 
     // Particle explosion
+    var particles = ['⭐', '✨', '💥', '🔥', '⚡', '💫', '🌟'];
     for (var i = 0; i < 30; i++) {
       var particle = createElement('div');
       particle.className = 'flash-freakout-particle';
-      particle.style.setProperty('--angle', (Math.random() * 360) + 'deg');
-      particle.style.setProperty('--distance', (100 + Math.random() * 300) + 'px');
-      particle.style.setProperty('--duration', (0.5 + Math.random() * 0.5) + 's');
-      particle.style.setProperty('--delay', (Math.random() * 0.2) + 's');
-      particle.style.setProperty('--size', (10 + Math.random() * 20) + 'px');
-      particle.textContent = randomFrom(['⭐', '✨', '💥', '🔥', '⚡', '💫', '🌟']);
+      particle.style.cssText = '--angle:' + (Math.random() * 360) + 'deg;--distance:' + (100 + Math.random() * 300) + 'px;--duration:' + (0.5 + Math.random() * 0.5) + 's;--delay:' + (Math.random() * 0.2) + 's;--size:' + (10 + Math.random() * 20) + 'px';
+      particle.textContent = randomFrom(particles);
       overlay.appendChild(particle);
     }
 
@@ -173,14 +170,9 @@
     for (var j = 0; j < 20; j++) {
       var column = createElement('div');
       column.className = 'flash-freakout-matrix-col';
-      column.style.left = (j * 5) + '%';
-      column.style.animationDelay = (Math.random() * 2) + 's';
-      column.style.animationDuration = (1 + Math.random() * 2) + 's';
-
+      column.style.cssText = 'left:' + (j * 5) + '%;animation-delay:' + (Math.random() * 2) + 's;animation-duration:' + (1 + Math.random() * 2) + 's';
       var chars = '';
-      for (var k = 0; k < 30; k++) {
-        chars += String.fromCharCode(0x30A0 + Math.random() * 96) + '<br>';
-      }
+      for (var k = 0; k < 30; k++) chars += String.fromCharCode(0x30A0 + Math.random() * 96) + '<br>';
       column.innerHTML = chars;
       overlay.appendChild(column);
     }
@@ -189,9 +181,7 @@
     for (var l = 0; l < 5; l++) {
       var flare = createElement('div');
       flare.className = 'flash-freakout-flare';
-      flare.style.setProperty('--flare-delay', (l * 0.15) + 's');
-      flare.style.left = (20 + Math.random() * 60) + '%';
-      flare.style.top = (20 + Math.random() * 60) + '%';
+      flare.style.cssText = '--flare-delay:' + (l * 0.15) + 's;left:' + (20 + Math.random() * 60) + '%;top:' + (20 + Math.random() * 60) + '%';
       overlay.appendChild(flare);
     }
 
@@ -209,12 +199,9 @@
     }, 2500);
   }
 
-  function addFlashLinkCrumpleHandler(linkElement) {
-    // All nav/sidebar links are external, so always add the crumple effect
-    linkElement.addEventListener('click', function(e) {
-      // Don't interfere with modified clicks
+  function addCrumpleHandler(el) {
+    el.addEventListener('click', function(e) {
       if (e.ctrlKey || e.metaKey || e.shiftKey) return;
-
       e.preventDefault();
       triggerPageCrumple(this.href);
     });
@@ -260,14 +247,14 @@
         sideLink.className = 'flash-sidebar-link';
         sideLink.href = link.href;
         sideLink.innerHTML = '› ' + link.text;
-        addFlashLinkCrumpleHandler(sideLink);
+        addCrumpleHandler(sideLink);
         flashSidebar.appendChild(sideLink);
 
         var navLink = createElement('a');
         navLink.className = 'flash-nav-link';
         navLink.href = link.href;
         navLink.textContent = link.text;
-        addFlashLinkCrumpleHandler(navLink);
+        addCrumpleHandler(navLink);
         flashNav.appendChild(navLink);
       });
     }
@@ -441,35 +428,29 @@
     texture.className = 'flash-crumple-texture';
     overlay.appendChild(texture);
 
-    // Add fold lines
-    var foldPositions = [
-      { type: 'horizontal', top: '30%', delay: '0s' },
-      { type: 'horizontal', top: '60%', delay: '0.1s' },
-      { type: 'vertical', left: '25%', delay: '0.05s' },
-      { type: 'vertical', left: '75%', delay: '0.15s' },
-      { type: 'diagonal', top: '20%', left: '-25%', rotate: '35deg', delay: '0.2s' },
-      { type: 'diagonal', top: '70%', left: '-25%', rotate: '-25deg', delay: '0.25s' }
-    ];
-
-    foldPositions.forEach(function(fold) {
+    // Fold lines
+    [
+      'horizontal;top:30%;animation-delay:0s',
+      'horizontal;top:60%;animation-delay:0.1s',
+      'vertical;left:25%;animation-delay:0.05s',
+      'vertical;left:75%;animation-delay:0.15s',
+      'diagonal;top:20%;left:-25%;transform:rotate(35deg);animation-delay:0.2s',
+      'diagonal;top:70%;left:-25%;transform:rotate(-25deg);animation-delay:0.25s'
+    ].forEach(function(f) {
+      var parts = f.split(';');
       var foldEl = createElement('div');
-      foldEl.className = 'flash-crumple-fold ' + fold.type;
-      if (fold.top) foldEl.style.top = fold.top;
-      if (fold.left) foldEl.style.left = fold.left;
-      if (fold.rotate) foldEl.style.transform = 'rotate(' + fold.rotate + ')';
-      foldEl.style.animationDelay = fold.delay;
+      foldEl.className = 'flash-crumple-fold ' + parts[0];
+      foldEl.style.cssText = parts.slice(1).join(';');
       overlay.appendChild(foldEl);
     });
 
-    // Add shockwaves
-    for (var i = 0; i < 3; i++) {
+    // Shockwaves
+    ['var(--gold)', 'var(--orange-red)', 'var(--cyan)'].forEach(function(color, i) {
       var wave = createElement('div');
       wave.className = 'flash-crumple-shockwave';
-      wave.style.setProperty('--wave-delay', (i * 0.15) + 's');
-      wave.style.setProperty('--wave-duration', '0.8s');
-      wave.style.borderColor = ['var(--gold)', 'var(--orange-red)', 'var(--cyan)'][i];
+      wave.style.cssText = '--wave-delay:' + (i * 0.15) + 's;--wave-duration:0.8s;border-color:' + color;
       overlay.appendChild(wave);
-    }
+    });
 
     // Add goodbye text
     var goodbyeText = createElement('div');

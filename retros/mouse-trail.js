@@ -95,35 +95,21 @@
   window.web90.TRAIL_STYLES = TRAIL_STYLES;
   window.web90.TRAIL_STYLE_NAMES = TRAIL_STYLE_NAMES;
 
-  // ============================================
-  // Canvas utilities (shared with core)
-  // ============================================
-
-  function createFullscreenCanvas(zIndex, opacity, matchScroll) {
+  function createTrailCanvas(zIndex) {
     var canvas = document.createElement('canvas');
-    canvas.style.position = matchScroll ? 'absolute' : 'fixed';
+    canvas.style.position = 'fixed';
     canvas.style.top = '0';
     canvas.style.left = '0';
     canvas.style.pointerEvents = 'none';
     canvas.style.zIndex = zIndex;
-    if (opacity !== undefined) canvas.style.opacity = opacity;
-
     canvas.width = window.innerWidth;
-    canvas.height = matchScroll ? document.body.scrollHeight : window.innerHeight;
-
+    canvas.height = window.innerHeight;
     document.body.appendChild(canvas);
-
-    return {
-      canvas: canvas,
-      ctx: canvas.getContext('2d')
-    };
-  }
-
-  function setupCanvasResize(canvas) {
     window.addEventListener('resize', function() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     });
+    return { canvas: canvas, ctx: canvas.getContext('2d') };
   }
 
   // ============================================
@@ -224,7 +210,7 @@
       cursorImg.src = config.basePath + '/cursors/win95.png';
     }
 
-    var result = createFullscreenCanvas(100002, undefined, false);
+    var result = createTrailCanvas(100002);
     var canvas = result.canvas;
     var ctx = result.ctx;
     var particles = [];
@@ -232,8 +218,6 @@
     var cursorScale = 1.0;
     var lifeSpan = 65;
     var maxAge = 200;
-
-    setupCanvasResize(canvas);
 
     function Particle(x, y) {
       this.x = x;
