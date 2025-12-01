@@ -1234,6 +1234,17 @@
     }, 2500);
   }
 
+  function addFlashLinkCrumpleHandler(linkElement) {
+    // All nav/sidebar links are external, so always add the crumple effect
+    linkElement.addEventListener('click', function(e) {
+      // Don't interfere with modified clicks
+      if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+      e.preventDefault();
+      triggerPageCrumple(this.href);
+    });
+  }
+
   function buildFlashNav(container, navLinks, sectionData) {
     var flashNav = container.querySelector('.flash-nav');
     var flashSidebar = container.querySelector('.flash-sidebar');
@@ -1274,12 +1285,14 @@
         sideLink.className = 'flash-sidebar-link';
         sideLink.href = link.href;
         sideLink.innerHTML = '› ' + link.text;
+        addFlashLinkCrumpleHandler(sideLink);
         flashSidebar.appendChild(sideLink);
 
         var navLink = createElement('a');
         navLink.className = 'flash-nav-link';
         navLink.href = link.href;
         navLink.textContent = link.text;
+        addFlashLinkCrumpleHandler(navLink);
         flashNav.appendChild(navLink);
       });
     }
@@ -1403,6 +1416,98 @@
       site.classList.add('flash-site-enter');
       document.getElementById('flash-visitors').textContent = (Math.floor(Math.random() * 50000) + 10000).toLocaleString();
     });
+
+    // Set up external link crumple effect
+    setupFlashExternalLinkCrumple(container);
+  }
+
+  function isExternalLink(href) {
+    if (!href) return false;
+    try {
+      var url = new URL(href, window.location.origin);
+      return url.origin !== window.location.origin;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function setupFlashExternalLinkCrumple(container) {
+    container.addEventListener('click', function(e) {
+      var link = e.target.closest('a[href]');
+      if (!link) return;
+
+      var href = link.getAttribute('href');
+      if (!isExternalLink(href)) return;
+
+      // Don't interfere with modified clicks
+      if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+      e.preventDefault();
+      triggerPageCrumple(href);
+    });
+  }
+
+  function triggerPageCrumple(destinationUrl) {
+    var container = document.getElementById('flash-container');
+    if (!container) {
+      window.location.href = destinationUrl;
+      return;
+    }
+
+    // Add crumpling class to body for the site animation
+    container.classList.add('flash-crumpling');
+
+    // Create the overlay
+    var overlay = createElement('div');
+    overlay.className = 'flash-crumple-overlay';
+
+    // Add crumple texture
+    var texture = createElement('div');
+    texture.className = 'flash-crumple-texture';
+    overlay.appendChild(texture);
+
+    // Add fold lines
+    var foldPositions = [
+      { type: 'horizontal', top: '30%', delay: '0s' },
+      { type: 'horizontal', top: '60%', delay: '0.1s' },
+      { type: 'vertical', left: '25%', delay: '0.05s' },
+      { type: 'vertical', left: '75%', delay: '0.15s' },
+      { type: 'diagonal', top: '20%', left: '-25%', rotate: '35deg', delay: '0.2s' },
+      { type: 'diagonal', top: '70%', left: '-25%', rotate: '-25deg', delay: '0.25s' }
+    ];
+
+    foldPositions.forEach(function(fold) {
+      var foldEl = createElement('div');
+      foldEl.className = 'flash-crumple-fold ' + fold.type;
+      if (fold.top) foldEl.style.top = fold.top;
+      if (fold.left) foldEl.style.left = fold.left;
+      if (fold.rotate) foldEl.style.transform = 'rotate(' + fold.rotate + ')';
+      foldEl.style.animationDelay = fold.delay;
+      overlay.appendChild(foldEl);
+    });
+
+    // Add shockwaves
+    for (var i = 0; i < 3; i++) {
+      var wave = createElement('div');
+      wave.className = 'flash-crumple-shockwave';
+      wave.style.setProperty('--wave-delay', (i * 0.15) + 's');
+      wave.style.setProperty('--wave-duration', '0.8s');
+      wave.style.borderColor = ['var(--gold)', 'var(--orange-red)', 'var(--cyan)'][i];
+      overlay.appendChild(wave);
+    }
+
+    // Add goodbye text
+    var goodbyeText = createElement('div');
+    goodbyeText.className = 'flash-crumple-text';
+    goodbyeText.textContent = randomFrom(['LATER!', 'BYE!', 'PEACE!', 'ADIOS!', 'SEE YA!', 'CIAO!']);
+    overlay.appendChild(goodbyeText);
+
+    container.appendChild(overlay);
+
+    // Navigate after animation
+    setTimeout(function() {
+      window.location.href = destinationUrl;
+    }, 1100);
   }
 
   // ============================================

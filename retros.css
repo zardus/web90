@@ -2096,6 +2096,253 @@ h1.wordart {
 }
 
 /* ============================================
+   Flash Page Crumple (External Link Exit)
+   ============================================ */
+.flash-crumple-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999999;
+  perspective: 1000px;
+  pointer-events: none;
+  background: transparent;
+}
+
+.flash-crumple-wrapper {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: flash-crumple-main 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+}
+
+@keyframes flash-crumple-main {
+  0% {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+    filter: brightness(1);
+  }
+  15% {
+    transform: perspective(1000px) rotateX(5deg) rotateY(-3deg) rotateZ(2deg) scale(0.98);
+    filter: brightness(1.1);
+  }
+  30% {
+    transform: perspective(800px) rotateX(-10deg) rotateY(8deg) rotateZ(-5deg) scale(0.9);
+    filter: brightness(0.9);
+  }
+  50% {
+    transform: perspective(600px) rotateX(25deg) rotateY(-20deg) rotateZ(15deg) scale(0.6);
+    filter: brightness(0.7) contrast(1.2);
+  }
+  70% {
+    transform: perspective(400px) rotateX(-40deg) rotateY(35deg) rotateZ(-30deg) scale(0.3);
+    filter: brightness(0.5) contrast(1.4);
+  }
+  85% {
+    transform: perspective(200px) rotateX(60deg) rotateY(-50deg) rotateZ(45deg) scale(0.1);
+    filter: brightness(0.3) contrast(1.6);
+  }
+  100% {
+    transform: perspective(100px) rotateX(90deg) rotateY(90deg) rotateZ(720deg) scale(0);
+    filter: brightness(0) contrast(2);
+  }
+}
+
+/* Individual fold lines that appear on the page */
+.flash-crumple-fold {
+  position: absolute;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(0, 0, 0, 0.3) 55%,
+    transparent 100%
+  );
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.flash-crumple-fold.horizontal {
+  width: 100%;
+  height: 4px;
+  left: 0;
+  animation: flash-fold-horizontal 0.8s ease-out forwards;
+}
+
+.flash-crumple-fold.vertical {
+  width: 4px;
+  height: 100%;
+  top: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(0, 0, 0, 0.3) 55%,
+    transparent 100%
+  );
+  animation: flash-fold-vertical 0.8s ease-out forwards;
+}
+
+.flash-crumple-fold.diagonal {
+  width: 200%;
+  height: 4px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(0, 0, 0, 0.4) 55%,
+    transparent 100%
+  );
+  animation: flash-fold-diagonal 0.6s ease-out forwards;
+}
+
+@keyframes flash-fold-horizontal {
+  0% { opacity: 0; transform: scaleX(0); }
+  30% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 1; transform: scaleX(1) scaleY(3); }
+}
+
+@keyframes flash-fold-vertical {
+  0% { opacity: 0; transform: scaleY(0); }
+  30% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 1; transform: scaleY(1) scaleX(3); }
+}
+
+@keyframes flash-fold-diagonal {
+  0% { opacity: 0; transform: scaleX(0); }
+  50% { opacity: 1; transform: scaleX(0.7); }
+  100% { opacity: 0.8; transform: scaleX(1); }
+}
+
+/* Paper crinkle texture overlay */
+.flash-crumple-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 10px,
+      rgba(0, 0, 0, 0.02) 10px,
+      rgba(0, 0, 0, 0.02) 20px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 10px,
+      rgba(255, 255, 255, 0.02) 10px,
+      rgba(255, 255, 255, 0.02) 20px
+    );
+  animation: flash-crumple-texture 0.8s ease-in forwards;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@keyframes flash-crumple-texture {
+  0% { opacity: 0; background-size: 20px 20px; }
+  50% { opacity: 1; background-size: 15px 15px; }
+  100% { opacity: 1; background-size: 5px 5px; }
+}
+
+/* Sound wave burst from center as page crumples */
+.flash-crumple-shockwave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: flash-crumple-shockwave var(--wave-duration, 0.6s) ease-out var(--wave-delay, 0s) forwards;
+  opacity: 0;
+}
+
+@keyframes flash-crumple-shockwave {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; border-width: 3px; }
+  100% { transform: translate(-50%, -50%) scale(20); opacity: 0; border-width: 1px; }
+}
+
+/* "GOODBYE" text that flashes */
+.flash-crumple-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 60px;
+  font-weight: 900;
+  font-family: Impact, 'Arial Black', sans-serif;
+  color: var(--gold);
+  text-shadow:
+    0 0 20px var(--gold),
+    0 0 40px var(--orange-red),
+    0 0 60px var(--magenta),
+    3px 3px 0 #000;
+  letter-spacing: 8px;
+  white-space: nowrap;
+  animation: flash-crumple-text 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+  z-index: 100;
+}
+
+@keyframes flash-crumple-text {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-20deg); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.3) rotate(5deg); opacity: 1; }
+  70% { transform: translate(-50%, -50%) scale(0.9) rotate(-2deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Crumple causes the actual site content to warp */
+.flash-crumpling #flash-site {
+  animation: flash-site-crumple 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+  transform-origin: center center;
+}
+
+@keyframes flash-site-crumple {
+  0% {
+    transform: perspective(1000px) rotateX(0) rotateY(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: perspective(800px) rotateX(-5deg) rotateY(5deg) scale(0.95);
+    opacity: 1;
+  }
+  50% {
+    transform: perspective(600px) rotateX(15deg) rotateY(-15deg) rotateZ(5deg) scale(0.7);
+    opacity: 0.9;
+  }
+  75% {
+    transform: perspective(400px) rotateX(-30deg) rotateY(30deg) rotateZ(-15deg) scale(0.4);
+    opacity: 0.6;
+  }
+  100% {
+    transform: perspective(200px) rotateX(45deg) rotateY(-45deg) rotateZ(30deg) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Background darkens as page crumples */
+.flash-crumpling::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 999998;
+  animation: flash-crumple-darken 1s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes flash-crumple-darken {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ============================================
    Matrix Rain Background (retheme)
    ============================================ */
 #matrix-bg { background: #000; }
