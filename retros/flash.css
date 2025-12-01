@@ -1,0 +1,1561 @@
+/**
+ * Flash Theme Styles
+ * Lazy-loaded CSS for the Flash site theme
+ *
+ * This stylesheet is loaded on-demand when the flash theme is activated.
+ * It relies on CSS variables defined in the main retros.css file.
+ */
+
+/* ============================================
+   FLASH MODE - Full-Screen Overlay Base
+   ============================================ */
+.flash-mode { overflow: hidden; }
+
+#flash-container {
+  z-index: 99999;
+  font-family: 'Trebuchet MS', 'Comic Sans MS', Arial, sans-serif;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Scanlines overlay for CRT feel */
+#flash-container::before {
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px);
+  pointer-events: none;
+  z-index: 100000;
+}
+
+/* ============================================
+   Flash Loading Screen
+   ============================================ */
+#flash-loader {
+  position: absolute;
+  background: radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
+}
+
+/* Animated star field background */
+#flash-loader::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+    radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 230px 80px, #fff, transparent),
+    radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 50px 180px, #fff, transparent),
+    radial-gradient(2px 2px at 120px 220px, rgba(255,255,255,0.8), transparent);
+  background-size: 350px 250px;
+  animation: flash-stars 20s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes flash-stars {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-350px, -250px); }
+}
+
+#flash-loader.fade-out { opacity: 0; }
+
+.flash-loader-content {
+  text-align: center;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.flash-logo {
+  font-size: 100px;
+  animation: flash-logo-spin 3s ease-in-out infinite;
+  text-shadow: var(--glow-cyan), 0 0 40px var(--cyan), 0 0 60px var(--cyan);
+  position: relative;
+}
+
+/* Lens flare on logo */
+.flash-logo::before {
+  content: '\2726';
+  position: absolute;
+  font-size: 30px;
+  top: 10px;
+  right: -10px;
+  color: #fff;
+  animation: flash-lens-flare 2s ease-in-out infinite;
+  text-shadow: 0 0 20px #fff, 0 0 40px var(--cyan);
+}
+
+@keyframes flash-logo-spin {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+  25% { transform: scale(1.1) rotate(5deg); }
+  50% { transform: scale(1) rotate(0deg); filter: hue-rotate(30deg); }
+  75% { transform: scale(1.1) rotate(-5deg); }
+}
+
+@keyframes flash-lens-flare {
+  0%, 100% { opacity: 0; transform: scale(0.5) translate(0, 0); }
+  50% { opacity: 1; transform: scale(1.5) translate(10px, -10px); }
+}
+
+.flash-loading-text {
+  font-size: 28px;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+  margin: 30px 0;
+  color: var(--cyan);
+  animation: flash-text-glow 1.5s ease-in-out infinite;
+  position: relative;
+}
+
+/* Swoosh underline */
+.flash-loading-text::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), #fff, var(--cyan), transparent);
+  animation: flash-swoosh 2s ease-in-out infinite;
+  transform: translateX(-50%);
+}
+
+@keyframes flash-swoosh {
+  0%, 100% { width: 0%; opacity: 0; }
+  50% { width: 100%; opacity: 1; }
+}
+
+@keyframes flash-text-glow {
+  0%, 100% { text-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan); }
+  50% { text-shadow: var(--glow-cyan), 0 0 40px var(--cyan), 0 0 60px var(--cyan); }
+}
+
+.flash-progress-container {
+  width: 350px;
+  height: 25px;
+  background: linear-gradient(180deg, #000 0%, #111 100%);
+  border: 3px solid;
+  border-color: var(--cyan) #006688 #004455 #00aadd;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 25px auto;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5), inset 0 3px 10px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+/* Bevel effect */
+.flash-progress-container::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  border-radius: 10px 10px 0 0;
+}
+
+.flash-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(180deg, var(--cyan-bright) 0%, var(--cyan) 30%, #0088aa 70%, #006688 100%);
+  transition: width 0.2s ease;
+  box-shadow: 0 0 20px var(--cyan), inset 0 -3px 5px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+/* Shimmer effect on progress bar */
+.flash-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  animation: flash-bar-shimmer 1s linear infinite;
+}
+
+@keyframes flash-bar-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.flash-progress-percent {
+  font-size: 22px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88;
+  animation: flash-percent-pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes flash-percent-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.flash-macromedia {
+  margin-top: 50px;
+  font-size: 12px;
+  color: #555;
+  letter-spacing: 3px;
+  animation: flash-fade-pulse 3s ease-in-out infinite;
+}
+
+@keyframes flash-fade-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* ============================================
+   Flash Intro Screen
+   ============================================ */
+#flash-intro {
+  position: absolute;
+  background: radial-gradient(ellipse at center, #2d1b4e 0%, #1a0a2e 50%, #0d0015 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
+}
+
+/* Rotating starburst background */
+#flash-intro::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200vmax;
+  height: 200vmax;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(255, 215, 0, 0.03) 10deg, transparent 20deg, transparent 30deg, rgba(255, 140, 0, 0.03) 40deg, transparent 50deg);
+  animation: flash-starburst 20s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes flash-starburst {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Floating particles */
+#flash-intro::after {
+  content: '\2726 \2727 \2605 \2726 \2727 \2605 \2726 \2727';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  color: rgba(255, 215, 0, 0.3);
+  letter-spacing: 100px;
+  line-height: 150px;
+  word-spacing: 200px;
+  animation: flash-float-particles 15s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes flash-float-particles {
+  0% { transform: translateY(100%) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.5; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(-100%) rotate(10deg); opacity: 0; }
+}
+
+#flash-intro.fade-in { opacity: 1; }
+#flash-intro.fade-out { opacity: 0; }
+
+.flash-intro-content {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.flash-intro-headshot {
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.flash-intro-headshot img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  background: linear-gradient(#1a0a2e, #1a0a2e) padding-box, linear-gradient(135deg, var(--gold), var(--orange-red), var(--magenta), var(--cyan), var(--gold)) border-box;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), 0 0 80px rgba(255, 140, 0, 0.4), 0 0 120px rgba(255, 0, 255, 0.2);
+  animation: flash-headshot-mega 4s ease-in-out infinite;
+}
+
+/* Orbiting rings around headshot */
+.flash-intro-headshot::before,
+.flash-intro-headshot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  animation: flash-orbit 3s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+.flash-intro-headshot::before {
+  width: 220px;
+  height: 220px;
+  border-top-color: var(--gold);
+  border-right-color: var(--orange-red);
+}
+
+.flash-intro-headshot::after {
+  width: 250px;
+  height: 250px;
+  border-width: 1px;
+  border-bottom-color: var(--cyan);
+  border-left-color: var(--magenta);
+  animation-duration: 4s;
+  animation-direction: reverse;
+}
+
+@keyframes flash-orbit {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes flash-headshot-mega {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), 0 0 80px rgba(255, 140, 0, 0.4), 0 0 120px rgba(255, 0, 255, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 140, 0, 0.6), 0 0 150px rgba(255, 0, 255, 0.4);
+    transform: scale(1.05);
+  }
+}
+
+.flash-intro-title {
+  font-size: 80px;
+  font-weight: bold;
+  background: linear-gradient(180deg, var(--gold) 0%, var(--orange) 30%, var(--orange-red) 60%, #ff00aa 100%);
+  background-size: 100% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: flash-title-mega 3s ease-in-out infinite;
+  letter-spacing: 6px;
+  position: relative;
+  text-transform: uppercase;
+}
+
+/* Glitch/echo effect on title */
+.flash-intro-title::before,
+.flash-intro-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.flash-intro-title::before { animation: flash-glitch-1 2s infinite; opacity: 0.8; }
+.flash-intro-title::after { animation: flash-glitch-2 2s infinite; opacity: 0.8; }
+
+@keyframes flash-glitch-1 {
+  0%, 90%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+  92% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+  94% { transform: translate(3px, -2px); filter: hue-rotate(-90deg); }
+}
+
+@keyframes flash-glitch-2 {
+  0%, 90%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+  91% { transform: translate(2px, 3px); filter: hue-rotate(180deg); }
+  93% { transform: translate(-2px, -3px); filter: hue-rotate(-180deg); }
+}
+
+@keyframes flash-title-mega {
+  0%, 100% { background-position: 0% 0%; filter: drop-shadow(0 0 30px rgba(255, 140, 0, 0.8)) drop-shadow(0 6px 0 #000); }
+  50% { background-position: 0% 100%; filter: drop-shadow(0 0 50px rgba(255, 0, 170, 0.8)) drop-shadow(0 6px 0 #000); }
+}
+
+.flash-intro-subtitle {
+  font-size: 28px;
+  color: transparent;
+  background: linear-gradient(90deg, #888, #fff, #888);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 16px;
+  margin: 40px 0;
+  text-transform: uppercase;
+  animation: flash-subtitle-shine 2s linear infinite;
+}
+
+@keyframes flash-subtitle-shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Flash button base styles (shared) */
+.flash-enter-btn,
+.flash-nav-btn {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.flash-enter-btn {
+  background: var(--gradient-gold-bg);
+  border: 4px solid;
+  border-color: var(--btn-border-gold);
+  color: var(--gold);
+  font-size: 24px;
+  padding: 20px 50px;
+  letter-spacing: 6px;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+  animation: flash-btn-mega 1.5s ease-in-out infinite;
+}
+
+/* Shine sweep on button */
+.flash-enter-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: flash-btn-shine 2s ease-in-out infinite;
+}
+
+@keyframes flash-btn-shine {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+@keyframes flash-btn-mega {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), 0 0 80px rgba(255, 140, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+    transform: scale(1.02);
+  }
+}
+
+.flash-enter-btn:hover {
+  background: linear-gradient(180deg, #7a6a00 0%, #5a5000 30%, #4a4000 70%, #3a3000 100%);
+  color: #fff;
+  transform: scale(1.08) !important;
+  box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 140, 0, 0.5) !important;
+}
+
+.flash-enter-btn:active {
+  transform: scale(0.98) !important;
+  border-color: var(--gold-darker) var(--gold) var(--gold-light) var(--gold-dark);
+}
+
+.flash-skip {
+  margin-top: 50px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  letter-spacing: 2px;
+}
+
+.flash-skip:hover {
+  color: var(--cyan);
+  text-shadow: 0 0 10px var(--cyan);
+  text-decoration: none;
+  letter-spacing: 4px;
+}
+
+/* ============================================
+   Main Flash Site
+   ============================================ */
+#flash-site {
+  position: absolute;
+  background:
+    radial-gradient(ellipse at top, rgba(30, 60, 114, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(42, 82, 152, 0.8) 0%, transparent 50%),
+    linear-gradient(180deg, #0a1628 0%, #1a2a48 50%, #0a1628 100%);
+  flex-direction: column;
+  opacity: 0;
+}
+
+/* Subtle animated gradient overlay */
+#flash-site::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0%, transparent 40%, transparent 60%, rgba(0, 212, 255, 0.02) 100%);
+  animation: flash-site-gradient 10s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes flash-site-gradient {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+#flash-site.flash-site-enter { animation: flash-site-reveal 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+@keyframes flash-site-reveal {
+  0% { opacity: 0; transform: scale(0.8) rotateX(10deg); filter: blur(10px); }
+  50% { filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) rotateX(0deg); filter: blur(0); }
+}
+
+/* ============================================
+   Flash Header
+   ============================================ */
+.flash-header {
+  background: linear-gradient(180deg, var(--dark-surface) 0%, var(--dark-deep) 100%);
+  border-bottom: 4px solid;
+  border-image: linear-gradient(90deg, transparent, var(--gold), var(--orange-red), var(--magenta), var(--cyan), var(--gold), transparent) 1;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 10;
+}
+
+/* Animated glow line under header */
+.flash-header::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--orange-red), var(--magenta), var(--cyan), var(--gold), transparent);
+  background-size: 200% 100%;
+  animation: flash-header-glow 3s linear infinite;
+}
+
+@keyframes flash-header-glow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+.flash-header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.flash-header-headshot img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background: linear-gradient(var(--dark-deep), var(--dark-deep)) padding-box, linear-gradient(135deg, var(--gold), var(--orange-red)) border-box;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 140, 0, 0.3);
+  animation: flash-header-headshot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes flash-header-headshot-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 140, 0, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), 0 0 45px rgba(255, 140, 0, 0.5); }
+}
+
+.flash-site-title {
+  font-size: 36px;
+  font-weight: bold;
+  background: var(--gradient-gold);
+  background-size: 100% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: flash-site-title-shift 4s ease-in-out infinite;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+@keyframes flash-site-title-shift {
+  0%, 100% { background-position: 0% 0%; filter: drop-shadow(2px 2px 0 #000) drop-shadow(0 0 10px rgba(255, 140, 0, 0.5)); }
+  50% { background-position: 0% 100%; filter: drop-shadow(2px 2px 0 #000) drop-shadow(0 0 20px rgba(255, 69, 0, 0.7)); }
+}
+
+.flash-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.flash-nav-btn {
+  background: linear-gradient(180deg, #2a2a2a 0%, var(--dark-surface) 50%, var(--dark-bg) 100%);
+  border: 2px solid;
+  border-color: #555 #222 #111 #444;
+  color: #aaa;
+  font-size: 13px;
+  padding: 10px 20px;
+  letter-spacing: 2px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Hover shine effect */
+.flash-nav-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+  transition: left var(--transition-normal);
+}
+
+.flash-nav-btn:hover::before { left: 100%; }
+
+.flash-nav-btn:hover {
+  background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, var(--dark-surface) 100%);
+  color: var(--gold);
+  border-color: var(--btn-border-gold);
+  box-shadow: 0 2px 15px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.flash-nav-btn.active {
+  background: linear-gradient(180deg, var(--gold) 0%, var(--orange) 50%, #cc6600 100%);
+  color: #000;
+  font-weight: bold;
+  border-color: #ffee00 #cc7000 #aa5500 #ffdd00;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* External nav links (hidden on desktop, shown on mobile) */
+.flash-nav-divider,
+.flash-nav-link {
+  display: none;
+}
+
+/* ============================================
+   Flash Main Content Area
+   ============================================ */
+.flash-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.flash-sidebar {
+  width: 200px;
+  background: linear-gradient(180deg, #0d0d1a 0%, #050510 100%);
+  border-right: 3px solid;
+  border-image: linear-gradient(180deg, var(--gold), var(--orange-red), var(--magenta), transparent) 1;
+  padding: 25px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: inset -15px 0 30px rgba(0, 0, 0, 0.5), 5px 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Decorative corner accent */
+.flash-sidebar::before {
+  content: '\25C6';
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: var(--gold);
+  font-size: 12px;
+  opacity: 0.5;
+  animation: flash-corner-pulse 2s ease-in-out infinite;
+}
+
+@keyframes flash-corner-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.flash-sidebar-btn {
+  color: #777;
+  font-size: 14px;
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border-left: 4px solid transparent;
+  background: transparent;
+  position: relative;
+}
+
+/* Hover underline animation */
+.flash-sidebar-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 18px;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), var(--orange-red));
+  transition: width var(--transition-normal);
+}
+
+.flash-sidebar-btn:hover::after { width: calc(100% - 36px); }
+
+.flash-sidebar-btn:hover {
+  color: var(--gold);
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%);
+  border-left-color: var(--gold);
+  padding-left: 25px;
+  text-shadow: var(--glow-gold);
+}
+
+.flash-sidebar-btn.active {
+  color: var(--gold);
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 140, 0, 0.1) 50%, transparent 100%);
+  border-left-color: var(--gold);
+  font-weight: bold;
+  padding-left: 25px;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+  box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.flash-sidebar-divider {
+  height: 2px;
+  margin: 15px 10px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--orange-red), transparent);
+  opacity: 0.5;
+}
+
+.flash-sidebar-header {
+  color: var(--orange-red);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-align: center;
+  margin: 10px 0;
+  text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+  animation: flash-sidebar-header-pulse 2s ease-in-out infinite;
+}
+
+@keyframes flash-sidebar-header-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.flash-sidebar-link {
+  color: var(--cyan);
+  font-size: 12px;
+  padding: 8px 15px;
+  text-decoration: none;
+  display: block;
+  transition: all var(--transition-normal);
+  border-left: 3px solid transparent;
+}
+
+.flash-sidebar-link:hover {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(0, 212, 255, 0.15) 0%, transparent 100%);
+  border-left-color: var(--cyan);
+  padding-left: 20px;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+}
+
+.flash-content {
+  flex: 1;
+  padding: 35px;
+  overflow-y: auto;
+  background:
+    radial-gradient(ellipse at top right, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+  position: relative;
+}
+
+/* Decorative corner elements */
+.flash-content::before,
+.flash-content::after {
+  content: '\2726';
+  position: absolute;
+  font-size: 16px;
+  color: rgba(255, 215, 0, 0.2);
+  animation: flash-content-star 3s ease-in-out infinite;
+}
+
+.flash-content::before { top: 20px; right: 20px; }
+.flash-content::after { bottom: 20px; left: 20px; animation-delay: 1.5s; }
+
+@keyframes flash-content-star {
+  0%, 100% { opacity: 0.2; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.5; transform: scale(1.3) rotate(180deg); }
+}
+
+.flash-section {
+  display: none;
+  color: #fff;
+  position: relative;
+}
+
+.flash-section.active {
+  display: block;
+  animation: flash-section-mega-entrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Multi-stage entrance animation */
+@keyframes flash-section-mega-entrance {
+  0% { opacity: 0; transform: perspective(1000px) translateZ(-500px) rotateY(-15deg) scale(0.5); filter: blur(20px) brightness(3) saturate(0); }
+  15% { opacity: 0.3; transform: perspective(1000px) translateZ(-200px) rotateY(-10deg) scale(0.7); filter: blur(15px) brightness(2.5) saturate(0.5); }
+  30% { opacity: 0.6; transform: perspective(1000px) translateZ(-50px) rotateY(-5deg) scale(0.85); filter: blur(8px) brightness(2) saturate(0.8); }
+  50% { opacity: 0.9; transform: perspective(1000px) translateZ(30px) rotateY(3deg) scale(1.05); filter: blur(2px) brightness(1.5) saturate(1.2); }
+  70% { opacity: 1; transform: perspective(1000px) translateZ(10px) rotateY(-2deg) scale(1.02); filter: blur(0) brightness(1.2) saturate(1.1); }
+  85% { transform: perspective(1000px) translateZ(-5px) rotateY(1deg) scale(0.99); filter: blur(0) brightness(1.1) saturate(1); }
+  100% { opacity: 1; transform: perspective(1000px) translateZ(0) rotateY(0) scale(1); filter: blur(0) brightness(1) saturate(1); }
+}
+
+/* Lens flare burst on section enter */
+.flash-section.active::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.4) 0%, rgba(255, 140, 0, 0.2) 20%, rgba(255, 69, 0, 0.1) 40%, transparent 60%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: flash-section-flare 0.8s ease-out forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes flash-section-flare {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+/* Horizontal light streak */
+.flash-section.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 100%);
+  animation: flash-section-streak 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes flash-section-streak {
+  0% { left: -100%; opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Exit animation */
+.flash-section.exiting {
+  display: block;
+  animation: flash-section-mega-exit 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+  pointer-events: none;
+}
+
+@keyframes flash-section-mega-exit {
+  0% { opacity: 1; transform: perspective(1000px) translateZ(0) rotateY(0) scale(1); filter: blur(0) brightness(1); }
+  30% { opacity: 0.8; transform: perspective(1000px) translateZ(50px) rotateY(5deg) scale(1.02); filter: blur(2px) brightness(1.3); }
+  100% { opacity: 0; transform: perspective(1000px) translateZ(-300px) rotateY(20deg) translateX(-100px) scale(0.6); filter: blur(15px) brightness(2) saturate(0); }
+}
+
+/* Screen shake on transition */
+.flash-screen-shake { animation: flash-screen-shake 0.3s ease-out; }
+
+@keyframes flash-screen-shake {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  10% { transform: translateX(-5px) translateY(2px); }
+  20% { transform: translateX(5px) translateY(-2px); }
+  30% { transform: translateX(-4px) translateY(1px); }
+  40% { transform: translateX(4px) translateY(-1px); }
+  50% { transform: translateX(-3px) translateY(2px); }
+  60% { transform: translateX(3px) translateY(-1px); }
+  70% { transform: translateX(-2px) translateY(1px); }
+  80% { transform: translateX(2px) translateY(0); }
+  90% { transform: translateX(-1px) translateY(0); }
+}
+
+/* Flash of light on content area during transition */
+.flash-content.flash-screen-shake::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  animation: flash-content-flash 0.3s ease-out forwards;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes flash-content-flash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.flash-section-title {
+  font-size: 32px;
+  background: var(--gradient-gold);
+  background-size: 100% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  position: relative;
+  animation: flash-section-title-pulse 4s ease-in-out infinite;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* Animated underline */
+.flash-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--orange-red), var(--magenta), transparent);
+  background-size: 200% 100%;
+  animation: flash-title-underline 2s linear infinite;
+}
+
+@keyframes flash-title-underline {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+@keyframes flash-section-title-pulse {
+  0%, 100% { background-position: 0% 0%; filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.5)); }
+  50% { background-position: 0% 100%; filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.7)); }
+}
+
+/* ============================================
+   Flash Section Content Styling
+   ============================================ */
+.flash-section a {
+  color: var(--cyan);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.flash-section a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width var(--transition-normal);
+}
+
+.flash-section a:hover {
+  color: var(--gold);
+  text-shadow: var(--glow-gold);
+}
+
+.flash-section a:hover::after { width: 100%; }
+
+.flash-section h2,
+.flash-section h3,
+.flash-section h4 {
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.flash-section p {
+  line-height: 1.8;
+  color: #ccc;
+}
+
+.flash-section ul,
+.flash-section ol { color: #ccc; }
+
+.flash-section li { margin-bottom: 8px; }
+
+/* Generic handling for dark content */
+.flash-section img:not(.headshot),
+.flash-section svg,
+.flash-section canvas {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(230, 230, 255, 0.95) 100%);
+  border: 3px solid;
+  border-color: var(--btn-border-gold);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+/* Tables */
+.flash-section table {
+  background: linear-gradient(180deg, rgba(0, 20, 40, 0.9) 0%, rgba(0, 10, 30, 0.95) 100%);
+  border: 2px solid var(--gold);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.flash-section th {
+  background: linear-gradient(180deg, #3a3000 0%, #2a2000 100%);
+  color: var(--gold);
+  padding: 10px 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  border-bottom: 2px solid var(--gold);
+  text-shadow: var(--glow-gold);
+}
+
+.flash-section td {
+  padding: 8px 15px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  color: #ddd;
+}
+
+.flash-section tr:hover td { background: rgba(255, 215, 0, 0.1); }
+
+/* Code/pre blocks */
+.flash-section code,
+.flash-section pre {
+  background: linear-gradient(180deg, #0a0a1a 0%, #050510 100%);
+  border: 1px solid var(--cyan);
+  border-radius: 4px;
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+}
+
+.flash-section code { padding: 2px 6px; }
+
+.flash-section pre {
+  padding: 15px;
+  overflow-x: auto;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2), inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Blockquotes */
+.flash-section blockquote {
+  border-left: 4px solid var(--orange-red);
+  background: linear-gradient(90deg, rgba(255, 69, 0, 0.1) 0%, transparent 100%);
+  padding: 15px 20px;
+  margin: 15px 0;
+  font-style: italic;
+  color: #ccc;
+}
+
+/* Form elements */
+.flash-section input,
+.flash-section textarea,
+.flash-section select {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+  border: 2px solid #555;
+  border-radius: 4px;
+  color: #fff;
+  padding: 8px 12px;
+  transition: all var(--transition-normal);
+}
+
+.flash-section input:focus,
+.flash-section textarea:focus,
+.flash-section select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  outline: none;
+}
+
+.flash-section button,
+.flash-section input[type="submit"] {
+  background: linear-gradient(180deg, #3a3000 0%, #2a2000 100%);
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  padding: 10px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all var(--transition-normal);
+}
+
+.flash-section button:hover,
+.flash-section input[type="submit"]:hover {
+  background: linear-gradient(180deg, #5a4a00 0%, #3a3000 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* ============================================
+   Flash Footer
+   ============================================ */
+.flash-footer {
+  background: linear-gradient(180deg, var(--dark-deep) 0%, #000 100%);
+  border-top: 3px solid;
+  border-image: linear-gradient(90deg, transparent, #333, var(--gold), #333, transparent) 1;
+  padding: 12px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #555;
+  position: relative;
+}
+
+/* Subtle top glow */
+.flash-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 10%, rgba(255, 215, 0, 0.3) 50%, transparent 90%);
+}
+
+.flash-footer span { transition: color var(--transition-normal); }
+.flash-footer span:hover { color: #888; }
+
+.flash-visitor-count {
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+}
+
+#flash-visitors {
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+  animation: flash-visitor-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes flash-visitor-glow {
+  0% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+  100% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 25px rgba(255, 140, 0, 0.5); }
+}
+
+/* ============================================
+   Headshot Freakout Mode
+   ============================================ */
+.flash-headshot-freakout {
+  background: radial-gradient(ellipse at center, #000033 0%, #000 100%);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: flash-freakout-bg 0.5s ease-out;
+  overflow: hidden;
+}
+
+.flash-headshot-freakout.ending { animation: flash-freakout-end 0.5s ease-in forwards; }
+
+@keyframes flash-freakout-bg {
+  0% { opacity: 0; background: #fff; }
+  30% { opacity: 1; background: #fff; }
+  100% { opacity: 1; background: radial-gradient(ellipse at center, #000033 0%, #000 100%); }
+}
+
+@keyframes flash-freakout-end {
+  0% { opacity: 1; transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(0); }
+}
+
+/* Giant spinning headshot */
+.flash-freakout-head {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: var(--gold) var(--orange-red) var(--magenta) var(--cyan);
+  box-shadow: 0 0 50px var(--gold), 0 0 100px var(--orange-red), 0 0 150px var(--magenta), 0 0 200px var(--cyan), inset 0 0 50px rgba(255, 255, 255, 0.3);
+  animation: flash-freakout-head-spin 2s linear infinite, flash-freakout-head-pulse 0.5s ease-in-out infinite alternate, flash-freakout-head-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+@keyframes flash-freakout-head-enter {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  50% { transform: scale(1.3) rotate(20deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes flash-freakout-head-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes flash-freakout-head-pulse {
+  0% { box-shadow: 0 0 50px var(--gold), 0 0 100px var(--orange-red), 0 0 150px var(--magenta), 0 0 200px var(--cyan); }
+  100% { box-shadow: 0 0 80px var(--gold), 0 0 150px var(--orange-red), 0 0 200px var(--magenta), 0 0 250px var(--cyan); }
+}
+
+/* Particle explosion */
+.flash-freakout-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: var(--size);
+  animation: flash-freakout-particle-fly var(--duration) ease-out var(--delay) forwards;
+  opacity: 0;
+  z-index: 5;
+}
+
+@keyframes flash-freakout-particle-fly {
+  0% { transform: translate(-50%, -50%) rotate(0deg) translateX(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--distance)) rotate(720deg); opacity: 0; }
+}
+
+/* Matrix rain */
+.flash-freakout-matrix-col {
+  position: absolute;
+  top: -100%;
+  font-family: 'MS Gothic', monospace;
+  font-size: 16px;
+  color: var(--matrix-green);
+  text-shadow: var(--glow-matrix);
+  line-height: 1.2;
+  animation: flash-freakout-matrix-fall linear infinite;
+  opacity: 0.7;
+  z-index: 1;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+@keyframes flash-freakout-matrix-fall {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(300%); }
+}
+
+/* Lens flare bursts */
+.flash-freakout-flare {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 1) 0%, rgba(255, 215, 0, 0.8) 20%, rgba(255, 140, 0, 0.4) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: flash-freakout-flare-burst 0.6s ease-out var(--flare-delay) forwards;
+  opacity: 0;
+  transform: scale(0);
+  z-index: 15;
+}
+
+@keyframes flash-freakout-flare-burst {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(3); opacity: 0.8; }
+  100% { transform: scale(5); opacity: 0; }
+}
+
+/* EPIC text */
+.flash-freakout-text {
+  position: absolute;
+  font-size: 120px;
+  font-weight: 900;
+  font-family: Impact, 'Arial Black', sans-serif;
+  background: linear-gradient(180deg, var(--gold) 0%, var(--orange-red) 50%, var(--magenta) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 10px;
+  animation: flash-freakout-text-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards, flash-freakout-text-shake 0.1s linear 0.3s infinite;
+  opacity: 0;
+  transform: scale(0) rotate(-10deg);
+  z-index: 20;
+  text-shadow: none;
+  filter: drop-shadow(0 0 10px var(--gold)) drop-shadow(0 0 20px var(--orange-red)) drop-shadow(0 0 30px var(--magenta)) drop-shadow(4px 4px 0 #000);
+}
+
+@keyframes flash-freakout-text-enter {
+  0% { opacity: 0; transform: scale(0) rotate(-10deg) translateY(100px); }
+  60% { opacity: 1; transform: scale(1.2) rotate(5deg) translateY(-20px); }
+  80% { transform: scale(0.9) rotate(-3deg) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg) translateY(0); }
+}
+
+@keyframes flash-freakout-text-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-3px) rotate(-1deg); }
+  75% { transform: translateX(3px) rotate(1deg); }
+}
+
+/* Chromatic aberration overlay */
+.flash-headshot-freakout::after {
+  background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 255, 0, 0.03) 2px, rgba(0, 255, 0, 0.03) 4px);
+  pointer-events: none;
+  z-index: 100;
+  animation: flash-freakout-scanlines 0.1s linear infinite;
+}
+
+@keyframes flash-freakout-scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* ============================================
+   Flash Page Crumple (External Link Exit)
+   ============================================ */
+.flash-crumple-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999999;
+  perspective: 1000px;
+  pointer-events: none;
+  background: transparent;
+}
+
+.flash-crumple-wrapper {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: flash-crumple-main 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+}
+
+@keyframes flash-crumple-main {
+  0% {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+    filter: brightness(1);
+  }
+  15% {
+    transform: perspective(1000px) rotateX(5deg) rotateY(-3deg) rotateZ(2deg) scale(0.98);
+    filter: brightness(1.1);
+  }
+  30% {
+    transform: perspective(800px) rotateX(-10deg) rotateY(8deg) rotateZ(-5deg) scale(0.9);
+    filter: brightness(0.9);
+  }
+  50% {
+    transform: perspective(600px) rotateX(25deg) rotateY(-20deg) rotateZ(15deg) scale(0.6);
+    filter: brightness(0.7) contrast(1.2);
+  }
+  70% {
+    transform: perspective(400px) rotateX(-40deg) rotateY(35deg) rotateZ(-30deg) scale(0.3);
+    filter: brightness(0.5) contrast(1.4);
+  }
+  85% {
+    transform: perspective(200px) rotateX(60deg) rotateY(-50deg) rotateZ(45deg) scale(0.1);
+    filter: brightness(0.3) contrast(1.6);
+  }
+  100% {
+    transform: perspective(100px) rotateX(90deg) rotateY(90deg) rotateZ(720deg) scale(0);
+    filter: brightness(0) contrast(2);
+  }
+}
+
+/* Individual fold lines that appear on the page */
+.flash-crumple-fold {
+  position: absolute;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(0, 0, 0, 0.3) 55%,
+    transparent 100%
+  );
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.flash-crumple-fold.horizontal {
+  width: 100%;
+  height: 4px;
+  left: 0;
+  animation: flash-fold-horizontal 0.8s ease-out forwards;
+}
+
+.flash-crumple-fold.vertical {
+  width: 4px;
+  height: 100%;
+  top: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(0, 0, 0, 0.3) 55%,
+    transparent 100%
+  );
+  animation: flash-fold-vertical 0.8s ease-out forwards;
+}
+
+.flash-crumple-fold.diagonal {
+  width: 200%;
+  height: 4px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(0, 0, 0, 0.4) 55%,
+    transparent 100%
+  );
+  animation: flash-fold-diagonal 0.6s ease-out forwards;
+}
+
+@keyframes flash-fold-horizontal {
+  0% { opacity: 0; transform: scaleX(0); }
+  30% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 1; transform: scaleX(1) scaleY(3); }
+}
+
+@keyframes flash-fold-vertical {
+  0% { opacity: 0; transform: scaleY(0); }
+  30% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 1; transform: scaleY(1) scaleX(3); }
+}
+
+@keyframes flash-fold-diagonal {
+  0% { opacity: 0; transform: scaleX(0); }
+  50% { opacity: 1; transform: scaleX(0.7); }
+  100% { opacity: 0.8; transform: scaleX(1); }
+}
+
+/* Paper crinkle texture overlay */
+.flash-crumple-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 10px,
+      rgba(0, 0, 0, 0.02) 10px,
+      rgba(0, 0, 0, 0.02) 20px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 10px,
+      rgba(255, 255, 255, 0.02) 10px,
+      rgba(255, 255, 255, 0.02) 20px
+    );
+  animation: flash-crumple-texture 0.8s ease-in forwards;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@keyframes flash-crumple-texture {
+  0% { opacity: 0; background-size: 20px 20px; }
+  50% { opacity: 1; background-size: 15px 15px; }
+  100% { opacity: 1; background-size: 5px 5px; }
+}
+
+/* Sound wave burst from center as page crumples */
+.flash-crumple-shockwave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: flash-crumple-shockwave var(--wave-duration, 0.6s) ease-out var(--wave-delay, 0s) forwards;
+  opacity: 0;
+}
+
+@keyframes flash-crumple-shockwave {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; border-width: 3px; }
+  100% { transform: translate(-50%, -50%) scale(20); opacity: 0; border-width: 1px; }
+}
+
+/* "GOODBYE" text that flashes */
+.flash-crumple-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 60px;
+  font-weight: 900;
+  font-family: Impact, 'Arial Black', sans-serif;
+  color: var(--gold);
+  text-shadow:
+    0 0 20px var(--gold),
+    0 0 40px var(--orange-red),
+    0 0 60px var(--magenta),
+    3px 3px 0 #000;
+  letter-spacing: 8px;
+  white-space: nowrap;
+  animation: flash-crumple-text 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+  z-index: 100;
+}
+
+@keyframes flash-crumple-text {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-20deg); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.3) rotate(5deg); opacity: 1; }
+  70% { transform: translate(-50%, -50%) scale(0.9) rotate(-2deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Crumple causes the actual site content to warp */
+.flash-crumpling #flash-site {
+  animation: flash-site-crumple 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+  transform-origin: center center;
+}
+
+@keyframes flash-site-crumple {
+  0% {
+    transform: perspective(1000px) rotateX(0) rotateY(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: perspective(800px) rotateX(-5deg) rotateY(5deg) scale(0.95);
+    opacity: 1;
+  }
+  50% {
+    transform: perspective(600px) rotateX(15deg) rotateY(-15deg) rotateZ(5deg) scale(0.7);
+    opacity: 0.9;
+  }
+  75% {
+    transform: perspective(400px) rotateX(-30deg) rotateY(30deg) rotateZ(-15deg) scale(0.4);
+    opacity: 0.6;
+  }
+  100% {
+    transform: perspective(200px) rotateX(45deg) rotateY(-45deg) rotateZ(30deg) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Background darkens as page crumples */
+.flash-crumpling::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 999998;
+  animation: flash-crumple-darken 1s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes flash-crumple-darken {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
