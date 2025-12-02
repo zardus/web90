@@ -275,8 +275,10 @@
 
     // Handle chat button
     chatBtn.addEventListener('click', async function() {
-      // Check if model is already loaded (worker exists and ready)
-      if (!worker) {
+      // Check if user has previously confirmed download
+      var hasConfirmed = localStorage.getItem('clippy-model-confirmed');
+
+      if (!hasConfirmed) {
         // Show confirmation dialog for download
         var confirmed = confirm(
           "To chat with Clippy, I need to download a small AI model (~180MB).\n\n" +
@@ -286,6 +288,7 @@
         if (!confirmed) {
           return;
         }
+        localStorage.setItem('clippy-model-confirmed', 'true');
       }
 
       introSection.style.display = 'none';

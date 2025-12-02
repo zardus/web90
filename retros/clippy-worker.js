@@ -76,7 +76,7 @@ self.onmessage = async function(e) {
       });
 
       const output = await pipeline(messages, {
-        max_new_tokens: 48,
+        max_new_tokens: 512,
         temperature: 0.7,
         top_p: 0.9,
         do_sample: true,
