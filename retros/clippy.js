@@ -8,18 +8,19 @@
 (function() {
   'use strict';
 
-  // Clippy image URL - using a well-known Clippy sprite
-  var CLIPPY_IMAGE_URL = 'https://upload.wikimedia.org/wikipedia/en/d/db/Clippy-letter.PNG';
+  // Clippy image URL - local asset
+  var CLIPPY_IMAGE_URL = null; // Set dynamically from basePath
 
-  // Model configuration - using a tiny model that runs fast in-browser
-  var MODEL_ID = 'onnx-community/Qwen2.5-0.5B-Instruct';
+  // Model configuration - tiny instruction-tuned model, pre-converted to ONNX
+  var MODEL_ID = 'onnx-community/SmolLM-135M-Instruct-ONNX';
 
   // State
-  var pipeline = null;
-  var tokenizer = null;
+  var worker = null;
   var conversationHistory = [];
   var pageContext = '';
   var isGenerating = false;
+  var pendingResolve = null;
+  var pendingOnToken = null;
 
   // Classic Clippy intro messages
   var INTRO_MESSAGES = [
@@ -59,20 +60,14 @@
       content.push('Headings: ' + headingTexts.slice(0, 10).join(', '));
     }
 
-    // Get main content text (limited)
+    // Get main content text
     var mainEl = document.querySelector('main, article, #main, #content, .content');
     if (mainEl) {
       var mainText = mainEl.textContent.replace(/\s+/g, ' ').trim();
-      if (mainText.length > 1500) {
-        mainText = mainText.substring(0, 1500) + '...';
-      }
       content.push('Content: ' + mainText);
     } else {
       // Fallback: get body text
       var bodyText = document.body.textContent.replace(/\s+/g, ' ').trim();
-      if (bodyText.length > 1000) {
-        bodyText = bodyText.substring(0, 1000) + '...';
-      }
       content.push('Content: ' + bodyText);
     }
 
@@ -96,84 +91,61 @@
    * Build the system prompt with Clippy persona and page context
    */
   function buildSystemPrompt() {
-    return "You are Clippy, the helpful (and slightly annoying) Microsoft Office assistant from the late 1990s. " +
-      "You're enthusiastic, eager to help, and occasionally make outdated tech references. " +
-      "You use phrases like 'It looks like you're...', offer unsolicited tips, and are nostalgic about the 90s internet era. " +
-      "Keep responses SHORT (1-3 sentences max). Be helpful but also quirky and fun. " +
-      "You're currently helping a user browse a retro-styled webpage.\n\n" +
-      "=== CURRENT PAGE CONTENT ===\n" + pageContext + "\n=== END PAGE CONTENT ===\n\n" +
-      "Answer questions about this page or help the user in your classic Clippy way!";
+    return "You are Clippy, the Microsoft Office assistant from the 1990s. " +
+      "You're enthusiastic and use phrases like 'It looks like you're...' " +
+      "IMPORTANT: Keep responses to 1-2 sentences MAX. Be brief and punchy. " +
+      "Your response will be shown directly to the user in a chat bubble - write conversationally, no formatting or meta-commentary. " +
+      "You're helping a user browse this webpage:\n\n" +
+      "=== PAGE CONTENT ===\n" + pageContext + "\n=== END ===\n\n" +
+      "Answer questions about this page. Stay in character. 1-2 sentences only!";
   }
 
   /**
-   * Load the LLM model with progress updates
+   * Load the LLM model in a Web Worker
    */
   async function loadModel(progressCallback) {
-    try {
-      // Dynamic import of Transformers.js from CDN
-      progressCallback(5, 'Loading Transformers.js...');
+    return new Promise(function(resolve) {
+      var basePath = window.web90 ? window.web90.config.basePath : '';
+      worker = new Worker(basePath + '/retros/clippy-worker.js', { type: 'module' });
 
-      var transformers = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0');
+      worker.onmessage = function(e) {
+        var msg = e.data;
 
-      progressCallback(15, 'Initializing pipeline...');
-
-      // Create text generation pipeline
-      pipeline = await transformers.pipeline(
-        'text-generation',
-        MODEL_ID,
-        {
-          dtype: 'q4',  // Use 4-bit quantization for smaller size
-          device: 'webgpu',  // Try WebGPU first
-          progress_callback: function(progress) {
-            if (progress.status === 'downloading' || progress.status === 'progress') {
-              var pct = Math.round(15 + (progress.progress || 0) * 0.8);
-              progressCallback(pct, 'Downloading model: ' + Math.round(progress.progress || 0) + '%');
-            } else if (progress.status === 'loading') {
-              progressCallback(95, 'Loading into memory...');
-            }
+        if (msg.type === 'progress') {
+          progressCallback(msg.progress, msg.status);
+        } else if (msg.type === 'loaded') {
+          resolve(true);
+        } else if (msg.type === 'error') {
+          console.error('Worker error:', msg.error);
+          progressCallback(-1, 'Error: ' + msg.error);
+          resolve(false);
+        } else if (msg.type === 'token') {
+          if (pendingOnToken) pendingOnToken(msg.text);
+        } else if (msg.type === 'done') {
+          if (pendingResolve) {
+            pendingResolve(msg.response);
+            pendingResolve = null;
+            pendingOnToken = null;
           }
         }
-      );
+      };
 
-      progressCallback(100, 'Ready!');
-      return true;
-    } catch (webgpuError) {
-      console.log('WebGPU not available, falling back to WASM:', webgpuError);
+      worker.onerror = function(err) {
+        console.error('Worker error:', err);
+        progressCallback(-1, 'Worker failed to load');
+        resolve(false);
+      };
 
-      try {
-        // Retry with WASM backend
-        var transformers = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0');
-
-        pipeline = await transformers.pipeline(
-          'text-generation',
-          MODEL_ID,
-          {
-            dtype: 'q4',
-            device: 'wasm',
-            progress_callback: function(progress) {
-              if (progress.status === 'downloading' || progress.status === 'progress') {
-                var pct = Math.round(15 + (progress.progress || 0) * 0.8);
-                progressCallback(pct, 'Downloading model: ' + Math.round(progress.progress || 0) + '%');
-              }
-            }
-          }
-        );
-
-        progressCallback(100, 'Ready!');
-        return true;
-      } catch (wasmError) {
-        console.error('Failed to load model:', wasmError);
-        progressCallback(-1, 'Error: ' + wasmError.message);
-        return false;
-      }
-    }
+      // Start loading the model
+      worker.postMessage({ type: 'load', data: { modelId: MODEL_ID } });
+    });
   }
 
   /**
-   * Generate a response from Clippy
+   * Generate a response from Clippy (via Web Worker)
    */
-  async function generateResponse(userMessage) {
-    if (!pipeline || isGenerating) return null;
+  async function generateResponse(userMessage, onToken) {
+    if (!worker || isGenerating) return null;
 
     isGenerating = true;
 
@@ -184,24 +156,27 @@
       ];
 
       // Add conversation history (keep last few turns)
-      var recentHistory = conversationHistory.slice(-6);
+      var recentHistory = conversationHistory.slice(-4);
       messages = messages.concat(recentHistory);
 
       // Add user message
       messages.push({ role: 'user', content: userMessage });
 
-      // Generate response
-      var output = await pipeline(messages, {
-        max_new_tokens: 128,
-        temperature: 0.7,
-        top_p: 0.9,
-        do_sample: true
+      // Log the full prompt to console for debugging
+      console.log('=== CLIPPY PROMPT ===');
+      messages.forEach(function(msg) {
+        console.log('[' + msg.role.toUpperCase() + ']:', msg.content);
+      });
+      console.log('=====================');
+
+      // Send to worker and wait for response
+      var response = await new Promise(function(resolve) {
+        pendingResolve = resolve;
+        pendingOnToken = onToken;
+        worker.postMessage({ type: 'generate', data: { messages: messages } });
       });
 
-      // Extract assistant response
-      var generatedMessages = output[0].generated_text;
-      var lastMessage = generatedMessages[generatedMessages.length - 1];
-      var response = lastMessage.content || '';
+      console.log('[CLIPPY RESPONSE]:', response);
 
       // Update conversation history
       conversationHistory.push({ role: 'user', content: userMessage });
@@ -250,10 +225,11 @@
     // Extract page content for context
     pageContext = extractPageContent();
 
-    // Set Clippy image
+    // Set Clippy image from local asset
+    var basePath = window.web90 ? window.web90.config.basePath : '';
     var img = document.getElementById('clippy-img');
     if (img) {
-      img.src = CLIPPY_IMAGE_URL;
+      img.src = basePath + '/clippy.png';
       img.onerror = function() {
         // Fallback to a simple emoji representation
         img.style.display = 'none';
@@ -299,6 +275,19 @@
 
     // Handle chat button
     chatBtn.addEventListener('click', async function() {
+      // Check if model is already loaded (worker exists and ready)
+      if (!worker) {
+        // Show confirmation dialog for download
+        var confirmed = confirm(
+          "To chat with Clippy, I need to download a small AI model (~180MB).\n\n" +
+          "This only happens once - it'll be cached for future visits.\n\n" +
+          "Download now?"
+        );
+        if (!confirmed) {
+          return;
+        }
+      }
+
       introSection.style.display = 'none';
       buttonsSection.style.display = 'none';
       loadingSection.style.display = 'block';
@@ -318,7 +307,7 @@
         chatSection.style.display = 'block';
 
         // Add initial Clippy greeting
-        addMessage("I'm ready to help! Ask me anything about this page, or just chat! 📎", 'clippy');
+        addMessage("I'm ready to help! Ask me anything about this page, or just chat!", 'clippy');
         chatInput.focus();
       } else {
         // Show error state with retry option
@@ -350,14 +339,19 @@
       chatInput.value = '';
       addMessage(text, 'user');
 
-      // Show typing indicator
+      // Show bouncing dots indicator
       var typingMsg = addMessage('', 'clippy');
       typingMsg.classList.add('clippy-msg-typing');
-      typingMsg.innerHTML = '<span class="clippy-thinking">Thinking</span>';
+      typingMsg.innerHTML = '<span class="clippy-dots"><span class="clippy-dot"></span><span class="clippy-dot"></span><span class="clippy-dot"></span></span>';
 
-      var response = await generateResponse(text);
+      // Stream tokens with bouncing dots at the end
+      var dotsHtml = '<span class="clippy-dots"><span class="clippy-dot"></span><span class="clippy-dot"></span><span class="clippy-dot"></span></span>';
+      var response = await generateResponse(text, function(fullText) {
+        typingMsg.innerHTML = fullText + ' ' + dotsHtml;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      });
 
-      // Replace typing with response
+      // Final update - remove dots, show complete response
       typingMsg.classList.remove('clippy-msg-typing');
       typingMsg.textContent = response || "Hmm, I seem to have lost my train of thought!";
     }
