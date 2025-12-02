@@ -1,0 +1,30 @@
+/**
+ * Cascade Virus Theme Styles
+ * Simulates the classic DOS Cascade virus aesthetic
+ */
+
+/* DOS-style green on black when cascade is active */
+body.cascade-mode {
+  background-color: #000000 !important;
+  color: #00ff00 !important;
+}
+
+body.cascade-mode * {
+  color: #00ff00 !important;
+}
+
+body.cascade-mode a {
+  color: #00ff00 !important;
+}
+
+body.cascade-mode a:hover {
+  color: #55ff55 !important;
+}
+
+#cascade-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+}

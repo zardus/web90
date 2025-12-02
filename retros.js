@@ -265,7 +265,8 @@
     { name: 'vhs', type: 'theme', emoji: '📼', label: 'VHS Glitch', init: initThemeVHS },
     // Themes (external/lazy-loaded)
     { name: 'flash', type: 'theme', emoji: '⚡', label: 'Flash Site', resources: { js: 'flash.js', css: 'flash.css' } },
-    { name: 'starwars', type: 'theme', emoji: '⭐', label: 'Star Wars Crawl', resources: { js: 'starwars.js', css: 'starwars.css' } }
+    { name: 'starwars', type: 'theme', emoji: '⭐', label: 'Star Wars Crawl', resources: { js: 'starwars.js', css: 'starwars.css' } },
+    { name: 'cascade', type: 'theme', emoji: '🦠', label: 'Cascade Virus', resources: { js: 'cascade.js', css: 'cascade.css' } }
   ];
 
   // Derived arrays
