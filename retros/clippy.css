@@ -6,6 +6,13 @@
   right: 20px;
   z-index: 100001;
   font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#clippy-container.hiding {
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  pointer-events: none;
 }
 
 #clippy-wrapper {
@@ -216,6 +223,27 @@
 #clippy-chat-input:focus {
   outline: none;
   border-color: #000080;
+}
+
+#clippy-close-btn {
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
+  padding: 4px 12px;
+  margin-top: 8px;
+  width: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #d4d0c8 100%);
+  border: 2px outset #d4d0c8;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #808080;
+}
+
+#clippy-close-btn:hover {
+  background: linear-gradient(180deg, #e8e8e8 0%, #c0c0c0 100%);
+}
+
+#clippy-close-btn:active {
+  border-style: inset;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 /* Clippy Character */

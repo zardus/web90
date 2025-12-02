@@ -261,10 +261,17 @@
     var messagesContainer = document.getElementById('clippy-chat-messages');
     var character = document.getElementById('clippy-character');
 
+    // Smooth hide helper
+    function hideClippy() {
+      container.classList.add('hiding');
+      setTimeout(function() {
+        container.style.display = 'none';
+        container.classList.remove('hiding');
+      }, 300);
+    }
+
     // Handle dismiss
-    dismissBtn.addEventListener('click', function() {
-      container.classList.add('minimized');
-    });
+    dismissBtn.addEventListener('click', hideClippy);
 
     // Handle click on minimized Clippy to restore
     character.addEventListener('click', function() {
@@ -365,6 +372,10 @@
         sendMessage();
       }
     });
+
+    // Handle close button in chat
+    var closeBtn = document.getElementById('clippy-close-btn');
+    closeBtn.addEventListener('click', hideClippy);
   }
 
   // Register as a web90 plugin
