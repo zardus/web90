@@ -22,7 +22,8 @@
   var TRAIL_STYLES = {
     binary: {
       emoji: '🔟', label: 'Binary',
-      chars: function() { return Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1'); }
+      chars: function() { return Math.random() < 0.001 ? '2' : (Math.random() < 0.5 ? '0' : '1'); },
+      color: function() { return document.body.classList.contains('dark-mode') ? '#fff' : '#000'; }
     },
     sparkles: {
       emoji: '✨', label: 'Sparkles',
