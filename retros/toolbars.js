@@ -577,6 +577,7 @@
     // Create container
     container = document.createElement('div');
     container.id = 'toolbar-container';
+    container.className = 'win98';
     document.documentElement.appendChild(container);
 
     isRunning = true;

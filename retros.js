@@ -35,11 +35,10 @@
   // ============================================
 
   (function() {
-    var SCOPES = ['#control-panel', '#chat-window', '#clippy-container', '#popup-container', '#toolbar-container'];
     fetch('https://unpkg.com/98.css@0.1.21/dist/98.css')
       .then(function(r) { return r.text(); })
       .then(function(css) {
-        // Prefix all selectors with our scope containers
+        // Prefix all selectors with .win98 scope class
         var scoped = css.replace(/([^{}]+)(\{[^{}]*\})/g, function(match, selectorBlock, rules) {
           // Skip @-rules and font-face
           var trimmed = selectorBlock.trim();
@@ -51,10 +50,8 @@
           var prefixed = selectors.map(function(sel) {
             sel = sel.trim();
             if (!sel || sel.charAt(0) === '@') return sel;
-            // Prefix with each scope
-            return SCOPES.map(function(scope) {
-              return scope + ' ' + sel;
-            }).join(', ');
+            // Prefix with .win98 scope
+            return '.win98 ' + sel;
           }).join(', ');
           return prefixed + rules;
         });
