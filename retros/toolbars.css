@@ -1,0 +1,686 @@
+/**
+ * Early 2000s Browser Toolbar Infestation
+ * Simulates the nightmare of bundled search bars and browser toolbars
+ * that would stack up and consume half your screen
+ */
+
+/* Container for all the toolbar chaos */
+#toolbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99990;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+}
+
+/* Individual toolbar wrapper */
+.browser-toolbar {
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #808080;
+}
+
+.browser-toolbar.toolbar-visible {
+  height: auto;
+}
+
+/* Toolbar content area */
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  gap: 2px;
+  min-height: 26px;
+  flex-wrap: nowrap;
+  font-size: 11px;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+}
+
+/* Toolbar branding/logo area */
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: 11px;
+  border-right: 1px solid #808080;
+  margin-right: 4px;
+}
+
+.toolbar-brand-icon {
+  font-size: 16px;
+}
+
+/* Search box styling */
+.toolbar-search-box {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.toolbar-search-input {
+  width: 140px;
+  height: 18px;
+  border: 2px inset #fff;
+  font-size: 11px;
+  padding: 0 4px;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+}
+
+.toolbar-search-btn {
+  height: 22px;
+  padding: 0 8px;
+  font-size: 10px;
+  margin-left: 2px;
+  cursor: pointer;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+}
+
+/* Toolbar buttons */
+.toolbar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 10px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #000;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+}
+
+.toolbar-btn:hover {
+  border: 1px outset #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
+}
+
+.toolbar-btn:active {
+  border: 1px inset #808080;
+}
+
+.toolbar-btn-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.toolbar-btn-label {
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+/* Dropdown arrow */
+.toolbar-dropdown {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-dropdown::after {
+  content: '▼';
+  font-size: 6px;
+  margin-left: 2px;
+}
+
+/* Separator */
+.toolbar-separator {
+  width: 2px;
+  height: 22px;
+  background: linear-gradient(90deg, #808080, #ffffff);
+  margin: 0 4px;
+}
+
+/* Toolbar theme variations */
+
+/* Ask Jeeves - Classic purple/yellow */
+.toolbar-askjeeves {
+  background: linear-gradient(180deg, #ffeb99 0%, #ffdd55 50%, #e6c84a 100%);
+  border-bottom: 1px solid #806600;
+}
+
+.toolbar-askjeeves .toolbar-brand {
+  color: #4a0080;
+}
+
+.toolbar-askjeeves .toolbar-search-btn {
+  background: linear-gradient(180deg, #9966cc 0%, #663399 100%);
+  color: white;
+  border: 1px outset #b088d4;
+}
+
+/* Yahoo - Purple gradient */
+.toolbar-yahoo {
+  background: linear-gradient(180deg, #7b68a6 0%, #5e4b8a 50%, #483d6b 100%);
+  color: white;
+}
+
+.toolbar-yahoo .toolbar-brand {
+  color: #ffff00;
+  border-right-color: #9980c0;
+}
+
+.toolbar-yahoo .toolbar-btn {
+  color: white;
+}
+
+.toolbar-yahoo .toolbar-btn:hover {
+  background: linear-gradient(180deg, #8b78b6 0%, #6e5b9a 100%);
+  border-color: #a090c0;
+}
+
+.toolbar-yahoo .toolbar-search-btn {
+  background: linear-gradient(180deg, #ff0000 0%, #cc0000 100%);
+  color: white;
+  font-weight: bold;
+  border: 1px outset #ff4444;
+}
+
+/* Google - Clean but dated */
+.toolbar-google {
+  background: linear-gradient(180deg, #ffffff 0%, #ececec 50%, #dddddd 100%);
+  border-bottom: 1px solid #4285f4;
+}
+
+.toolbar-google .toolbar-brand {
+  font-weight: bold;
+}
+
+.toolbar-google .toolbar-brand span:nth-child(1) { color: #4285f4; }
+.toolbar-google .toolbar-brand span:nth-child(2) { color: #ea4335; }
+.toolbar-google .toolbar-brand span:nth-child(3) { color: #fbbc05; }
+.toolbar-google .toolbar-brand span:nth-child(4) { color: #4285f4; }
+.toolbar-google .toolbar-brand span:nth-child(5) { color: #34a853; }
+.toolbar-google .toolbar-brand span:nth-child(6) { color: #ea4335; }
+
+.toolbar-google .toolbar-search-btn {
+  background: linear-gradient(180deg, #4d90fe 0%, #4285f4 100%);
+  color: white;
+  border: 1px solid #3079ed;
+}
+
+/* Bonzi Buddy - Purple nightmare */
+.toolbar-bonzi {
+  background: linear-gradient(180deg, #cc99ff 0%, #9933ff 50%, #6600cc 100%);
+  color: white;
+}
+
+.toolbar-bonzi .toolbar-brand {
+  color: #ffff00;
+  text-shadow: 1px 1px 2px #000;
+  border-right-color: #aa66ff;
+}
+
+.toolbar-bonzi .toolbar-brand-icon {
+  font-size: 18px;
+}
+
+.toolbar-bonzi .toolbar-btn {
+  color: white;
+  text-shadow: 1px 1px 1px #000;
+}
+
+.toolbar-bonzi .toolbar-search-btn {
+  background: linear-gradient(180deg, #00cc00 0%, #009900 100%);
+  color: white;
+  font-weight: bold;
+  border: 1px outset #00ff00;
+}
+
+/* WeatherBug - Blue/white clouds */
+.toolbar-weatherbug {
+  background: linear-gradient(180deg, #99ccff 0%, #6699cc 50%, #336699 100%);
+  color: white;
+}
+
+.toolbar-weatherbug .toolbar-brand {
+  color: #ffff00;
+  border-right-color: #77aadd;
+}
+
+.toolbar-weatherbug .toolbar-btn {
+  color: white;
+}
+
+.toolbar-weatherbug .toolbar-temp {
+  font-weight: bold;
+  font-size: 12px;
+  color: #ffff00;
+  padding: 0 8px;
+}
+
+/* MyWebSearch - Garish red/orange */
+.toolbar-mywebsearch {
+  background: linear-gradient(180deg, #ff6600 0%, #cc3300 50%, #aa2200 100%);
+  color: white;
+}
+
+.toolbar-mywebsearch .toolbar-brand {
+  color: #ffff00;
+  text-shadow: 1px 1px 2px #000;
+  border-right-color: #ff8844;
+}
+
+.toolbar-mywebsearch .toolbar-search-btn {
+  background: linear-gradient(180deg, #00cc00 0%, #009900 100%);
+  color: white;
+  font-weight: bold;
+}
+
+.toolbar-mywebsearch .toolbar-smileys {
+  display: flex;
+  gap: 2px;
+  padding: 0 4px;
+  font-size: 14px;
+}
+
+/* Hotbar - Gaudy gold */
+.toolbar-hotbar {
+  background: linear-gradient(180deg, #ffd700 0%, #daa520 50%, #b8860b 100%);
+  color: #000;
+}
+
+.toolbar-hotbar .toolbar-brand {
+  color: #8b0000;
+  font-style: italic;
+  border-right-color: #d4a520;
+}
+
+.toolbar-hotbar .toolbar-skins {
+  display: flex;
+  gap: 2px;
+  font-size: 8px;
+}
+
+.toolbar-hotbar .toolbar-skin-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px outset;
+  cursor: pointer;
+}
+
+/* Limewire - Green P2P */
+.toolbar-limewire {
+  background: linear-gradient(180deg, #66cc66 0%, #339933 50%, #006600 100%);
+  color: white;
+}
+
+.toolbar-limewire .toolbar-brand {
+  color: #ffff00;
+  border-right-color: #55bb55;
+}
+
+.toolbar-limewire .toolbar-btn {
+  color: white;
+}
+
+.toolbar-limewire .toolbar-search-btn {
+  background: linear-gradient(180deg, #ffcc00 0%, #ff9900 100%);
+  color: #000;
+  font-weight: bold;
+}
+
+/* Cursor Mania - Psychedelic */
+.toolbar-cursormania {
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+  background-size: 200% 100%;
+  animation: toolbar-rainbow 3s linear infinite;
+  color: #000;
+}
+
+@keyframes toolbar-rainbow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.toolbar-cursormania .toolbar-brand {
+  color: #000;
+  text-shadow: 0 0 2px #fff;
+  border-right-color: #ffffff80;
+}
+
+.toolbar-cursormania .toolbar-cursors {
+  display: flex;
+  gap: 4px;
+  padding: 0 4px;
+}
+
+.toolbar-cursormania .toolbar-cursor-option {
+  font-size: 16px;
+  cursor: pointer;
+  animation: toolbar-cursor-bounce 0.5s infinite alternate;
+}
+
+.toolbar-cursormania .toolbar-cursor-option:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.toolbar-cursormania .toolbar-cursor-option:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes toolbar-cursor-bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3px); }
+}
+
+/* Gator/GAIN - Sneaky gray */
+.toolbar-gator {
+  background: linear-gradient(180deg, #cccccc 0%, #999999 50%, #666666 100%);
+  color: white;
+}
+
+.toolbar-gator .toolbar-brand {
+  color: #00cc00;
+  border-right-color: #aaaaaa;
+}
+
+.toolbar-gator .toolbar-deals {
+  color: #ffff00;
+  font-weight: bold;
+  animation: toolbar-blink 1s infinite;
+  padding: 0 8px;
+}
+
+@keyframes toolbar-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Comet Cursor - Starry */
+.toolbar-cometcursor {
+  background: linear-gradient(180deg, #000066 0%, #000033 100%);
+  color: white;
+}
+
+.toolbar-cometcursor .toolbar-brand {
+  color: #ffcc00;
+  border-right-color: #333399;
+}
+
+.toolbar-cometcursor .toolbar-stars {
+  animation: toolbar-twinkle 2s infinite;
+}
+
+@keyframes toolbar-twinkle {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* AOL Toolbar - Blue classic */
+.toolbar-aol {
+  background: linear-gradient(180deg, #6699ff 0%, #3366cc 50%, #003399 100%);
+  color: white;
+}
+
+.toolbar-aol .toolbar-brand {
+  color: #ffff00;
+  font-weight: bold;
+  font-style: italic;
+  border-right-color: #5588dd;
+}
+
+.toolbar-aol .toolbar-btn {
+  color: white;
+}
+
+.toolbar-aol .toolbar-mail-count {
+  background: #ff0000;
+  color: white;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+/* RealPlayer */
+.toolbar-realplayer {
+  background: linear-gradient(180deg, #333333 0%, #1a1a1a 100%);
+  color: white;
+}
+
+.toolbar-realplayer .toolbar-brand {
+  color: #00cc00;
+  border-right-color: #444444;
+}
+
+.toolbar-realplayer .toolbar-btn {
+  color: #cccccc;
+}
+
+/* Install animation overlay */
+#toolbar-install-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  animation: toolbar-dialog-appear 0.3s ease-out;
+  pointer-events: auto;
+}
+
+@keyframes toolbar-dialog-appear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+#toolbar-install-dialog .window {
+  width: 380px;
+  min-width: 380px;
+}
+
+#toolbar-install-dialog .window-body {
+  padding: 16px;
+}
+
+.toolbar-install-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.toolbar-install-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.toolbar-install-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.toolbar-install-text p {
+  margin: 4px 0;
+  font-size: 11px;
+}
+
+.toolbar-install-features {
+  margin: 8px 0;
+  padding-left: 20px;
+  font-size: 11px;
+}
+
+.toolbar-install-features li {
+  margin: 2px 0;
+}
+
+.toolbar-install-checkbox {
+  margin: 12px 0;
+  font-size: 11px;
+}
+
+.toolbar-install-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-install-checkbox input {
+  margin: 0;
+}
+
+.toolbar-install-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.toolbar-install-btns button {
+  min-width: 75px;
+  padding: 4px 12px;
+}
+
+.toolbar-install-progress {
+  margin: 16px 0;
+}
+
+.toolbar-install-progress p {
+  font-size: 11px;
+  margin: 4px 0;
+}
+
+.toolbar-progress-bar {
+  width: 100%;
+  height: 18px;
+  background: #fff;
+  border: 2px inset #808080;
+  overflow: hidden;
+}
+
+.toolbar-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00007f 0%, #0000ff 50%, #00007f 100%);
+  background-size: 20px 100%;
+  animation: toolbar-progress-stripe 0.5s linear infinite;
+  transition: width 0.3s linear;
+}
+
+@keyframes toolbar-progress-stripe {
+  from { background-position: 0 0; }
+  to { background-position: 20px 0; }
+}
+
+/* Blocker button */
+#toolbar-blocker {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 100001;
+  animation: toolbar-blocker-pulse 2s ease-in-out infinite;
+  transition: opacity 0.5s;
+}
+
+@keyframes toolbar-blocker-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 0, 128, 0); }
+  50% { transform: scale(1.02); box-shadow: 0 0 12px rgba(0, 0, 128, 0.5); }
+}
+
+#toolbar-blocker .window-body {
+  padding: 8px 12px;
+  text-align: center;
+}
+
+#toolbar-blocker p {
+  margin: 4px 0;
+  font-size: 11px;
+}
+
+#toolbar-blocker-btn {
+  margin-top: 6px;
+  padding: 4px 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#toolbar-blocker-btn:hover {
+  background: #c0c0ff;
+}
+
+/* Toolbar removal animation */
+.browser-toolbar.toolbar-removing {
+  animation: toolbar-slide-out 0.5s ease-in forwards;
+}
+
+@keyframes toolbar-slide-out {
+  from {
+    height: auto;
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+/* Page push effect */
+body.toolbar-infected {
+  transition: margin-top 0.5s ease-out;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .toolbar-content {
+    font-size: 10px;
+    padding: 1px 2px;
+    min-height: 22px;
+  }
+
+  .toolbar-brand {
+    font-size: 9px;
+    padding: 0 4px;
+  }
+
+  .toolbar-brand-icon {
+    font-size: 12px;
+  }
+
+  .toolbar-search-input {
+    width: 80px;
+    height: 16px;
+    font-size: 10px;
+  }
+
+  .toolbar-search-btn {
+    height: 18px;
+    padding: 0 4px;
+    font-size: 9px;
+  }
+
+  .toolbar-btn {
+    padding: 1px 3px;
+  }
+
+  .toolbar-btn-icon {
+    font-size: 11px;
+  }
+
+  .toolbar-btn-label {
+    display: none;
+  }
+
+  #toolbar-install-dialog .window {
+    width: 300px;
+    min-width: 300px;
+  }
+
+  .toolbar-install-icon {
+    font-size: 32px;
+  }
+}
