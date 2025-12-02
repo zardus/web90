@@ -253,6 +253,9 @@
     { name: 'clippy', type: 'js', emoji: '📎', label: 'Clippy', resources: { js: 'clippy.js', css: 'clippy.css' } },
     { name: 'popups', type: 'js', emoji: '🪟', label: 'Popups', resources: { js: 'popups.js', css: 'popups.css' } },
     { name: 'toolbars', type: 'js', emoji: '🔍', label: 'Toolbars', resources: { js: 'toolbars.js', css: 'toolbars.css' } },
+    { name: 'flying-toasters', type: 'js', emoji: '🍞', label: 'Flying Toasters', resources: { js: 'flying-toasters.js' } },
+    { name: 'click-sparkles', type: 'js', emoji: '💥', label: 'Click Sparkles', resources: { js: 'click-sparkles.js' } },
+    { name: 'dvd-bounce', type: 'js', emoji: '📀', label: 'DVD Bounce', resources: { js: 'dvd-bounce.js' } },
     // Themes (inline init)
     { name: 'matrix', type: 'theme', emoji: '🕴️', label: 'Matrix', init: initThemeMatrix },
     { name: 'crt', type: 'theme', emoji: '📺', label: 'CRT Monitor', init: initThemeCRT },
@@ -265,7 +268,8 @@
     // Themes (external/lazy-loaded)
     { name: 'flash', type: 'theme', emoji: '⚡', label: 'Flash Site', resources: { js: 'flash.js', css: 'flash.css' } },
     { name: 'starwars', type: 'theme', emoji: '⭐', label: 'Star Wars Crawl', resources: { js: 'starwars.js', css: 'starwars.css' } },
-    { name: 'cascade', type: 'theme', emoji: '🦠', label: 'Cascade Virus', resources: { js: 'cascade.js', css: 'cascade.css' } }
+    { name: 'cascade', type: 'theme', emoji: '🦠', label: 'Cascade Virus', resources: { js: 'cascade.js', css: 'cascade.css' } },
+    { name: 'pipes', type: 'theme', emoji: '🔧', label: '3D Pipes', resources: { js: 'pipes.js' } }
   ];
 
   // Derived arrays
