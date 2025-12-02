@@ -444,9 +444,14 @@ body.retheme-y2k h1 {
   text-shadow: none !important;
 }
 
+/* Prevent WordArt from rendering behind Y2K chrome background */
+body.retheme-y2k .wordart-container {
+  z-index: 1;
+}
+
 .y2k-shape {
   position: fixed;
-  z-index: -1;
+  z-index: -2;
   animation: y2k-float 10s ease-in-out infinite;
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
   opacity: 0.6;

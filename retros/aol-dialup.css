@@ -1,0 +1,344 @@
+/**
+ * AOL Dialup Connection Styles
+ * Classic Windows 3.1 era AOL connection dialog
+ * Uses 98.css for window styling, this file adds AOL-specific styles
+ */
+
+/* Full-screen overlay that blocks page until connected */
+#aol-dialup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #008080; /* Classic teal Windows desktop */
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The main dialog window */
+.aol-window {
+  width: 420px;
+  user-select: none;
+}
+
+.aol-body {
+  padding: 12px;
+}
+
+.aol-title-icon {
+  margin-right: 4px;
+}
+
+/* AOL Logo and Running Man header section */
+.aol-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 12px;
+  background: #000;
+  margin-bottom: 12px;
+}
+
+.aol-logo-container {
+  text-align: center;
+}
+
+.aol-logo {
+  font-size: 32px;
+  font-weight: bold;
+  color: #00aaff;
+  font-family: Arial, sans-serif;
+  text-shadow: 2px 2px 0 #004488;
+  letter-spacing: -1px;
+}
+
+.aol-logo-text {
+  font-size: 10px;
+  color: #ffcc00;
+  margin-top: -4px;
+}
+
+/* The iconic Running Man animation */
+.aol-running-man {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aol-running-man-figure {
+  font-size: 40px;
+  color: #ffcc00;
+  animation: aol-running 0.4s steps(2) infinite;
+  text-shadow: 0 0 10px #ffcc00;
+}
+
+@keyframes aol-running {
+  0%, 100% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+}
+
+/* Running man trail effect */
+.aol-running-man::before,
+.aol-running-man::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffcc00;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: aol-trail 0.3s ease-out infinite;
+}
+
+.aol-running-man::before {
+  left: 5px;
+  animation-delay: 0s;
+}
+
+.aol-running-man::after {
+  left: 15px;
+  animation-delay: 0.1s;
+}
+
+@keyframes aol-trail {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.3) translateX(-20px); }
+}
+
+/* Three connection panels - horizontal layout */
+.aol-panels {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.aol-panel {
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  flex: 1;
+  min-height: 70px;
+  transition: background-color 0.2s;
+}
+
+.aol-panel-icon {
+  font-size: 20px;
+  transition: color 0.2s;
+}
+
+.aol-panel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.aol-panel-title {
+  font-size: 10px;
+  font-weight: bold;
+  color: #000080;
+  margin-bottom: 2px;
+}
+
+.aol-panel-status {
+  font-size: 9px;
+  color: #000;
+  min-height: 22px;
+}
+
+/* Panel states */
+.aol-panel.waiting .aol-panel-icon {
+  color: #808080;
+}
+
+.aol-panel.active {
+  background: #ffffcc;
+}
+
+.aol-panel.active .aol-panel-icon {
+  color: #ff8800;
+  animation: aol-spin 1s linear infinite;
+}
+
+.aol-panel.complete {
+  background: #ccffcc;
+}
+
+.aol-panel.complete .aol-panel-icon {
+  color: #008800;
+}
+
+.aol-panel.error {
+  background: #ffcccc;
+}
+
+.aol-panel.error .aol-panel-icon {
+  color: #cc0000;
+}
+
+@keyframes aol-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Progress bar section */
+.aol-progress-section {
+  margin-bottom: 12px;
+}
+
+.aol-progress-container {
+  height: 20px;
+  background: #fff;
+  border: 2px inset #808080;
+  padding: 2px;
+}
+
+.aol-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: repeating-linear-gradient(
+    90deg,
+    #000080 0px,
+    #000080 8px,
+    #c0c0c0 8px,
+    #c0c0c0 10px
+  );
+  transition: width 0.3s ease-out;
+}
+
+/* Dialog buttons */
+.aol-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.aol-buttons button {
+  min-width: 75px;
+}
+
+/* "You've Got Mail!" success screen */
+.aol-success {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.aol-success.visible {
+  display: block;
+}
+
+.aol-success-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+  animation: aol-bounce 0.5s ease-out;
+}
+
+@keyframes aol-bounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.aol-success-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000080;
+  margin-bottom: 4px;
+}
+
+.aol-success-subtext {
+  font-size: 14px;
+  color: #000080;
+  margin-bottom: 15px;
+}
+
+/* Connection content (hidden during success) */
+.aol-connection-content {
+  display: block;
+}
+
+.aol-connection-content.hidden {
+  display: none;
+}
+
+/* Fade out animation for overlay */
+#aol-dialup-overlay.fade-out {
+  animation: aol-fadeout 0.5s ease-out forwards;
+}
+
+@keyframes aol-fadeout {
+  0% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+/* Dialog shake animation */
+.aol-window.shake {
+  animation: aol-dialog-shake 0.3s ease-in-out;
+}
+
+@keyframes aol-dialog-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-10px); }
+  80% { transform: translateX(10px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .aol-window {
+    width: 95%;
+    max-width: 360px;
+  }
+
+  .aol-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .aol-logo {
+    font-size: 26px;
+  }
+
+  .aol-running-man-figure {
+    font-size: 32px;
+  }
+
+  .aol-panels {
+    gap: 4px;
+  }
+
+  .aol-panel {
+    padding: 6px 4px;
+    min-height: 60px;
+  }
+
+  .aol-panel-icon {
+    font-size: 16px;
+  }
+
+  .aol-panel-title {
+    font-size: 8px;
+  }
+
+  .aol-panel-status {
+    font-size: 8px;
+  }
+
+  .aol-buttons button {
+    min-width: 60px;
+    font-size: 11px;
+  }
+}

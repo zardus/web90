@@ -256,6 +256,7 @@
     { name: 'flying-toasters', type: 'js', emoji: '🍞', label: 'Flying Toasters', resources: { js: 'flying-toasters.js' } },
     { name: 'click-sparkles', type: 'js', emoji: '💥', label: 'Click Sparkles', resources: { js: 'click-sparkles.js' } },
     { name: 'dvd-bounce', type: 'js', emoji: '📀', label: 'DVD Bounce', resources: { js: 'dvd-bounce.js' } },
+    { name: 'aol-dialup', type: 'js', emoji: '📞', label: 'AOL Dialup', resources: { js: 'aol-dialup.js', css: 'aol-dialup.css' } },
     // Themes (inline init)
     { name: 'matrix', type: 'theme', emoji: '🕴️', label: 'Matrix', init: initThemeMatrix },
     { name: 'crt', type: 'theme', emoji: '📺', label: 'CRT Monitor', init: initThemeCRT },
