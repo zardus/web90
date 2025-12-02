@@ -269,7 +269,8 @@
     { name: 'flash', type: 'theme', emoji: '⚡', label: 'Flash Site', resources: { js: 'flash.js', css: 'flash.css' } },
     { name: 'starwars', type: 'theme', emoji: '⭐', label: 'Star Wars Crawl', resources: { js: 'starwars.js', css: 'starwars.css' } },
     { name: 'cascade', type: 'theme', emoji: '🦠', label: 'Cascade Virus', resources: { js: 'cascade.js', css: 'cascade.css' } },
-    { name: 'pipes', type: 'theme', emoji: '🔧', label: '3D Pipes', resources: { js: 'pipes.js' } }
+    { name: 'pipes', type: 'theme', emoji: '🔧', label: '3D Pipes', resources: { js: 'pipes.js' } },
+    { name: 'comic-sans', type: 'theme', emoji: '🤪', label: 'Comic Sans Mode', init: initThemeComicSans }
   ];
 
   // Derived arrays
@@ -769,6 +770,18 @@
     }
 
     setTimeout(triggerGlitch, 1000);
+  }
+
+  // ============================================
+  // Theme: Comic Sans Mode (Cursed)
+  // ============================================
+
+  function initThemeComicSans() {
+    // Load Comic Neue from Google Fonts as fallback for systems without Comic Sans MS
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap';
+    document.head.appendChild(link);
   }
 
   // ============================================

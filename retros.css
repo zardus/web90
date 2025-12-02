@@ -516,3 +516,67 @@ body.retheme-vhs.glitch-active #main {
 
 body.retheme-snow { filter: saturate(0.9); }
 
+/* ============================================
+   Comic Sans Mode (retheme) - The Cursed Theme
+   ============================================ */
+body.retheme-comic-sans,
+body.retheme-comic-sans *,
+body.retheme-comic-sans *::before,
+body.retheme-comic-sans *::after,
+body.retheme-comic-sans h1,
+body.retheme-comic-sans h2,
+body.retheme-comic-sans h3,
+body.retheme-comic-sans h4,
+body.retheme-comic-sans h5,
+body.retheme-comic-sans h6,
+body.retheme-comic-sans p,
+body.retheme-comic-sans li,
+body.retheme-comic-sans span,
+body.retheme-comic-sans div,
+body.retheme-comic-sans a,
+body.retheme-comic-sans button,
+body.retheme-comic-sans input,
+body.retheme-comic-sans textarea,
+body.retheme-comic-sans select,
+body.retheme-comic-sans label,
+body.retheme-comic-sans td,
+body.retheme-comic-sans th,
+body.retheme-comic-sans code,
+body.retheme-comic-sans pre,
+body.retheme-comic-sans blockquote {
+  font-family: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive !important;
+}
+
+/* Give it that authentic early 2000s personal website vibe */
+body.retheme-comic-sans {
+  background: linear-gradient(180deg, #87ceeb 0%, #98fb98 50%, #ffd700 100%) !important;
+}
+
+body.retheme-comic-sans main,
+body.retheme-comic-sans #main {
+  background: #fffacd !important;
+  border: 3px dashed #ff69b4 !important;
+  border-radius: 15px;
+  box-shadow: 5px 5px 0 #ff69b4, 10px 10px 0 #87ceeb;
+}
+
+body.retheme-comic-sans h1 {
+  color: #ff1493 !important;
+  text-shadow: 2px 2px 0 #ffd700, 4px 4px 0 #ff69b4 !important;
+}
+
+body.retheme-comic-sans h2,
+body.retheme-comic-sans h3 {
+  color: #4169e1 !important;
+}
+
+body.retheme-comic-sans a {
+  color: #ff00ff !important;
+  text-decoration: underline wavy !important;
+}
+
+body.retheme-comic-sans a:hover {
+  color: #00ff00 !important;
+  background: #ffff00 !important;
+}
+
