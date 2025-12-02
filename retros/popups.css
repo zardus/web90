@@ -1,0 +1,401 @@
+/**
+ * Early 2000s Annoying Popups Styles
+ * Works with 98.css for authentic Windows styling
+ */
+
+#popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100000;
+}
+
+/* Popup instance wrapper */
+.popup-instance {
+  position: absolute;
+  pointer-events: auto;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 100000;
+}
+
+.popup-instance .window {
+  width: 360px;
+  min-height: 180px;
+}
+
+.popup-instance.popup-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.popup-instance.popup-closing {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.popup-instance.popup-minimized .window {
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.popup-instance.popup-minimized .window-body {
+  display: none;
+}
+
+.popup-instance.popup-maximized .window {
+  width: 450px !important;
+  min-height: 350px !important;
+}
+
+.popup-instance.popup-dragging {
+  opacity: 0.9;
+  cursor: move;
+}
+
+.popup-instance.popup-shake {
+  animation: popup-shake 0.5s ease-in-out;
+}
+
+@keyframes popup-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Popup body content */
+.popup-body {
+  text-align: center;
+  padding: 12px;
+}
+
+.popup-body p {
+  margin: 8px 0;
+}
+
+/* Flashing text effect */
+.popup-flash {
+  animation: popup-flash 0.5s infinite;
+  font-weight: bold;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+@keyframes popup-flash {
+  0%, 50% { color: #ff0000; }
+  51%, 100% { color: #ffff00; }
+}
+
+/* Blink effect */
+.popup-blink {
+  animation: popup-blink 1s infinite;
+  color: #ff0000;
+  font-weight: bold;
+}
+
+@keyframes popup-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Action buttons - extra flashy */
+.popup-action {
+  background: linear-gradient(180deg, #ffcc00 0%, #ff9900 50%, #ff6600 100%);
+  border: 2px outset #fff;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 8px 4px;
+  color: #000;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  animation: popup-btn-pulse 1s infinite;
+}
+
+.popup-action:hover {
+  background: linear-gradient(180deg, #ffdd33 0%, #ffaa33 50%, #ff7733 100%);
+}
+
+.popup-action:active {
+  border-style: inset;
+}
+
+@keyframes popup-btn-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.popup-btn-danger {
+  background: linear-gradient(180deg, #ff6666 0%, #cc0000 100%);
+  color: white;
+  text-shadow: 1px 1px 0 #600;
+}
+
+.popup-small {
+  font-size: 9px;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* Winner popup */
+.popup-winner {
+  background: linear-gradient(180deg, #ffffcc, #ffff99);
+  padding: 10px;
+  border: 2px dashed #ff0000;
+  margin: -12px;
+}
+
+.popup-trophy {
+  font-size: 48px;
+  display: block;
+  margin: 8px auto;
+}
+
+.popup-prize {
+  color: #cc0000;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+/* Virus popup */
+.popup-virus-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.popup-virus-icon {
+  font-size: 24px;
+  animation: popup-virus-pulse 0.5s infinite;
+}
+
+@keyframes popup-virus-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.popup-virus-title {
+  color: #cc0000;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.popup-virus-list {
+  text-align: left;
+  padding: 8px;
+  margin: 8px 0;
+  font-size: 10px;
+}
+
+/* Casino popup */
+.popup-type-casino .popup-body {
+  background: linear-gradient(180deg, #1a472a 0%, #2d5a3f 50%, #1a472a 100%);
+  color: #ffd700;
+}
+
+.popup-casino-title {
+  font-size: 20px;
+  animation: popup-rainbow 2s infinite;
+}
+
+@keyframes popup-rainbow {
+  0% { color: #ff0000; }
+  17% { color: #ff8800; }
+  33% { color: #ffff00; }
+  50% { color: #00ff00; }
+  67% { color: #0088ff; }
+  83% { color: #ff00ff; }
+  100% { color: #ff0000; }
+}
+
+.popup-casino-slots {
+  font-size: 32px;
+  margin: 8px 0;
+}
+
+/* Download popup */
+.popup-download-icon {
+  font-size: 36px;
+}
+
+.popup-download-title {
+  color: #0066cc;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.popup-progress {
+  width: 80%;
+  height: 18px;
+  background: #fff;
+  border: 2px inset #808080;
+  margin: 8px auto;
+  overflow: hidden;
+}
+
+.popup-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ff00, #00cc00);
+  animation: popup-progress-fill 3s infinite;
+}
+
+@keyframes popup-progress-fill {
+  0% { width: 0%; }
+  90% { width: 90%; }
+  100% { width: 90%; }
+}
+
+/* Toolbar popup */
+.popup-toolbar .tree-view {
+  text-align: left;
+  margin: 8px;
+}
+
+/* Error popup */
+.popup-error-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.popup-error-icon {
+  font-size: 32px;
+}
+
+.popup-error-text p {
+  margin: 4px 0;
+}
+
+.popup-error-btns {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Survey popup */
+.popup-type-survey .popup-body {
+  background: linear-gradient(180deg, #ffffcc, #ffff99);
+}
+
+.popup-survey fieldset {
+  text-align: left;
+  margin: 8px 0;
+}
+
+/* Punch the monkey popup */
+.popup-type-punch .popup-body {
+  background: linear-gradient(180deg, #ffcc00, #ff9900);
+}
+
+.popup-punch-title {
+  color: #cc3300;
+  font-size: 16px;
+  font-weight: bold;
+  animation: popup-flash 0.3s infinite;
+}
+
+.popup-monkey {
+  font-size: 56px;
+  cursor: crosshair;
+  transition: transform 0.1s;
+  display: inline-block;
+}
+
+.popup-monkey:hover {
+  animation: popup-monkey-dodge 0.2s infinite;
+}
+
+@keyframes popup-monkey-dodge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-20px); }
+  75% { transform: translateX(20px); }
+}
+
+/* Congratulations popup */
+.popup-type-congratulations .popup-body {
+  background: linear-gradient(180deg, #e6f3ff, #cce6ff);
+}
+
+.popup-timer {
+  color: #cc0000;
+  font-weight: bold;
+  font-size: 12px;
+  animation: popup-blink 1s infinite;
+}
+
+/* Sound notification effect */
+.popup-ding {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  animation: popup-ding 0.5s ease-out forwards;
+  pointer-events: none;
+  z-index: 999999;
+}
+
+@keyframes popup-ding {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+}
+
+/* Popup killer button */
+#popup-killer {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100001;
+  pointer-events: auto;
+  transition: opacity 0.5s;
+  animation: killer-pulse 2s ease-in-out infinite;
+}
+
+@keyframes killer-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 128, 0, 0); }
+  50% { transform: scale(1.03); box-shadow: 0 0 12px rgba(0, 128, 0, 0.5); }
+}
+
+.popup-killer-body {
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.popup-killer-body p {
+  margin: 4px 0;
+}
+
+#popup-killer-btn {
+  margin-top: 6px;
+  padding: 4px 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#popup-killer-btn:hover {
+  background: #c0ffc0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .popup-instance .window {
+    width: 300px;
+    min-height: 160px;
+  }
+
+  #popup-killer {
+    top: 5px;
+    left: 5px;
+  }
+}

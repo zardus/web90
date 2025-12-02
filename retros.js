@@ -35,7 +35,7 @@
   // ============================================
 
   (function() {
-    var SCOPES = ['#control-panel', '#chat-window', '#clippy-container'];
+    var SCOPES = ['#control-panel', '#chat-window', '#clippy-container', '#popup-container'];
     fetch('https://unpkg.com/98.css@0.1.21/dist/98.css')
       .then(function(r) { return r.text(); })
       .then(function(css) {
@@ -254,6 +254,7 @@
     { name: 'retheme', type: 'js', emoji: '🎨', label: 'Retheme', init: initRetheme },
     { name: 'perspective', type: 'js', emoji: '🎲', label: '3D Tilt', init: initPerspective },
     { name: 'clippy', type: 'js', emoji: '📎', label: 'Clippy', resources: { js: 'clippy.js', css: 'clippy.css' } },
+    { name: 'popups', type: 'js', emoji: '🪟', label: 'Popups', resources: { js: 'popups.js', css: 'popups.css' } },
     // Themes (inline init)
     { name: 'matrix', type: 'theme', emoji: '🕴️', label: 'Matrix', init: initThemeMatrix },
     { name: 'crt', type: 'theme', emoji: '📺', label: 'CRT Monitor', init: initThemeCRT },
