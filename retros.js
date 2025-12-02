@@ -244,6 +244,7 @@
     { name: 'guestbook', type: 'dom', emoji: '📖', label: 'Guestbook' },
     // JS retros (initialize via JavaScript)
     { name: 'mouse-trail', type: 'js', emoji: '✨', label: 'Mouse Trail', resources: { js: 'mouse-trail.js', css: 'mouse-trail.css' } },
+    { name: 'fireworks', type: 'js', emoji: '🎆', label: 'Fireworks', resources: { js: 'fireworks.js', css: 'fireworks.css' } },
     { name: 'blink', type: 'js', emoji: '💡', label: 'Blink', init: initBlink },
     { name: 'marquee', type: 'js', emoji: '📜', label: 'Marquee', init: initMarquee },
     { name: 'wordart', type: 'js', emoji: '🔤', label: 'WordArt', resources: { js: 'wordart.js', css: 'wordart.css' } },
