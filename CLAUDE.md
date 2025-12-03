@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-web90 is a drop-in JavaScript library that adds nostalgic 90s/2000s web aesthetics to any website. It's 100% vibecoded. Features include animated GIFs, visitor counters, mouse trails, WordArt, retro themes (Win98, macOS Classic, DOS), and more.
+web90 is a drop-in JavaScript library that adds nostalgic 90s/2000s web aesthetics to any website. It's 100% vibecoded. Features include animated GIFs, visitor counters, mouse trails, WordArt, retro themes (Win98, macOS Classic, DOS, flash, others), and more.
 
 ## Development
 
