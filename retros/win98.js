@@ -24,6 +24,7 @@
   // ============================================
 
   function initWin98() {
+    var basePath = window.web90.config.basePath;
     var header = document.querySelector('header');
     var nav = document.querySelector('nav');
     var sections = document.querySelectorAll('section[id]');
@@ -59,7 +60,7 @@
     var win98Container = createElement('div');
     win98Container.id = 'win98-container';
     win98Container.className = 'win98';
-    win98Container.innerHTML = buildWin98HTML(sectionData, navLinks, headerContent);
+    win98Container.innerHTML = buildWin98HTML(sectionData, navLinks, headerContent, basePath);
 
     if (main) main.style.display = 'none';
     document.body.appendChild(win98Container);
@@ -73,6 +74,7 @@
     win98Container.headerContent = headerContent;
     win98Container.navLinks = navLinks;
 
+
     // Start boot sequence
     startBootSequence(win98Container);
   }
@@ -81,7 +83,7 @@
   // HTML Structure
   // ============================================
 
-  function buildWin98HTML(sectionData, navLinks, headerContent) {
+  function buildWin98HTML(sectionData, navLinks, headerContent, basePath) {
     var desktopIcons = buildDesktopIconsHTML(sectionData, navLinks, headerContent);
 
     return '\
@@ -100,17 +102,8 @@
           <div class="bios-press">Press DEL to enter SETUP</div>\
         </div>\
       </div>\
-      <div id="win98-boot" style="display:none;">\
-        <div class="boot-content">\
-          <div class="boot-logo">\
-            <div class="boot-clouds"></div>\
-            <div class="boot-text">Microsoft<sup>®</sup></div>\
-            <div class="boot-windows">Windows 98</div>\
-            <div class="boot-progress-container">\
-              <div class="boot-progress-bar"></div>\
-            </div>\
-          </div>\
-        </div>\
+      <div id="win98-boot" style="display:none; background-color: #000; background-image: url(\'' + basePath + '/win98-boot.webp\'); background-position: center; background-size: cover; background-repeat: no-repeat;">\
+        <div class="boot-wave-strip"></div>\
       </div>\
       <div id="win98-desktop" style="display:none;">\
         <div class="desktop-area">\
@@ -268,37 +261,16 @@
   }
 
   function startWindowsBoot(container, boot, desktop) {
-    var progressBar = boot.querySelector('.boot-progress-bar');
-    var progress = 0;
-    var bootSounds = [
-      'Loading system files...',
-      'Initializing devices...',
-      'Loading Windows 98...'
-    ];
-    var soundIndex = 0;
-
-    function updateProgress() {
-      progress += Math.random() * 8 + 2;
-      if (progress > 100) progress = 100;
-      progressBar.style.width = progress + '%';
-
-      if (progress < 100) {
-        setTimeout(updateProgress, 150 + Math.random() * 100);
-      } else {
-        // Boot complete, show desktop
-        setTimeout(function() {
-          boot.classList.add('fade-out');
-          setTimeout(function() {
-            boot.style.display = 'none';
-            desktop.style.display = 'flex';
-            desktop.classList.add('desktop-startup');
-            initDesktop(container);
-          }, 500);
-        }, 500);
-      }
-    }
-
-    setTimeout(updateProgress, 500);
+    // Wave animation runs via CSS, just wait then show desktop
+    setTimeout(function() {
+      boot.classList.add('fade-out');
+      setTimeout(function() {
+        boot.style.display = 'none';
+        desktop.style.display = 'flex';
+        desktop.classList.add('desktop-startup');
+        initDesktop(container);
+      }, 500);
+    }, 3000); // Show boot screen for 3 seconds
   }
 
   // ============================================

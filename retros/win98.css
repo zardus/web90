@@ -115,10 +115,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: opacity 0.5s ease;
 }
 
@@ -126,162 +122,42 @@
   opacity: 0;
 }
 
-.boot-content {
-  text-align: center;
-}
-
-.boot-logo {
-  position: relative;
-}
-
-/* Animated clouds background */
-.boot-clouds {
+/* Win98 boot wave animation - transparent strip at bottom with blue shades */
+.boot-wave-strip {
   position: absolute;
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 400px;
-  height: 200px;
-  background: linear-gradient(180deg,
-    #000 0%,
-    #001833 20%,
-    #003366 40%,
-    #0066cc 60%,
-    #66aaff 80%,
-    #99ccff 100%
-  );
-  border-radius: 200px 200px 0 0;
-  opacity: 0.8;
-  overflow: hidden;
-}
-
-.boot-clouds::before,
-.boot-clouds::after {
-  content: '';
-  position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  animation: cloud-float 8s ease-in-out infinite;
-}
-
-.boot-clouds::before {
-  width: 100px;
-  height: 40px;
-  bottom: 30px;
-  left: 20px;
-  animation-delay: 0s;
-}
-
-.boot-clouds::after {
-  width: 80px;
-  height: 30px;
-  bottom: 50px;
-  right: 40px;
-  animation-delay: 2s;
-}
-
-@keyframes cloud-float {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(20px); }
-}
-
-.boot-text {
-  font-family: 'Times New Roman', serif;
-  font-size: 28px;
-  font-style: italic;
-  color: #fff;
-  margin-bottom: 5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 1;
-}
-
-.boot-text sup {
-  font-size: 12px;
-}
-
-.boot-windows {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  font-size: 72px;
-  font-weight: bold;
-  background: linear-gradient(180deg,
-    #fff 0%,
-    #ccc 40%,
-    #999 60%,
-    #666 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.7));
-  letter-spacing: -2px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Windows flag colors effect */
-.boot-windows::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 8px;
-  background: linear-gradient(90deg,
-    #ff0000 0%, #ff0000 25%,
-    #00ff00 25%, #00ff00 50%,
-    #0000ff 50%, #0000ff 75%,
-    #ffff00 75%, #ffff00 100%
-  );
-  border-radius: 4px;
-}
-
-.boot-progress-container {
-  width: 300px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   height: 20px;
-  margin: 60px auto 0;
-  background: #000;
-  border: 2px solid #444;
-  border-radius: 10px;
   overflow: hidden;
-  position: relative;
 }
 
-.boot-progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg,
-    #004488 0%,
-    #0066cc 50%,
-    #0088ff 100%
-  );
-  transition: width 0.15s linear;
-  position: relative;
-}
-
-/* Animated blocks inside progress bar */
-.boot-progress-bar::after {
+.boot-wave-strip::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 300%;
   height: 100%;
   background: repeating-linear-gradient(
     90deg,
-    transparent 0px,
-    transparent 15px,
-    rgba(0, 0, 0, 0.3) 15px,
-    rgba(0, 0, 0, 0.3) 17px
+    rgba(111, 200, 252, 0.5) 0px,
+    rgba(111, 200, 252, 0.5) 80px,
+    rgba(0, 168, 232, 0.5) 80px,
+    rgba(0, 168, 232, 0.5) 160px,
+    rgba(0, 128, 192, 0.5) 160px,
+    rgba(0, 128, 192, 0.5) 240px,
+    rgba(64, 176, 224, 0.5) 240px,
+    rgba(64, 176, 224, 0.5) 320px,
+    transparent 320px,
+    transparent 640px
   );
-  animation: boot-progress-blocks 0.3s linear infinite;
+  animation: wave-march 2.5s linear infinite;
 }
 
-@keyframes boot-progress-blocks {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(17px); }
+@keyframes wave-march {
+  0% { transform: translateX(-33.333%); }
+  100% { transform: translateX(0%); }
 }
 
 /* ============================================
