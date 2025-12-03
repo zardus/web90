@@ -1,6 +1,8 @@
 /**
  * Click Sparkles - Explosion of particles on mouse click
  * Because every click should feel magical
+ *
+ * Now with COMBO SYSTEM - rapid clicks = bigger explosions!
  */
 (function() {
   'use strict';
@@ -13,6 +15,17 @@
 
     var ctx = canvas.getContext('2d');
     var particles = [];
+    var shockwaves = [];
+
+    // COMBO SYSTEM
+    var combo = 0;
+    var maxCombo = 10;
+    var comboTimeout = null;
+    var comboDecayMs = 800; // Time before combo starts dropping
+    var lastClickTime = 0;
+    var comboDisplay = null;
+    var screenShakeAmount = 0;
+    var screenShakeDecay = 0.9;
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -23,6 +36,152 @@
 
     var params = window.web90 ? window.web90.params : new URLSearchParams(window.location.search);
     var sparkleStyle = params.get('sparkle-style') || 'rainbow';
+
+    // Create combo display element
+    function createComboDisplay() {
+      comboDisplay = document.createElement('div');
+      comboDisplay.id = 'combo-display';
+      comboDisplay.style.cssText = 'position:fixed;top:20px;right:20px;z-index:100004;pointer-events:none;' +
+        'font-family:"Press Start 2P",monospace,sans-serif;font-size:24px;color:#fff;text-shadow:0 0 10px #f0f,0 0 20px #f0f,0 0 30px #f0f,2px 2px 0 #000;' +
+        'opacity:0;transition:opacity 0.2s,transform 0.1s;transform:scale(1);';
+      document.documentElement.appendChild(comboDisplay);
+
+      // Try to load the retro font
+      var fontLink = document.createElement('link');
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
+      fontLink.rel = 'stylesheet';
+      document.head.appendChild(fontLink);
+    }
+    createComboDisplay();
+
+    function updateComboDisplay() {
+      if (!comboDisplay) return;
+      if (combo > 1) {
+        var hue = (combo / maxCombo) * 60; // Goes from red to yellow
+        var scale = 1 + (combo / maxCombo) * 0.5;
+        comboDisplay.textContent = combo + 'x COMBO!';
+        comboDisplay.style.opacity = '1';
+        comboDisplay.style.transform = 'scale(' + scale + ')';
+        comboDisplay.style.color = 'hsl(' + hue + ', 100%, 60%)';
+        comboDisplay.style.textShadow = '0 0 10px hsl(' + hue + ',100%,50%),0 0 20px hsl(' + hue + ',100%,50%),0 0 30px hsl(' + hue + ',100%,50%),2px 2px 0 #000';
+
+        if (combo >= maxCombo) {
+          comboDisplay.textContent = '★ MAX COMBO ★';
+          comboDisplay.style.color = '#fff';
+          comboDisplay.style.textShadow = '0 0 10px #ff0,0 0 20px #f80,0 0 40px #f00,0 0 60px #f0f,2px 2px 0 #000';
+        }
+      } else {
+        comboDisplay.style.opacity = '0';
+      }
+    }
+
+    function incrementCombo() {
+      var now = Date.now();
+      var timeSinceLastClick = now - lastClickTime;
+      lastClickTime = now;
+
+      // Rapid clicks (under 300ms) build combo faster
+      if (timeSinceLastClick < 300 && combo < maxCombo) {
+        combo = Math.min(combo + 1, maxCombo);
+      } else if (timeSinceLastClick < comboDecayMs && combo > 0) {
+        // Maintain combo
+      } else {
+        // Reset combo on slow click
+        combo = 1;
+      }
+
+      // Clear existing timeout and set new one
+      if (comboTimeout) clearTimeout(comboTimeout);
+      comboTimeout = setTimeout(function() {
+        combo = 0;
+        updateComboDisplay();
+      }, comboDecayMs);
+
+      updateComboDisplay();
+      return combo;
+    }
+
+    // Flash effect class - bright burst at click point
+    function Flash(x, y, comboLevel) {
+      this.x = x;
+      this.y = y;
+      this.size = 30 + comboLevel * 10;
+      this.life = 1;
+      this.decay = 0.15;
+    }
+
+    Flash.prototype.update = function() {
+      this.life -= this.decay;
+      return this.life > 0;
+    };
+
+    Flash.prototype.draw = function() {
+      ctx.save();
+      var gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * this.life);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, ' + this.life + ')');
+      gradient.addColorStop(0.4, 'rgba(255, 255, 200, ' + (this.life * 0.6) + ')');
+      gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    var flashes = [];
+
+    // Shockwave class
+    function Shockwave(x, y, comboLevel) {
+      this.x = x;
+      this.y = y;
+      this.radius = 5;
+      this.maxRadius = 80 + comboLevel * 20;
+      this.life = 1;
+      this.lineWidth = 3 + comboLevel * 0.5;
+      this.hue = (comboLevel / maxCombo) * 60;
+    }
+
+    Shockwave.prototype.update = function() {
+      this.radius += 8 + (this.maxRadius / 20);
+      this.life -= 0.05;
+      return this.life > 0;
+    };
+
+    Shockwave.prototype.draw = function() {
+      ctx.save();
+      ctx.globalAlpha = this.life * 0.6;
+      ctx.strokeStyle = 'hsl(' + this.hue + ', 100%, 70%)';
+      ctx.lineWidth = this.lineWidth * this.life;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Inner glow ring
+      ctx.globalAlpha = this.life * 0.3;
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius * 0.8, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // Screen shake
+    function triggerScreenShake(intensity) {
+      screenShakeAmount = Math.min(screenShakeAmount + intensity, 20);
+    }
+
+    function applyScreenShake() {
+      if (screenShakeAmount > 0.5) {
+        var shakeX = (Math.random() - 0.5) * screenShakeAmount * 2;
+        var shakeY = (Math.random() - 0.5) * screenShakeAmount * 2;
+        canvas.style.transform = 'translate(' + shakeX + 'px, ' + shakeY + 'px)';
+        screenShakeAmount *= screenShakeDecay;
+      } else {
+        screenShakeAmount = 0;
+        canvas.style.transform = '';
+      }
+    }
 
     var SPARKLE_STYLES = {
       rainbow: {
@@ -163,12 +322,93 @@
     }
 
     function spawnExplosion(x, y) {
+      var currentCombo = incrementCombo();
       var style = SPARKLE_STYLES[sparkleStyle] || SPARKLE_STYLES.rainbow;
-      var count = 20 + Math.floor(Math.random() * 15);
+
+      // Base particles + bonus based on combo
+      var baseCount = 20 + Math.floor(Math.random() * 15);
+      var comboBonus = currentCombo * 5;
+      var count = baseCount + comboBonus;
+
+      // Particle speed/size multiplier based on combo
+      var powerMultiplier = 1 + (currentCombo / maxCombo) * 0.8;
 
       for (var i = 0; i < count; i++) {
-        particles.push(new Particle(x, y, style));
+        var p = new Particle(x, y, style);
+        // Boost particles based on combo
+        p.vx *= powerMultiplier;
+        p.vy *= powerMultiplier;
+        p.size *= (1 + currentCombo * 0.1);
+        particles.push(p);
       }
+
+      // Add shockwave at combo 3+
+      if (currentCombo >= 3) {
+        shockwaves.push(new Shockwave(x, y, currentCombo));
+      }
+
+      // Flash effect at combo 5+
+      if (currentCombo >= 5) {
+        flashes.push(new Flash(x, y, currentCombo));
+      }
+
+      // Screen shake scales with combo
+      if (currentCombo >= 2) {
+        triggerScreenShake(currentCombo * 1.5);
+      }
+
+      // MEGA EXPLOSION at max combo - spiral burst!
+      if (currentCombo >= maxCombo) {
+        spawnMegaExplosion(x, y, style);
+      }
+    }
+
+    // Special mega explosion with spiral pattern
+    function spawnMegaExplosion(x, y, style) {
+      var spiralCount = 60;
+      for (var i = 0; i < spiralCount; i++) {
+        var angle = (i / spiralCount) * Math.PI * 6; // 3 full rotations
+        var speed = 4 + (i / spiralCount) * 8;
+        var p = new Particle(x, y, style);
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        p.size = 8 + Math.random() * 6;
+        p.decay = 0.008; // Slower decay for mega explosion
+        particles.push(p);
+      }
+
+      // Add cross-burst pattern for extra drama
+      var crossCount = 8;
+      for (var j = 0; j < crossCount; j++) {
+        var crossAngle = (j / crossCount) * Math.PI * 2;
+        for (var k = 0; k < 5; k++) {
+          var crossP = new Particle(x, y, style);
+          var crossSpeed = 8 + k * 2;
+          crossP.vx = Math.cos(crossAngle) * crossSpeed;
+          crossP.vy = Math.sin(crossAngle) * crossSpeed;
+          crossP.size = 10 - k;
+          crossP.decay = 0.012;
+          particles.push(crossP);
+        }
+      }
+
+      // BIG flash
+      var megaFlash = new Flash(x, y, maxCombo * 1.5);
+      megaFlash.size = 150;
+      megaFlash.decay = 0.08;
+      flashes.push(megaFlash);
+
+      // Add extra shockwaves
+      shockwaves.push(new Shockwave(x, y, maxCombo));
+      setTimeout(function() {
+        shockwaves.push(new Shockwave(x, y, maxCombo * 0.7));
+      }, 50);
+      setTimeout(function() {
+        shockwaves.push(new Shockwave(x, y, maxCombo * 0.5));
+      }, 100);
+
+      // BIG shake
+      triggerScreenShake(15);
     }
 
     // Click handler
@@ -188,6 +428,24 @@
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Apply screen shake
+      applyScreenShake();
+
+      // Update and draw flashes (behind everything)
+      flashes = flashes.filter(function(f) {
+        var alive = f.update();
+        if (alive) f.draw();
+        return alive;
+      });
+
+      // Update and draw shockwaves
+      shockwaves = shockwaves.filter(function(s) {
+        var alive = s.update();
+        if (alive) s.draw();
+        return alive;
+      });
+
+      // Update and draw particles
       particles = particles.filter(function(p) {
         var alive = p.update();
         if (alive) p.draw();
