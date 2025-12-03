@@ -99,8 +99,8 @@ test.describe('JS Effects', () => {
       await page.goto('/test.html?retros=dividers');
       await page.waitForTimeout(1000);
 
-      // Dividers should have img children
-      const dividerImages = page.locator('.divider img');
+      // Dividers should have divider-img elements with background images
+      const dividerImages = page.locator('.divider .divider-img');
       expect(await dividerImages.count()).toBeGreaterThanOrEqual(1);
     });
 
@@ -108,9 +108,9 @@ test.describe('JS Effects', () => {
       await page.goto('/test.html?retros=dividers&divider-style=2');
       await page.waitForTimeout(1000);
 
-      const dividerImg = page.locator('.divider img').first();
-      const src = await dividerImg.getAttribute('src');
-      expect(src).toContain('2.gif');
+      const dividerImg = page.locator('.divider .divider-img').first();
+      const bgImage = await dividerImg.evaluate(el => el.style.backgroundImage);
+      expect(bgImage).toContain('2.gif');
     });
   });
 
@@ -249,10 +249,18 @@ test.describe('JS Effects', () => {
   test.describe('Toolbars', () => {
     test('toolbar elements appear', async ({ page }) => {
       await page.goto('/test.html?retros=toolbars');
-      await page.waitForTimeout(1500);
 
-      // Toolbars creates toolbar elements
-      const toolbars = page.locator('.toolbar, [class*="toolbar"]');
+      // Wait for install dialog to appear (2s delay + some buffer)
+      await page.waitForSelector('#toolbar-install-dialog', { timeout: 5000 });
+
+      // Click Install button to trigger toolbar installation
+      await page.click('#toolbar-install-yes');
+
+      // Wait for toolbar to be installed
+      await page.waitForSelector('.browser-toolbar', { timeout: 5000 });
+
+      // Toolbars creates toolbar elements with browser-toolbar class
+      const toolbars = page.locator('.browser-toolbar');
       expect(await toolbars.count()).toBeGreaterThanOrEqual(1);
     });
   });

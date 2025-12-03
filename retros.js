@@ -463,8 +463,14 @@
         retroList = selectAprilFoolsRetros();
       } else {
         var randomRetro = selectRandomRetro();
-        return randomRetro ? [randomRetro] : [];
+        retroList = randomRetro ? [randomRetro] : [];
       }
+    }
+
+    // Auto-load retheme when theme param is specified
+    var themeParam = params.get('theme');
+    if (themeParam && THEME_NAMES.includes(themeParam) && retroList.indexOf('retheme') === -1) {
+      retroList.push('retheme');
     }
 
     if (retroList.length === 0) return [];
@@ -535,7 +541,11 @@
 
   function wrapH1(tag) {
     var h1 = document.querySelector('h1');
-    if (h1) h1.innerHTML = '<' + tag + '>' + h1.textContent + '</' + tag + '>';
+    if (h1 && h1.parentNode) {
+      var wrapper = document.createElement(tag);
+      h1.parentNode.insertBefore(wrapper, h1);
+      wrapper.appendChild(h1);
+    }
   }
 
   function initBlink() { wrapH1('blink'); }
@@ -609,6 +619,7 @@
       var img = new Image();
       img.onload = function() {
         var div = createElement('div');
+        div.className = 'divider-img';
         div.style.width = '100%';
         div.style.height = img.naturalHeight + 'px';
         div.style.backgroundImage = 'url(' + src + ')';
@@ -647,6 +658,7 @@
   // ============================================
 
   function initThemeMatrix() {
+    document.body.style.backgroundColor = '#000';
     var result = createCanvas(
       'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0;transition:opacity 1s ease;background:#000;',
       document.documentElement

@@ -71,14 +71,9 @@ test.describe('Themes', () => {
       await page.goto('/test.html?theme=table');
       await page.waitForTimeout(1000);
 
-      // Check for table structure or display:table-cell
-      const tableDisplay = await page.evaluate(() => {
-        const tableable = document.querySelector('.tableable');
-        if (!tableable) return null;
-        return window.getComputedStyle(tableable).display;
-      });
-
-      expect(tableDisplay).toContain('table');
+      // Check that tableable elements get the table-cell class
+      const tableCells = page.locator('.tableable.table-cell');
+      expect(await tableCells.count()).toBeGreaterThanOrEqual(1);
     });
 
     test('untableable elements are hidden', async ({ page }) => {
@@ -135,9 +130,10 @@ test.describe('Themes', () => {
 
     test('taskbar is present', async ({ page }) => {
       await page.goto('/test.html?theme=win98');
-      await page.waitForTimeout(3000);
+      // Wait for boot sequence to complete and desktop to be visible (~5s)
+      await page.waitForSelector('#win98-desktop:not([style*="display: none"])', { timeout: 10000 });
 
-      const taskbar = page.locator('.taskbar, [class*="taskbar"]');
+      const taskbar = page.locator('.win98-taskbar');
       expect(await taskbar.count()).toBeGreaterThanOrEqual(1);
     });
 

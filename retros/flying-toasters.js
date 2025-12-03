@@ -285,6 +285,7 @@
     function Toaster() {
       this.el = document.createElement('img');
       this.el.src = toasterSrc;
+      this.el.className = 'toaster';
       this.el.style.cssText = 'position:absolute;transition:filter 0.2s;';
       container.appendChild(this.el);
 
