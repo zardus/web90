@@ -1,0 +1,22 @@
+{
+  "name": "web90",
+  "version": "1.0.0",
+  "description": "Drop-in JavaScript library that adds nostalgic 90s/2000s web aesthetics to any website",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "serve": "npx http-server -p 8090 -c-1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "http-server": "^14.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zardus/web90"
+  },
+  "license": "MIT"
+}

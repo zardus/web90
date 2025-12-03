@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web90 Test Page</title>
+  <link rel="stylesheet" href="retros.css">
+  <style>
+    body {
+      font-family: Georgia, serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    #main {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .tableable {
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #fafafa;
+      border-left: 4px solid #333;
+    }
+    img {
+      max-width: 200px;
+      height: auto;
+    }
+    .test-section {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px dashed #ccc;
+    }
+    #test-status {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #333;
+      color: #0f0;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 999999;
+      max-width: 300px;
+      max-height: 200px;
+      overflow: auto;
+    }
+  </style>
+  <script>
+    // Test configuration - enables all testable features
+    window.WEB90_CONFIG = {
+      badges: [
+        { src: 'badges/construction.gif' },
+        { src: 'badges/vi-vim.gif', href: 'https://neovim.io/' },
+        { src: 'badges/anybrowser6.gif' }
+      ],
+      dividers: [
+        'dividers/1.gif',
+        'dividers/2.gif',
+        'dividers/3.gif'
+      ],
+      music: [
+        { src: 'https://example.com/test.ogg', label: '♪ Test Track' }
+      ],
+      webringUrl: 'about:blank',
+      guestbookUrl: 'about:blank',
+      cursorUrl: 'cursors/hourglass.png',
+      counterGlitchText: 'VISITORS',
+      randomRetros: null,
+      aprilFoolsRetros: null
+    };
+
+    // Test helper to track initialization
+    window.web90TestStatus = {
+      initialized: false,
+      errors: [],
+      retrosLoaded: [],
+      themeApplied: null
+    };
+
+    window.onerror = function(msg, url, line, col, error) {
+      window.web90TestStatus.errors.push({ msg, url, line, col, error: error?.stack });
+    };
+
+    window.addEventListener('unhandledrejection', function(e) {
+      window.web90TestStatus.errors.push({ msg: 'Unhandled rejection', reason: e.reason?.message || String(e.reason) });
+    });
+  </script>
+</head>
+<body>
+  <div id="test-status"></div>
+
+  <div id="main">
+    <h1 id="main-heading">Web90 Test Page</h1>
+
+    <p>This page contains all the elements needed to test web90 retros.</p>
+
+    <!-- Retro slots for DOM elements -->
+    <div data-retro-slot="0" class="test-section" data-testid="slot-0">
+      <p>Primary retro slot (badges, counter, etc. go here)</p>
+    </div>
+
+    <div class="divider"><hr></div>
+
+    <section id="section-one" class="tableable test-section">
+      <h2>Section One</h2>
+      <p>This is the first section with some content. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
+      <img src="badges/construction.gif" alt="Test image" data-image-rotate="true" data-testid="rotating-image">
+    </section>
+
+    <div class="divider"><hr></div>
+
+    <section id="section-two" class="tableable test-section">
+      <h2>Section Two</h2>
+      <p>This is the second section. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </section>
+
+    <div class="divider"><hr></div>
+
+    <section id="section-three" class="tableable test-section">
+      <h2>Section Three</h2>
+      <p>Third section content. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    </section>
+
+    <div class="divider"><hr></div>
+
+    <div data-retro-slot="1" class="test-section" data-testid="slot-1">
+      <p>Secondary retro slot (overflow elements)</p>
+    </div>
+
+    <div class="untableable test-section">
+      <p>This element has class="untableable" and should be hidden in table mode.</p>
+    </div>
+  </div>
+
+  <script src="retros.js"></script>
+  <script>
+    // Mark as initialized when web90 is ready
+    if (window.web90) {
+      window.web90TestStatus.initialized = true;
+
+      // Track which retros get loaded
+      var originalLoadRetroResources = window.loadRetroResources;
+
+      // Update status display
+      function updateStatus() {
+        var status = window.web90TestStatus;
+        var el = document.getElementById('test-status');
+        el.innerHTML = [
+          'Initialized: ' + status.initialized,
+          'Errors: ' + status.errors.length,
+          'Theme: ' + (status.themeApplied || 'none')
+        ].join('<br>');
+      }
+
+      updateStatus();
+      setInterval(updateStatus, 1000);
+    }
+  </script>
+</body>
+</html>
