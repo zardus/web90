@@ -16,6 +16,7 @@
     sections: [],
     navLinks: [],
     headshot: null,
+    title: null,
     commandHistory: [],
     historyIndex: -1,
     currentView: 'prompt' // 'prompt', 'viewer', 'filemanager'
@@ -41,8 +42,9 @@
       headshot: document.querySelector('.headshot') ? document.querySelector('.headshot').src : null
     };
 
-    // Store headshot for later use
+    // Store headshot and title for later use
     state.headshot = headerContent.headshot;
+    state.title = headerContent.title;
 
     if (nav) {
       nav.querySelectorAll('a').forEach(function(a) {
@@ -215,6 +217,15 @@
     addOutput(terminal, '             (C)Copyright Microsoft Corp 1981-1994.');
     addOutput(terminal, '');
 
+    // Show title as ASCII block art banner
+    if (state.title) {
+      var banner = createElement('pre');
+      banner.className = 'dos-banner';
+      banner.textContent = textToBlockArt(state.title);
+      terminal.appendChild(banner);
+      addOutput(terminal, '');
+    }
+
     // Show clickable quick commands
     addOutputHTML(terminal, 'Quick commands: ' + cmdLink('DIR') + ' | ' + cmdLink('HELP') + ' | ' + cmdLink('EXIT'));
     addOutput(terminal, '');
@@ -264,6 +275,78 @@
   // Create an external link (opens in new tab)
   function extLink(href, label) {
     return '<a class="dos-ext-link" href="' + href + '" target="_blank">' + label + '</a>';
+  }
+
+  // ============================================
+  // ASCII Block Letter Generator (Figlet-style)
+  // ============================================
+
+  var BLOCK_FONT = {
+    'A': ['█▀█', '█▀█', '▀ ▀'],
+    'B': ['█▀▄', '█▀▄', '▀▀ '],
+    'C': ['█▀▀', '█  ', '▀▀▀'],
+    'D': ['█▀▄', '█ █', '▀▀ '],
+    'E': ['█▀▀', '█▀▀', '▀▀▀'],
+    'F': ['█▀▀', '█▀ ', '▀  '],
+    'G': ['█▀▀', '█ █', '▀▀▀'],
+    'H': ['█ █', '█▀█', '▀ ▀'],
+    'I': ['▀█▀', ' █ ', '▀▀▀'],
+    'J': ['  █', '  █', '▀▀ '],
+    'K': ['█ █', '█▀▄', '▀ ▀'],
+    'L': ['█  ', '█  ', '▀▀▀'],
+    'M': ['█▄▄█', '█  █', '▀  ▀'],
+    'N': ['█▄ █', '█ ▀█', '▀  ▀'],
+    'O': ['█▀█', '█ █', '▀▀▀'],
+    'P': ['█▀█', '█▀▀', '▀  '],
+    'Q': ['█▀█', '█ █', '▀▀▄'],
+    'R': ['█▀█', '█▀▄', '▀ ▀'],
+    'S': ['█▀▀', '▀▀█', '▀▀▀'],
+    'T': ['▀█▀', ' █ ', ' ▀ '],
+    'U': ['█ █', '█ █', '▀▀▀'],
+    'V': ['█ █', '█ █', ' ▀ '],
+    'W': ['█   █', '█ █ █', ' ▀ ▀ '],
+    'X': ['▀▄▀', ' █ ', '▀ ▀'],
+    'Y': ['█ █', ' █ ', ' ▀ '],
+    'Z': ['▀▀█', ' █ ', '▀▀▀'],
+    '0': ['█▀█', '█ █', '▀▀▀'],
+    '1': ['▄█ ', ' █ ', '▀▀▀'],
+    '2': ['▀▀█', '█▀▀', '▀▀▀'],
+    '3': ['▀▀█', ' ▀█', '▀▀▀'],
+    '4': ['█ █', '▀▀█', '  ▀'],
+    '5': ['█▀▀', '▀▀█', '▀▀▀'],
+    '6': ['█▀▀', '█▀█', '▀▀▀'],
+    '7': ['▀▀█', '  █', '  ▀'],
+    '8': ['█▀█', '█▀█', '▀▀▀'],
+    '9': ['█▀█', '▀▀█', '▀▀▀'],
+    ' ': ['  ', '  ', '  '],
+    '.': [' ', ' ', '▀'],
+    '!': ['█', '▀', '▀'],
+    '?': ['▀█', ' ▀', ' ▀'],
+    '-': ['   ', '▀▀▀', '   '],
+    '_': ['   ', '   ', '▀▀▀'],
+    "'": ['▀', ' ', ' '],
+    '"': ['▀▀', '  ', '  '],
+    ':': ['▀', ' ', '▀'],
+    '/': ['  █', ' █ ', '▀  '],
+    '(': [' █', '█ ', ' █'],
+    ')': ['█ ', ' █', '█ '],
+    '@': ['▄▀▀▄', '█▀▀ ', ' ▀▀ ']
+  };
+
+  function textToBlockArt(text) {
+    text = text.toUpperCase();
+    var lines = ['', '', ''];
+
+    for (var i = 0; i < text.length; i++) {
+      var char = text[i];
+      var glyph = BLOCK_FONT[char] || BLOCK_FONT[' '];
+
+      for (var row = 0; row < 3; row++) {
+        lines[row] += (glyph[row] || '') + ' ';
+      }
+    }
+
+    return lines.join('\n');
   }
 
   // ============================================
