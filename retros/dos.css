@@ -1,0 +1,653 @@
+/**
+ * DOS Theme Styles
+ * Lazy-loaded CSS for the DOS command line theme
+ *
+ * Authentic DOS 6.22 / MS-DOS experience with blinking cursor,
+ * command prompt, and Norton Commander-inspired file viewer.
+ */
+
+/* ============================================
+   Global Theme Setup
+   ============================================ */
+.dos-mode {
+  overflow: hidden;
+}
+
+#dos-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  font-family: 'Perfect DOS VGA 437', 'Fixedsys', 'Courier New', monospace;
+  background: #000;
+  color: #aaa;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+#dos-container * {
+  box-sizing: border-box;
+}
+
+/* Scanlines for CRT feel */
+#dos-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 100000;
+}
+
+/* ============================================
+   BIOS POST Screen
+   ============================================ */
+#dos-bios {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #aaa;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s ease;
+}
+
+#dos-bios.fade-out {
+  opacity: 0;
+}
+
+.bios-content {
+  max-width: 800px;
+}
+
+.bios-header {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.bios-copyright {
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+.bios-line {
+  height: 16px;
+}
+
+.bios-cpu {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.bios-memory-test {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.bios-memory-test span {
+  color: #0f0;
+}
+
+.bios-detecting {
+  color: #fff;
+  margin: 15px 0 10px;
+}
+
+.bios-drive {
+  color: #aaa;
+  margin-left: 20px;
+  margin-bottom: 5px;
+}
+
+.bios-press {
+  position: absolute;
+  bottom: 40px;
+  color: #aaa;
+  animation: dos-blink 1s steps(1) infinite;
+}
+
+@keyframes dos-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ============================================
+   DOS Boot Messages
+   ============================================ */
+#dos-boot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #aaa;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.boot-messages {
+  flex: 1;
+  overflow: hidden;
+}
+
+.boot-line {
+  margin-bottom: 2px;
+  white-space: pre;
+}
+
+.boot-line.highlight {
+  color: #fff;
+}
+
+.boot-line.success {
+  color: #0f0;
+}
+
+.boot-line.msdos {
+  color: #fff;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+/* ============================================
+   Main DOS Prompt Screen
+   ============================================ */
+#dos-prompt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #aaa;
+  padding: 0;
+  display: none;
+  flex-direction: column;
+}
+
+/* DOS terminal scrollable area */
+.dos-terminal {
+  flex: 1;
+  padding: 10px 20px;
+  overflow-y: auto;
+  font-size: 16px;
+}
+
+.dos-terminal::-webkit-scrollbar {
+  width: 12px;
+}
+
+.dos-terminal::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.dos-terminal::-webkit-scrollbar-thumb {
+  background: #555;
+  border: 2px solid #000;
+}
+
+/* Command output */
+.dos-output {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 2px;
+}
+
+.dos-output.white {
+  color: #fff;
+}
+
+.dos-output.green {
+  color: #0f0;
+}
+
+.dos-output.cyan {
+  color: #0ff;
+}
+
+.dos-output.header {
+  color: #0ff;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Current command line */
+.dos-input-line {
+  display: flex;
+  align-items: center;
+  color: #aaa;
+}
+
+.dos-prompt-text {
+  color: #aaa;
+  white-space: pre;
+}
+
+.dos-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  caret-color: transparent;
+  padding: 0;
+}
+
+.dos-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: #aaa;
+  animation: dos-cursor-blink 0.53s steps(1) infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes dos-cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Clickable command links */
+.dos-cmd-link {
+  color: #ff0;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.dos-cmd-link::before {
+  content: '[';
+}
+
+.dos-cmd-link::after {
+  content: ']';
+}
+
+.dos-cmd-link:hover {
+  color: #fff;
+  background: #550;
+}
+
+.dos-cmd-link:active {
+  color: #fa0;
+}
+
+/* External links (nav links that open URLs) */
+.dos-ext-link {
+  color: #ff0;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.dos-ext-link::before {
+  content: '[';
+}
+
+.dos-ext-link::after {
+  content: ']';
+}
+
+.dos-ext-link:hover {
+  color: #fff;
+  background: #550;
+}
+
+.dos-ext-link:active {
+  color: #fa0;
+}
+
+/* ============================================
+   Norton Commander Style Viewer
+   ============================================ */
+#dos-viewer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: none;
+  flex-direction: column;
+}
+
+.viewer-header {
+  background: #00a;
+  color: #0ff;
+  padding: 2px 10px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #00f;
+}
+
+.viewer-title {
+  font-weight: bold;
+}
+
+.viewer-controls {
+  color: #0ff;
+}
+
+.viewer-content {
+  flex: 1;
+  background: #001;
+  color: #0ff;
+  padding: 10px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.viewer-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.viewer-content::-webkit-scrollbar-track {
+  background: #001;
+}
+
+.viewer-content::-webkit-scrollbar-thumb {
+  background: #00a;
+  border: 2px solid #001;
+}
+
+/* Content formatting in viewer */
+.viewer-content h1,
+.viewer-content h2,
+.viewer-content h3,
+.viewer-content h4 {
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  margin: 16px 0 8px;
+  text-transform: uppercase;
+}
+
+.viewer-content h1::before { content: '=== '; }
+.viewer-content h1::after { content: ' ==='; }
+
+.viewer-content h2::before { content: '--- '; }
+.viewer-content h2::after { content: ' ---'; }
+
+.viewer-content p {
+  margin: 8px 0;
+  color: #0ff;
+}
+
+.viewer-content a {
+  color: #ff0;
+  text-decoration: none;
+}
+
+.viewer-content a:hover {
+  color: #fff;
+  background: #550;
+}
+
+.viewer-content a::before { content: '['; }
+.viewer-content a::after { content: ']'; }
+
+.viewer-content ul,
+.viewer-content ol {
+  margin: 8px 0 8px 20px;
+  padding: 0;
+}
+
+.viewer-content li {
+  margin: 4px 0;
+}
+
+.viewer-content ul li::marker {
+  content: '* ';
+  color: #aaa;
+}
+
+/* Hide images in DOS mode */
+.viewer-content img,
+.viewer-content .headshot {
+  display: none;
+}
+
+/* Status bar */
+.viewer-statusbar {
+  background: #00a;
+  color: #0ff;
+  padding: 4px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #00f;
+}
+
+.viewer-quit-btn {
+  color: #ff0;
+  cursor: pointer;
+}
+
+.viewer-quit-btn::before {
+  content: '[';
+}
+
+.viewer-quit-btn::after {
+  content: ']';
+}
+
+.viewer-quit-btn:hover {
+  color: #fff;
+  background: #550;
+}
+
+.viewer-hint {
+  color: #0aa;
+  font-size: 14px;
+}
+
+/* ============================================
+   Norton Commander File Manager
+   ============================================ */
+#dos-filemanager {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #00a;
+  display: none;
+  flex-direction: column;
+}
+
+.fm-header {
+  background: #000;
+  color: #0ff;
+  padding: 2px 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.fm-panels {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.fm-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #0ff;
+  margin: 2px;
+  background: #00a;
+}
+
+.fm-panel-header {
+  background: #0ff;
+  color: #000;
+  padding: 2px 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.fm-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.fm-file {
+  display: flex;
+  padding: 1px 5px;
+  cursor: pointer;
+  color: #0ff;
+}
+
+.fm-file:hover {
+  background: #008;
+}
+
+.fm-file.selected {
+  background: #0ff;
+  color: #000;
+}
+
+.fm-file.directory {
+  color: #fff;
+  font-weight: bold;
+}
+
+.fm-file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-file-ext {
+  width: 40px;
+  text-align: left;
+  color: #aaa;
+}
+
+.fm-file-size {
+  width: 80px;
+  text-align: right;
+}
+
+.fm-file-date {
+  width: 100px;
+  text-align: right;
+  color: #aaa;
+}
+
+.fm-panel-footer {
+  background: #008;
+  color: #0ff;
+  padding: 2px 10px;
+  font-size: 14px;
+}
+
+/* F-key bar at bottom */
+.fm-funcbar {
+  background: #000;
+  display: flex;
+  padding: 2px 0;
+}
+
+.fm-funcbar .func-key {
+  flex: 1;
+}
+
+/* ============================================
+   DOS Color Scheme Helpers
+   ============================================ */
+.dos-black { color: #000; }
+.dos-blue { color: #00a; }
+.dos-green { color: #0a0; }
+.dos-cyan { color: #0aa; }
+.dos-red { color: #a00; }
+.dos-magenta { color: #a0a; }
+.dos-brown { color: #a50; }
+.dos-lightgray { color: #aaa; }
+.dos-darkgray { color: #555; }
+.dos-lightblue { color: #55f; }
+.dos-lightgreen { color: #5f5; }
+.dos-lightcyan { color: #5ff; }
+.dos-lightred { color: #f55; }
+.dos-lightmagenta { color: #f5f; }
+.dos-white { color: #fff; }
+
+.dos-bg-blue { background: #00a; }
+.dos-bg-cyan { background: #0aa; }
+
+/* ============================================
+   ASCII Art Box Drawing
+   ============================================ */
+.dos-box {
+  border: 1px solid #aaa;
+  padding: 5px 10px;
+  margin: 5px 0;
+}
+
+.dos-box-double {
+  border: 2px double #aaa;
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 768px) {
+  #dos-container {
+    font-size: 12px;
+  }
+
+  .dos-terminal {
+    padding: 5px 10px;
+  }
+
+  .viewer-content {
+    padding: 5px;
+    font-size: 12px;
+  }
+
+  .fm-file-date {
+    display: none;
+  }
+
+  .fm-file-size {
+    width: 60px;
+  }
+
+  .func-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  #dos-container {
+    font-size: 10px;
+  }
+
+  .fm-file-ext,
+  .fm-file-size {
+    display: none;
+  }
+}

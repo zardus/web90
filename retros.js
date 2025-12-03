@@ -272,6 +272,7 @@
     { name: 'cascade', type: 'theme', emoji: '🦠', label: 'Cascade Virus', resources: { js: 'cascade.js', css: 'cascade.css' } },
     { name: 'pipes', type: 'theme', emoji: '🔧', label: '3D Pipes', resources: { js: 'pipes.js' } },
     { name: 'win98', type: 'theme', emoji: '🖥️', label: 'Windows 98', resources: { js: 'win98.js', css: 'win98.css' } },
+    { name: 'dos', type: 'theme', emoji: '💾', label: 'MS-DOS', resources: { js: 'dos.js', css: 'dos.css' } },
     { name: 'comic-sans', type: 'theme', emoji: '🤪', label: 'Comic Sans Mode', init: initThemeComicSans }
   ];
 
