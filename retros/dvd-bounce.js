@@ -40,7 +40,26 @@
     } catch(e) { /* ignore */ }
   }
 
+  // Themes that transform the page in ways incompatible with fixed-position overlays
+  var INCOMPATIBLE_THEMES = ['starwars', 'dos', 'win98', 'macos-classic', 'flash'];
+
+  function getActiveTheme() {
+    var classList = document.body.className.split(/\s+/);
+    for (var i = 0; i < classList.length; i++) {
+      var match = classList[i].match(/^retheme-(.+)$/);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
   function initDVDBounce() {
+    // Check for incompatible themes
+    var activeTheme = getActiveTheme();
+    if (activeTheme && INCOMPATIBLE_THEMES.indexOf(activeTheme) !== -1) {
+      console.warn('DVD Bounce: Incompatible with ' + activeTheme + ' theme, skipping');
+      return;
+    }
+
     // Find the first visible image on the page
     var images = document.querySelectorAll('img');
     var sourceImg = null;
