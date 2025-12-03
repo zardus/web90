@@ -596,8 +596,8 @@
       content: wrapper.outerHTML,
       menuItems: ['File', 'Edit', 'Search', 'Help'],
       statusBar: 'Ln 1, Col 1',
-      width: 600,
-      height: 450
+      width: 800,
+      height: 600
     });
   }
 
