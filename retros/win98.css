@@ -448,6 +448,8 @@
   padding: 4px 12px 4px 8px;
   cursor: pointer;
   font-size: 11px;
+  position: relative;
+  color: #000;
 }
 
 .menu-item:hover {
@@ -478,6 +480,84 @@
   height: 2px;
   margin: 4px 8px;
   background: linear-gradient(180deg, #808080 0%, #808080 50%, #fff 50%, #fff 100%);
+}
+
+/* ============================================
+   Cascading Submenus
+   ============================================ */
+.submenu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: -2px;
+  min-width: 180px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10001;
+  padding: 4px 0;
+}
+
+.menu-item.has-submenu:hover > .submenu,
+.submenu-item.has-submenu:hover > .submenu {
+  display: block;
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px 4px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  position: relative;
+  color: #000;
+}
+
+.submenu-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.submenu-item.disabled {
+  color: #808080;
+  cursor: default;
+}
+
+.submenu-item.disabled:hover {
+  background: transparent;
+  color: #808080;
+}
+
+.submenu-icon {
+  width: 20px;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.submenu-label {
+  flex: 1;
+}
+
+.submenu-item .menu-arrow {
+  font-size: 8px;
+  color: #808080;
+}
+
+.submenu-item:hover .menu-arrow {
+  color: #fff;
+}
+
+.submenu-divider {
+  height: 2px;
+  margin: 4px 8px;
+  background: linear-gradient(180deg, #808080 0%, #808080 50%, #fff 50%, #fff 100%);
+}
+
+/* Nested submenu positioning */
+.submenu-nested {
+  left: 100%;
+  top: -2px;
 }
 
 /* ============================================
@@ -710,7 +790,7 @@
   max-width: 65px;
 }
 
-/* Dialog windows (Run dialog) */
+/* Dialog windows (Run dialog) - uses 98.css field-row */
 .dialog-window .window-body {
   padding: 12px;
   background: #c0c0c0;
@@ -736,54 +816,21 @@
   line-height: 1.4;
 }
 
-.run-text label {
-  font-size: 11px;
-  display: block;
-  margin-bottom: 4px;
-}
-
 .run-input {
-  width: 100%;
-  padding: 4px;
-  font-size: 11px;
-  border: 2px solid;
-  border-color: #808080 #fff #fff #808080;
+  flex: 1;
 }
 
 .run-buttons {
-  display: flex;
   justify-content: flex-end;
-  gap: 8px;
 }
 
 .run-buttons button {
   min-width: 70px;
-  padding: 4px 12px;
+}
+
+/* Status bar - 98.css provides base, just override if needed */
+#win98-container .status-bar {
   font-size: 11px;
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
-  cursor: pointer;
-}
-
-.run-buttons button:active {
-  border-color: #808080 #fff #fff #808080;
-}
-
-/* Status bar */
-.status-bar {
-  background: #c0c0c0;
-  border-top: 2px solid;
-  border-color: #808080 #fff #fff #808080;
-  padding: 2px 4px;
-  font-size: 11px;
-}
-
-.status-bar-field {
-  margin: 0;
-  padding: 0 4px;
-  border: 1px solid;
-  border-color: #808080 #fff #fff #808080;
 }
 
 /* ============================================
@@ -934,4 +981,469 @@
 #win98-container .win-close::after {
   content: '✕';
   font-size: 10px;
+}
+
+/* ============================================
+   Application Windows - Calculator
+   ============================================ */
+.calculator {
+  padding: 8px;
+  background: #c0c0c0;
+}
+
+.calc-display {
+  width: 100%;
+  padding: 8px;
+  font-size: 18px;
+  font-family: 'Courier New', monospace;
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.calc-btn {
+  padding: 8px;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.calc-zero {
+  grid-column: span 2;
+}
+
+.calc-op {
+  background: #e0e0e0;
+}
+
+.calc-equals {
+  background: #ffcc00;
+}
+
+/* ============================================
+   Application Windows - Paint
+   ============================================ */
+.paint-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #c0c0c0;
+}
+
+.paint-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #c0c0c0;
+  border-bottom: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+.paint-tool {
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  font-size: 16px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  cursor: pointer;
+}
+
+.paint-tool.active {
+  border-color: #808080 #fff #fff #808080;
+  background: #e0e0e0;
+}
+
+.paint-colors {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: #c0c0c0;
+}
+
+.paint-color {
+  width: 20px;
+  height: 20px;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  cursor: pointer;
+}
+
+.paint-color.active {
+  border-color: #000 #000 #000 #000;
+}
+
+.paint-canvas {
+  flex: 1;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  cursor: crosshair;
+}
+
+/* ============================================
+   Application Windows - WordPad
+   ============================================ */
+.wordpad-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #c0c0c0;
+  border-bottom: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  align-items: center;
+}
+
+.wp-btn {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  font-size: 12px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  cursor: pointer;
+}
+
+.wp-sep {
+  color: #808080;
+  margin: 0 4px;
+}
+
+.wp-font, .wp-size {
+  padding: 2px;
+  font-size: 11px;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+.wordpad-content {
+  flex: 1;
+  padding: 8px;
+  background: #fff;
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 12px;
+  overflow-y: auto;
+  min-height: 200px;
+}
+
+/* ============================================
+   Application Windows - Internet Explorer
+   ============================================ */
+.ie-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #c0c0c0;
+  border-bottom: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  align-items: center;
+}
+
+.ie-btn {
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  font-size: 14px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  cursor: pointer;
+}
+
+.ie-address {
+  flex: 1;
+  padding: 4px;
+  font-size: 11px;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+.ie-go {
+  padding: 4px 12px;
+  font-size: 11px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  cursor: pointer;
+}
+
+.ie-content {
+  flex: 1;
+  background: #fff;
+  overflow: auto;
+}
+
+.ie-welcome {
+  padding: 40px;
+  text-align: center;
+}
+
+.ie-welcome h1 {
+  font-size: 24px;
+  color: #000080;
+  margin-bottom: 16px;
+}
+
+/* ============================================
+   Application Windows - DOS Prompt
+   ============================================ */
+.dos-window .window-body {
+  background: #000;
+  padding: 0;
+}
+
+.dos-prompt {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #c0c0c0;
+  background: #000;
+  padding: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dos-output {
+  flex: 1;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  margin-bottom: 4px;
+}
+
+.dos-input-line {
+  display: flex;
+  align-items: center;
+}
+
+.dos-prompt-text {
+  margin-right: 4px;
+}
+
+.dos-input {
+  flex: 1;
+  background: #000;
+  border: none;
+  color: #c0c0c0;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  outline: none;
+}
+
+/* Fullscreen DOS mode */
+#win98-dos-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 100001;
+}
+
+.dos-fullscreen {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  color: #c0c0c0;
+  padding: 20px;
+  white-space: pre-wrap;
+}
+
+/* ============================================
+   Application Windows - Notepad (empty)
+   ============================================ */
+.notepad-textarea {
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  resize: none;
+  outline: none;
+}
+
+/* ============================================
+   Application Windows - Help
+   ============================================ */
+.help-window {
+  display: flex;
+  height: 100%;
+}
+
+.help-sidebar {
+  width: 180px;
+  background: #fff;
+  border-right: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  padding: 8px;
+}
+
+.help-item {
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.help-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.help-content {
+  flex: 1;
+  padding: 16px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+.help-content h2 {
+  color: #000080;
+  font-size: 16px;
+  margin: 0 0 12px 0;
+}
+
+.help-content ul {
+  margin: 12px 0 12px 20px;
+}
+
+.help-content li {
+  margin: 4px 0;
+}
+
+/* ============================================
+   Dialogs - Shutdown (uses 98.css field-row)
+   ============================================ */
+.shutdown-dialog {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.shutdown-icon {
+  font-size: 48px;
+}
+
+.shutdown-options p {
+  margin: 0 0 12px 0;
+  font-size: 11px;
+}
+
+.shutdown-buttons {
+  justify-content: flex-end;
+}
+
+.shutdown-buttons button {
+  min-width: 70px;
+}
+
+/* ============================================
+   Dialogs - Find (uses 98.css tabs, field-row)
+   ============================================ */
+.find-dialog, .find-computer-dialog {
+  padding: 8px;
+}
+
+.find-dialog [role="tabpanel"] {
+  margin-bottom: 12px;
+}
+
+.find-input, .find-location, .find-computer-input {
+  flex: 1;
+}
+
+.find-buttons {
+  margin-bottom: 12px;
+}
+
+.find-results {
+  background: #fff;
+}
+
+.find-results-header {
+  display: flex;
+  padding: 4px 8px;
+  background: #c0c0c0;
+  font-size: 11px;
+  font-weight: bold;
+  border-bottom: 1px solid #808080;
+}
+
+.find-results-header span {
+  flex: 1;
+}
+
+.find-results-list {
+  max-height: 120px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.find-result-row {
+  display: flex;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.find-result-row:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.find-result-row span {
+  flex: 1;
+}
+
+.find-no-results {
+  padding: 12px;
+  text-align: center;
+  color: #808080;
+  font-style: italic;
+  font-size: 11px;
+}
+
+/* ============================================
+   Dialogs - Display Properties (uses 98.css tabs)
+   ============================================ */
+.display-props {
+  padding: 8px;
+  background: #c0c0c0;
+}
+
+.display-props [role="tabpanel"] {
+  margin-bottom: 12px;
+}
+
+.display-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.preview-monitor {
+  width: 150px;
+  height: 120px;
+  padding: 8px;
+}
+
+.preview-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.wallpaper-select {
+  flex: 1;
+}
+
+.display-buttons {
+  justify-content: flex-end;
+}
+
+.display-buttons button {
+  min-width: 70px;
 }
