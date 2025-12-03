@@ -75,9 +75,16 @@ Clone this repo into your site, then:
 | `custom-cursor` | Replace the cursor with a retro image |
 | `dividers` | Animated GIF dividers between sections (8 included) |
 | `image-rotate` | 3D rotating images (add `data-image-rotate="true"` to img tags) |
-| `retheme` | Full page theme transformation (8 themes!) |
+| `retheme` | Full page theme transformation (18 themes!) |
 | `perspective` | 3D tilt effect - page follows your mouse |
-| `glitch` | VHS-style glitch overlay effect |
+| `fireworks` | Click anywhere to launch fireworks |
+| `clippy` | It looks like you're browsing a website! Clippy is here to help |
+| `popups` | Random popup windows like it's 1999 |
+| `toolbars` | Retro browser toolbar overlays |
+| `flying-toasters` | The classic After Dark screensaver |
+| `click-sparkles` | Sparkle effects when you click |
+| `dvd-bounce` | DVD logo bouncing around the screen |
+| `aol-dialup` | AOL dialup connection sounds and UI |
 
 ### Special
 
@@ -118,6 +125,14 @@ Use `?theme=NAME` with the `retheme` retro:
 | `table` | Classic table-based layout styling |
 | `flash` | Full Macromedia Flash-style site takeover with loader, intro, and navigation |
 | `snow` | TV static/snow overlay |
+| `starwars` | Star Wars opening crawl text effect |
+| `cascade` | The Cascade virus effect |
+| `pipes` | Windows 3D Pipes screensaver |
+| `win98` | Full Windows 98 desktop experience |
+| `macos-classic` | Mac OS Classic (System 7-9) desktop |
+| `dos` | MS-DOS command prompt interface |
+| `vhs` | VHS tape glitch and tracking effects |
+| `comic-sans` | Everything in Comic Sans (the horror!) |
 
 ## URL Parameters
 
@@ -223,15 +238,39 @@ Enable the Windows 95-style control panel with `?retros=control-panel` (or inclu
 
 ```
 web90/
-├── retros.js           # Main JavaScript
+├── retros.js           # Main JavaScript (orchestrator)
 ├── retros.css          # Styles for all retros
 ├── retro-elements.html # HTML templates for DOM retros
 ├── control-panel.html  # Windows 95 control panel template
 ├── chat-window.html    # AIM-style chat window template
+├── clippy.html         # Clippy assistant template
 ├── hampsters.gif       # Hampster dance animation
+├── toaster.gif         # Flying toaster animation
+├── clippy.png          # Clippy assistant image
+├── win98-boot.webp     # Windows 98 boot screen
 ├── badges/             # Badge GIF images (4 included)
 ├── cursors/            # Cursor PNG images (win95, hourglass)
-└── dividers/           # Divider GIF images (8 included)
+├── dividers/           # Divider GIF images (8 included)
+└── retros/             # Individual retro modules (lazy-loaded)
+    ├── aol-dialup.js/css
+    ├── cascade.js/css
+    ├── click-sparkles.js
+    ├── clippy.js/css
+    ├── control-panel.js/css
+    ├── dos.js/css
+    ├── dvd-bounce.js
+    ├── fireworks.js/css
+    ├── flash.js/css
+    ├── flying-toasters.js
+    ├── macos-classic.js/css
+    ├── media-player.js/css
+    ├── mouse-trail.js/css
+    ├── pipes.js
+    ├── popups.js/css
+    ├── starwars.js/css
+    ├── toolbars.js/css
+    ├── win98.js/css
+    └── wordart.js/css
 ```
 
 ## License
