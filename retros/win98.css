@@ -1,0 +1,1010 @@
+/**
+ * Windows 98 Theme Styles
+ * Lazy-loaded CSS for the Windows 98 desktop theme
+ *
+ * Uses 98.css for authentic Windows components, plus custom styling
+ * for BIOS, boot sequence, desktop, and additional UI elements.
+ */
+
+/* ============================================
+   Global Theme Setup
+   ============================================ */
+.win98-mode {
+  overflow: hidden;
+}
+
+#win98-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+}
+
+#win98-container * {
+  box-sizing: border-box;
+}
+
+/* ============================================
+   BIOS POST Screen
+   ============================================ */
+#win98-bios {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #aaa;
+  font-family: 'Perfect DOS VGA 437', 'Courier New', monospace;
+  font-size: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.5s ease;
+}
+
+#win98-bios.fade-out {
+  opacity: 0;
+}
+
+.bios-content {
+  max-width: 800px;
+}
+
+.bios-header {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.bios-copyright {
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+.bios-line {
+  height: 10px;
+}
+
+.bios-cpu {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.bios-memory-test {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.bios-memory-test span {
+  color: #0f0;
+}
+
+.bios-detecting {
+  color: #ff0;
+  margin: 15px 0 10px;
+}
+
+.bios-drive {
+  color: #aaa;
+  margin-left: 20px;
+  margin-bottom: 5px;
+}
+
+.bios-press {
+  position: absolute;
+  bottom: 40px;
+  color: #aaa;
+  animation: bios-blink 1s infinite;
+}
+
+@keyframes bios-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ============================================
+   Windows 98 Boot Screen
+   ============================================ */
+#win98-boot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+#win98-boot.fade-out {
+  opacity: 0;
+}
+
+.boot-content {
+  text-align: center;
+}
+
+.boot-logo {
+  position: relative;
+}
+
+/* Animated clouds background */
+.boot-clouds {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 200px;
+  background: linear-gradient(180deg,
+    #000 0%,
+    #001833 20%,
+    #003366 40%,
+    #0066cc 60%,
+    #66aaff 80%,
+    #99ccff 100%
+  );
+  border-radius: 200px 200px 0 0;
+  opacity: 0.8;
+  overflow: hidden;
+}
+
+.boot-clouds::before,
+.boot-clouds::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: cloud-float 8s ease-in-out infinite;
+}
+
+.boot-clouds::before {
+  width: 100px;
+  height: 40px;
+  bottom: 30px;
+  left: 20px;
+  animation-delay: 0s;
+}
+
+.boot-clouds::after {
+  width: 80px;
+  height: 30px;
+  bottom: 50px;
+  right: 40px;
+  animation-delay: 2s;
+}
+
+@keyframes cloud-float {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(20px); }
+}
+
+.boot-text {
+  font-family: 'Times New Roman', serif;
+  font-size: 28px;
+  font-style: italic;
+  color: #fff;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 1;
+}
+
+.boot-text sup {
+  font-size: 12px;
+}
+
+.boot-windows {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 72px;
+  font-weight: bold;
+  background: linear-gradient(180deg,
+    #fff 0%,
+    #ccc 40%,
+    #999 60%,
+    #666 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.7));
+  letter-spacing: -2px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Windows flag colors effect */
+.boot-windows::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 8px;
+  background: linear-gradient(90deg,
+    #ff0000 0%, #ff0000 25%,
+    #00ff00 25%, #00ff00 50%,
+    #0000ff 50%, #0000ff 75%,
+    #ffff00 75%, #ffff00 100%
+  );
+  border-radius: 4px;
+}
+
+.boot-progress-container {
+  width: 300px;
+  height: 20px;
+  margin: 60px auto 0;
+  background: #000;
+  border: 2px solid #444;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.boot-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,
+    #004488 0%,
+    #0066cc 50%,
+    #0088ff 100%
+  );
+  transition: width 0.15s linear;
+  position: relative;
+}
+
+/* Animated blocks inside progress bar */
+.boot-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 15px,
+    rgba(0, 0, 0, 0.3) 15px,
+    rgba(0, 0, 0, 0.3) 17px
+  );
+  animation: boot-progress-blocks 0.3s linear infinite;
+}
+
+@keyframes boot-progress-blocks {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(17px); }
+}
+
+/* ============================================
+   Windows 98 Desktop
+   ============================================ */
+#win98-desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #008080; /* Classic teal */
+  display: none;
+  flex-direction: column;
+}
+
+/* Ensure flex layout when visible */
+#win98-desktop[style*="flex"] {
+  display: flex !important;
+}
+
+#win98-desktop.desktop-startup {
+  animation: desktop-fade-in 0.5s ease forwards;
+}
+
+@keyframes desktop-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Startup chime visual effect */
+#win98-desktop.startup-chime::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  animation: startup-flash 2s ease-out forwards;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@keyframes startup-flash {
+  0% { opacity: 1; transform: scale(0.5); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+.desktop-area {
+  flex: 1;
+  position: relative;
+  min-height: 0; /* Allow flex shrinking */
+}
+
+/* ============================================
+   Desktop Icons
+   ============================================ */
+.desktop-icons {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-height: calc(100vh - 60px);
+  align-content: flex-start;
+  z-index: 10;
+}
+
+.desktop-icon {
+  width: 75px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.desktop-icon:hover {
+  background: rgba(0, 0, 128, 0.2);
+}
+
+.desktop-icon.selected {
+  background: #000080;
+  border: 1px dotted #fff;
+}
+
+.desktop-icon.selected .icon-label {
+  background: #000080;
+  color: #fff;
+}
+
+.icon-image {
+  font-size: 32px;
+  margin-bottom: 5px;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+.icon-label {
+  font-size: 11px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 1px 1px 1px #000;
+  word-wrap: break-word;
+  max-width: 70px;
+}
+
+/* Special positioning for Recycle Bin - relative to desktop-area */
+.desktop-area > .desktop-icons > .desktop-icon.recycle-bin {
+  position: fixed;
+  bottom: 38px; /* Above taskbar */
+  right: 10px;
+  top: auto;
+  left: auto;
+}
+
+/* ============================================
+   Taskbar
+   ============================================ */
+.win98-taskbar {
+  height: 28px;
+  min-height: 28px;
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  gap: 4px;
+  position: relative;
+  z-index: 9999;
+  flex-shrink: 0;
+}
+
+.start-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  height: 22px;
+}
+
+.start-button:active,
+.start-button.active {
+  border-color: #808080 #fff #fff #808080;
+  padding: 3px 5px 1px 7px;
+}
+
+.start-logo {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg,
+    #ff0000 0%, #ff0000 25%,
+    #00ff00 25%, #00ff00 50%,
+    #0000ff 50%, #0000ff 75%,
+    #ffff00 75%, #ffff00 100%
+  );
+  border-radius: 2px;
+}
+
+.taskbar-divider {
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(90deg, #808080 0%, #808080 50%, #fff 50%, #fff 100%);
+  margin: 0 2px;
+}
+
+.taskbar-buttons {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.taskbar-btn {
+  min-width: 100px;
+  max-width: 160px;
+  height: 22px;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskbar-btn.active {
+  border-color: #808080 #fff #fff #808080;
+  background: #e0e0e0;
+  font-weight: bold;
+}
+
+.taskbar-btn:active {
+  border-color: #808080 #fff #fff #808080;
+}
+
+.system-tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  height: 22px;
+}
+
+.tray-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.tray-icon {
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tray-clock {
+  font-size: 11px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  min-width: 55px;
+  text-align: center;
+}
+
+/* ============================================
+   Start Menu
+   ============================================ */
+.start-menu {
+  position: absolute;
+  bottom: 28px;
+  left: 2px;
+  width: 180px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  display: flex;
+  z-index: 10000;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.start-menu-banner {
+  width: 22px;
+  background: linear-gradient(180deg, #000080 0%, #1084d0 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+
+.banner-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  color: #c0c0c0;
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.banner-98 {
+  color: #fff;
+}
+
+.start-menu-items {
+  flex: 1;
+  padding: 4px 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px 4px 8px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.menu-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.menu-icon {
+  width: 20px;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.menu-label {
+  flex: 1;
+}
+
+.menu-arrow {
+  font-size: 8px;
+  color: #808080;
+}
+
+.menu-item:hover .menu-arrow {
+  color: #fff;
+}
+
+.menu-divider {
+  height: 2px;
+  margin: 4px 8px;
+  background: linear-gradient(180deg, #808080 0%, #808080 50%, #fff 50%, #fff 100%);
+}
+
+/* ============================================
+   Windows (using 98.css class names)
+   ============================================ */
+.win98-window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  min-height: 100px;
+  animation: window-open 0.2s ease-out;
+}
+
+@keyframes window-open {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.win98-window.window-closing {
+  animation: window-close 0.2s ease-in forwards;
+}
+
+@keyframes window-close {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+.win98-window.window-maximized {
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: calc(100% - 28px) !important;
+}
+
+.win98-window.dragging {
+  cursor: move;
+  user-select: none;
+}
+
+.win98-window .title-bar {
+  cursor: move;
+}
+
+.win98-window .window-body {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Window menu bar */
+.window-menu-bar {
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  padding: 2px 4px;
+  display: flex;
+  gap: 0;
+}
+
+.menu-bar-item {
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.menu-bar-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+/* Notepad content */
+.notepad-content {
+  padding: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 100%;
+  background: #fff;
+  color: #000;
+}
+
+.notepad-content section {
+  display: block !important;
+}
+
+.notepad-content h1,
+.notepad-content h2,
+.notepad-content h3,
+.notepad-content h4 {
+  font-family: 'Courier New', Courier, monospace;
+  color: #000;
+  margin: 16px 0 8px;
+}
+
+.notepad-content h1 { font-size: 16px; }
+.notepad-content h2 { font-size: 14px; }
+.notepad-content h3 { font-size: 13px; }
+
+.notepad-content p {
+  margin: 8px 0;
+  color: #000;
+}
+
+.notepad-content a {
+  color: #0000ff;
+  text-decoration: underline;
+}
+
+.notepad-content a:hover {
+  color: #ff0000;
+}
+
+.notepad-content ul,
+.notepad-content ol {
+  margin: 8px 0 8px 20px;
+}
+
+.notepad-content li {
+  margin: 4px 0;
+}
+
+/* Hide headshot in notepad */
+.notepad-content .headshot {
+  display: none;
+}
+
+/* Explorer content (My Computer, etc.) */
+.explorer-content {
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #fff;
+  min-height: 100%;
+}
+
+.explorer-content.empty-folder {
+  color: #808080;
+  font-style: italic;
+  justify-content: center;
+  align-items: center;
+}
+
+.explorer-item {
+  width: 70px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+}
+
+.explorer-item:hover {
+  background: #e0e0e0;
+  border: 1px dotted #808080;
+}
+
+.explorer-icon {
+  font-size: 32px;
+  margin-bottom: 4px;
+}
+
+.explorer-label {
+  font-size: 11px;
+  word-wrap: break-word;
+  max-width: 65px;
+}
+
+/* Dialog windows (Run dialog) */
+.dialog-window .window-body {
+  padding: 12px;
+  background: #c0c0c0;
+}
+
+.run-dialog-content {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.run-icon {
+  font-size: 32px;
+}
+
+.run-text {
+  flex: 1;
+}
+
+.run-text p {
+  font-size: 11px;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.run-text label {
+  font-size: 11px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.run-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 11px;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+.run-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.run-buttons button {
+  min-width: 70px;
+  padding: 4px 12px;
+  font-size: 11px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  cursor: pointer;
+}
+
+.run-buttons button:active {
+  border-color: #808080 #fff #fff #808080;
+}
+
+/* Status bar */
+.status-bar {
+  background: #c0c0c0;
+  border-top: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  padding: 2px 4px;
+  font-size: 11px;
+}
+
+.status-bar-field {
+  margin: 0;
+  padding: 0 4px;
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+/* ============================================
+   Shutdown Screen
+   ============================================ */
+#win98-shutdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ff8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  animation: shutdown-appear 1s ease;
+}
+
+@keyframes shutdown-appear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.shutdown-content {
+  text-align: center;
+}
+
+.shutdown-text {
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-size: 48px;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.shutdown-subtext {
+  font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  font-size: 48px;
+  color: #000;
+}
+
+/* Shutting down animation */
+#win98-desktop.shutting-down {
+  animation: desktop-shutdown 1s ease-out forwards;
+}
+
+@keyframes desktop-shutdown {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(0.98);
+    filter: brightness(0.5);
+  }
+  100% {
+    transform: scale(0.95) translateY(10px);
+    filter: brightness(0);
+  }
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 768px) {
+  .desktop-icons {
+    gap: 5px;
+  }
+
+  .desktop-icon {
+    width: 60px;
+  }
+
+  .icon-image {
+    font-size: 24px;
+  }
+
+  .icon-label {
+    font-size: 9px;
+    max-width: 55px;
+  }
+
+  .win98-window {
+    width: calc(100% - 20px) !important;
+    max-height: calc(100% - 50px);
+    left: 10px !important;
+    top: 20px !important;
+  }
+
+  .win98-window .window-body {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .taskbar-btn {
+    min-width: 60px;
+    max-width: 100px;
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .start-menu {
+    width: 160px;
+  }
+
+  .bios-content {
+    font-size: 12px;
+  }
+
+  .boot-windows {
+    font-size: 48px;
+  }
+
+  .boot-text {
+    font-size: 20px;
+  }
+
+  .boot-clouds {
+    width: 280px;
+    height: 140px;
+  }
+
+  .shutdown-text,
+  .shutdown-subtext {
+    font-size: 28px;
+  }
+}
+
+/* ============================================
+   98.css Integration - Minimal Overrides
+   ============================================ */
+/* Add shadow to windows */
+#win98-container .window {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Custom button icons since 98.css uses images we don't have */
+#win98-container .win-minimize::after {
+  content: '🗕';
+  font-size: 8px;
+}
+
+#win98-container .win-maximize::after {
+  content: '🗖';
+  font-size: 8px;
+}
+
+#win98-container .win-close::after {
+  content: '✕';
+  font-size: 10px;
+}
