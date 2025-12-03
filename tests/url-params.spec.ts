@@ -133,9 +133,9 @@ test.describe('URL Parameter Handling', () => {
       await page.goto('/test.html?retros=dividers&divider-style=1');
       await page.waitForTimeout(1000);
 
-      const dividerImg = page.locator('.divider img').first();
-      const src = await dividerImg.getAttribute('src');
-      expect(src).toContain('1.gif');
+      const dividerImg = page.locator('.divider .divider-img').first();
+      const bgImage = await dividerImg.evaluate(el => el.style.backgroundImage);
+      expect(bgImage).toContain('1.gif');
     });
   });
 
@@ -186,9 +186,9 @@ test.describe('URL Parameter Handling', () => {
       await expect(page.locator('blink')).toHaveCount(1);
 
       // Divider style should be applied
-      const dividerImg = page.locator('.divider img').first();
-      const src = await dividerImg.getAttribute('src');
-      expect(src).toContain('2.gif');
+      const dividerImg = page.locator('.divider .divider-img').first();
+      const bgImage = await dividerImg.evaluate(el => el.style.backgroundImage);
+      expect(bgImage).toContain('2.gif');
     });
 
     test('theme with retros works together', async ({ page }) => {
