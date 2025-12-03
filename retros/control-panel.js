@@ -226,7 +226,40 @@
       select.addEventListener('mousedown', function(e) {
         e.preventDefault();
         select.focus();
+
+        // Close other open dropdowns first
+        panel.querySelectorAll('.custom-select-wrapper.open').forEach(function(w) {
+          if (w !== wrapper) w.classList.remove('open');
+        });
+
+        var isOpening = !wrapper.classList.contains('open');
         wrapper.classList.toggle('open');
+
+        // Position dropdown to stay in viewport
+        if (isOpening) {
+          var rect = wrapper.getBoundingClientRect();
+          var dropdownHeight = dropdown.offsetHeight || 200; // estimate if not rendered yet
+          var viewportHeight = window.innerHeight;
+          var spaceBelow = viewportHeight - rect.bottom;
+          var spaceAbove = rect.top;
+
+          // Reset positioning
+          dropdown.style.top = '';
+          dropdown.style.bottom = '';
+          dropdown.style.maxHeight = '';
+
+          if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+            // Open upward
+            dropdown.style.bottom = '100%';
+            dropdown.style.top = 'auto';
+            dropdown.style.maxHeight = Math.min(spaceAbove - 10, 300) + 'px';
+          } else {
+            // Open downward (default)
+            dropdown.style.top = '100%';
+            dropdown.style.bottom = 'auto';
+            dropdown.style.maxHeight = Math.min(spaceBelow - 10, 300) + 'px';
+          }
+        }
       });
 
       // Handle keyboard

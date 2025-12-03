@@ -64,6 +64,7 @@
   z-index: 1001;
   background: #fff;
   border: 1px solid #000;
+  overflow-y: auto;
 }
 
 .custom-select-wrapper.open .custom-select-dropdown { display: block; }
