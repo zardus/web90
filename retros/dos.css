@@ -316,6 +316,20 @@
   color: #fa0;
 }
 
+/* ASCII Art Display */
+.dos-ascii-art {
+  font-family: 'Courier New', monospace;
+  font-size: 5px;
+  line-height: 0.9;
+  color: #0f0;
+  margin: 0;
+  padding: 5px;
+  white-space: pre;
+  letter-spacing: 0;
+  background: #000;
+  display: inline-block;
+}
+
 /* ============================================
    Norton Commander Style Viewer
    ============================================ */

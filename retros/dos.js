@@ -15,6 +15,7 @@
   var state = {
     sections: [],
     navLinks: [],
+    headshot: null,
     commandHistory: [],
     historyIndex: -1,
     currentView: 'prompt' // 'prompt', 'viewer', 'filemanager'
@@ -39,6 +40,9 @@
       title: header && header.querySelector('h1') ? header.querySelector('h1').textContent : 'DOS',
       headshot: document.querySelector('.headshot') ? document.querySelector('.headshot').src : null
     };
+
+    // Store headshot for later use
+    state.headshot = headerContent.headshot;
 
     if (nav) {
       nav.querySelectorAll('a').forEach(function(a) {
@@ -230,9 +234,15 @@
   }
 
   function showQuickFiles(terminal) {
-    if (state.sections.length === 0) return;
+    if (state.sections.length === 0 && !state.headshot) return;
 
     addOutput(terminal, 'Files available:', 'cyan');
+
+    // Show headshot first if available
+    if (state.headshot) {
+      addOutputHTML(terminal, '  ' + cmdLink('VIEW HEADSHOT.BMP', 'HEADSHOT.BMP'));
+    }
+
     var fileLinks = state.sections.map(function(section) {
       var filename = section.title.toUpperCase().substring(0, 8);
       return '  ' + cmdLink('VIEW ' + filename + '.TXT', filename + '.TXT');
@@ -254,6 +264,114 @@
   // Create an external link (opens in new tab)
   function extLink(href, label) {
     return '<a class="dos-ext-link" href="' + href + '" target="_blank">' + label + '</a>';
+  }
+
+  // ============================================
+  // ASCII Art Generator
+  // ============================================
+
+  function imageToAscii(imgSrc, callback, options) {
+    options = options || {};
+    var width = options.width || 60;  // characters wide
+    var chars = options.chars || ' .:-=+*#%@';  // dark to light
+    var colored = options.colored !== false;  // default to colored
+
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+
+      // Calculate height to maintain aspect ratio (chars are ~2x tall as wide)
+      var aspectRatio = img.height / img.width;
+      var height = Math.floor(width * aspectRatio * 0.5);
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Fill with black background first
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw image scaled down
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Get pixel data
+      var imageData = ctx.getImageData(0, 0, width, height);
+      var pixels = imageData.data;
+
+      var ascii = '';
+      for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+          var idx = (y * width + x) * 4;
+          var r = pixels[idx];
+          var g = pixels[idx + 1];
+          var b = pixels[idx + 2];
+
+          // Calculate brightness (0-255)
+          var brightness = (r + g + b) / 3;
+
+          // Map brightness to character
+          var charIdx = Math.floor((brightness / 255) * (chars.length - 1));
+          var char = chars[charIdx];
+
+          if (colored && char !== ' ') {
+            // Output colored span
+            ascii += '<span style="color:rgb(' + r + ',' + g + ',' + b + ')">' + char + '</span>';
+          } else {
+            ascii += char;
+          }
+        }
+        ascii += '\n';
+      }
+
+      callback(ascii, colored);
+    };
+
+    img.onerror = function() {
+      callback(null);
+    };
+
+    img.src = imgSrc;
+  }
+
+  function showHeadshot(terminal) {
+    if (!state.headshot) {
+      addOutput(terminal, 'No headshot image found.', 'white');
+      addOutput(terminal, '');
+      return;
+    }
+
+    addOutput(terminal, 'Loading HEADSHOT.BMP...', 'cyan');
+
+    imageToAscii(state.headshot, function(ascii, isColored) {
+      if (ascii) {
+        // Clear the "Loading..." message
+        var outputs = terminal.querySelectorAll('.dos-output');
+        var lastOutput = outputs[outputs.length - 1];
+        if (lastOutput && lastOutput.textContent.includes('Loading')) {
+          lastOutput.remove();
+        }
+
+        addOutput(terminal, '');
+        var pre = createElement('pre');
+        pre.className = 'dos-ascii-art';
+        if (isColored) {
+          pre.innerHTML = ascii;
+        } else {
+          pre.textContent = ascii;
+        }
+        terminal.appendChild(pre);
+        addOutput(terminal, '');
+      } else {
+        addOutput(terminal, 'Error loading image.', 'white');
+        addOutput(terminal, '');
+      }
+
+      // Re-show prompt and scroll
+      showPromptLine(terminal);
+      terminal.scrollTop = terminal.scrollHeight;
+    }, { width: 120, colored: true });
   }
 
   function showPromptLine(terminal) {
@@ -412,6 +530,10 @@
       case 'mem':
         showMem(terminal);
         break;
+      case 'photo':
+      case 'headshot':
+        showHeadshot(terminal);
+        return; // Don't show prompt, showHeadshot will do it async
       case 'exit':
         addOutput(terminal, '');
         addOutput(terminal, 'Thanks for using DOS!', 'white');
@@ -457,14 +579,18 @@
     addOutputHTML(terminal, '  ' + cmdLink('DATE') + '         Display current date');
     addOutputHTML(terminal, '  ' + cmdLink('TIME') + '         Display current time');
     addOutputHTML(terminal, '  ' + cmdLink('MEM') + '          Display memory usage');
+    addOutputHTML(terminal, '  ' + cmdLink('PHOTO') + '        Display headshot as ASCII art');
     addOutput(terminal, '  ECHO <text>  Display text');
     addOutputHTML(terminal, '  ' + cmdLink('EXIT') + '         Exit DOS and return to normal page');
     addOutputHTML(terminal, '  ' + cmdLink('HELP') + '         Display this help');
     addOutput(terminal, '');
 
     // Also show clickable file list
-    if (state.sections.length > 0) {
+    if (state.sections.length > 0 || state.headshot) {
       addOutput(terminal, 'Click a file to view:', 'cyan');
+      if (state.headshot) {
+        addOutputHTML(terminal, '  ' + cmdLink('VIEW HEADSHOT.BMP', 'HEADSHOT.BMP'));
+      }
       state.sections.forEach(function(section) {
         var filename = section.title.toUpperCase().substring(0, 8);
         addOutputHTML(terminal, '  ' + cmdLink('VIEW ' + filename + '.TXT', filename + '.TXT'));
@@ -481,10 +607,20 @@
     addOutput(terminal, '');
 
     var totalSize = 0;
+    var fileCount = 0;
+
+    // Show headshot if available
+    if (state.headshot) {
+      var headshotSize = '     4,096';  // Fake size for BMP
+      addOutputHTML(terminal, cmdLink('VIEW HEADSHOT.BMP', 'HEADSHOT') + ' BMP   ' + headshotSize + '  12-25-95  10:30a');
+      totalSize += 4096;
+      fileCount++;
+    }
 
     state.sections.forEach(function(section) {
       var size = section.element.textContent.length;
       totalSize += size;
+      fileCount++;
       var sizeStr = size.toString().padStart(10, ' ');
       var name = section.title.toUpperCase().substring(0, 8);
       var namePadded = name.padEnd(8, ' ');
@@ -496,7 +632,7 @@
       addOutputHTML(terminal, clickableName + ' ' + ext + '   ' + sizeStr + '  ' + date);
     });
 
-    addOutput(terminal, '        ' + state.sections.length + ' file(s)    ' + totalSize.toLocaleString().padStart(10, ' ') + ' bytes');
+    addOutput(terminal, '        ' + fileCount + ' file(s)    ' + totalSize.toLocaleString().padStart(10, ' ') + ' bytes');
     addOutput(terminal, '        0 dir(s)    524,288,000 bytes free');
     addOutput(terminal, '');
   }
@@ -530,6 +666,14 @@
     if (!filename) {
       addOutput(terminal, 'Required parameter missing', 'white');
       addOutput(terminal, '');
+      return;
+    }
+
+    // Check for headshot
+    var lowerFilename = filename.toLowerCase().trim();
+    if (lowerFilename === 'headshot.bmp' || lowerFilename === 'headshot' ||
+        lowerFilename === 'photo.bmp' || lowerFilename === 'photo') {
+      showHeadshot(terminal);
       return;
     }
 
