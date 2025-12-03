@@ -19,7 +19,17 @@
     title: null,
     commandHistory: [],
     historyIndex: -1,
-    currentView: 'prompt' // 'prompt', 'viewer', 'filemanager'
+    currentView: 'prompt', // 'prompt', 'viewer', 'filemanager'
+    // Norton Commander state
+    nc: {
+      activePanel: 0, // 0 = left, 1 = right
+      panels: [
+        { path: 'C:\\', selectedIndex: 0, files: [] },
+        { path: 'C:\\', selectedIndex: 0, files: [] }
+      ],
+      clipboard: null, // { action: 'copy'|'move', files: [] }
+      message: null
+    }
   };
 
   // ============================================
@@ -113,6 +123,33 @@
         <div class="viewer-statusbar">\
           <span class="viewer-quit-btn">Quit</span>\
           <span class="viewer-hint">ESC or Q to exit | PgUp/PgDn to scroll</span>\
+        </div>\
+      </div>\
+      <div id="dos-filemanager">\
+        <div class="fm-panels">\
+          <div class="fm-panel" data-panel="0">\
+            <div class="fm-panel-header">C:\\</div>\
+            <div class="fm-panel-content"></div>\
+            <div class="fm-panel-footer">0 files</div>\
+          </div>\
+          <div class="fm-panel" data-panel="1">\
+            <div class="fm-panel-header">C:\\</div>\
+            <div class="fm-panel-content"></div>\
+            <div class="fm-panel-footer">0 files</div>\
+          </div>\
+        </div>\
+        <div class="fm-statusbar"></div>\
+        <div class="fm-funcbar">\
+          <div class="func-key"><span class="func-num">1</span><span class="func-label">Help</span></div>\
+          <div class="func-key"><span class="func-num">2</span><span class="func-label">Menu</span></div>\
+          <div class="func-key" data-func="view"><span class="func-num">3</span><span class="func-label">View</span></div>\
+          <div class="func-key" data-func="edit"><span class="func-num">4</span><span class="func-label">Edit</span></div>\
+          <div class="func-key" data-func="copy"><span class="func-num">5</span><span class="func-label">Copy</span></div>\
+          <div class="func-key" data-func="move"><span class="func-num">6</span><span class="func-label">RenMov</span></div>\
+          <div class="func-key" data-func="mkdir"><span class="func-num">7</span><span class="func-label">Mkdir</span></div>\
+          <div class="func-key" data-func="delete"><span class="func-num">8</span><span class="func-label">Delete</span></div>\
+          <div class="func-key"><span class="func-num">9</span><span class="func-label">PullDn</span></div>\
+          <div class="func-key" data-func="quit"><span class="func-num">10</span><span class="func-label">Quit</span></div>\
         </div>\
       </div>\
     ';
@@ -227,7 +264,7 @@
     }
 
     // Show clickable quick commands
-    addOutputHTML(terminal, 'Quick commands: ' + cmdLink('DIR') + ' | ' + cmdLink('HELP') + ' | ' + cmdLink('EXIT'));
+    addOutputHTML(terminal, 'Quick commands: ' + cmdLink('DIR') + ' | ' + cmdLink('NC') + ' | ' + cmdLink('HELP') + ' | ' + cmdLink('EXIT'));
     addOutput(terminal, '');
 
     // Show file listing with clickable files
@@ -518,6 +555,11 @@
         return;
       }
 
+      if (state.currentView === 'filemanager') {
+        handleNCKeydown(container, e);
+        return;
+      }
+
       var input = terminal.querySelector('.dos-input');
       if (!input) return;
 
@@ -633,6 +675,16 @@
         addOutput(terminal, args.join(' '), 'white');
         addOutput(terminal, '');
         break;
+      case 'nc':
+      case 'norton':
+      case 'commander':
+        addOutput(terminal, '');
+        addOutput(terminal, 'Norton Commander 5.0', 'white');
+        addOutput(terminal, 'Loading file manager...', 'cyan');
+        setTimeout(function() {
+          initNortonCommander(container);
+        }, 500);
+        return; // Don't show prompt, NC will take over
       case '':
         // Empty command
         break;
@@ -656,7 +708,8 @@
     addOutput(terminal, '');
     addOutputHTML(terminal, '  ' + cmdLink('DIR') + '          Lists files in current directory');
     addOutput(terminal, '  TYPE <file>  Display contents of a file');
-    addOutput(terminal, '  VIEW <file>  View file in Norton Commander style');
+    addOutput(terminal, '  VIEW <file>  View file in full-screen viewer');
+    addOutputHTML(terminal, '  ' + cmdLink('NC') + '           Norton Commander file manager');
     addOutputHTML(terminal, '  ' + cmdLink('CLS') + '          Clear screen');
     addOutputHTML(terminal, '  ' + cmdLink('VER') + '          Display DOS version');
     addOutputHTML(terminal, '  ' + cmdLink('DATE') + '         Display current date');
@@ -824,14 +877,545 @@
   function closeViewer(container) {
     var prompt = container.querySelector('#dos-prompt');
     var viewer = container.querySelector('#dos-viewer');
+    var fm = container.querySelector('#dos-filemanager');
 
     viewer.style.display = 'none';
+
+    // Return to Norton Commander if we came from there
+    if (state.ncReturnOnClose) {
+      state.ncReturnOnClose = false;
+      fm.style.display = 'flex';
+      state.currentView = 'filemanager';
+    } else {
+      prompt.style.display = 'flex';
+      state.currentView = 'prompt';
+      // Focus input
+      var input = prompt.querySelector('.dos-input');
+      if (input) input.focus();
+    }
+  }
+
+  // ============================================
+  // Norton Commander File Manager
+  // ============================================
+
+  function buildFileList() {
+    // Build virtual file system from sections
+    var files = [];
+
+    // Add parent directory entry
+    files.push({
+      name: '..',
+      ext: '',
+      type: 'dir',
+      size: 0,
+      date: '12-25-95',
+      time: '10:30a',
+      section: null
+    });
+
+    // Add headshot if available
+    if (state.headshot) {
+      files.push({
+        name: 'HEADSHOT',
+        ext: 'BMP',
+        type: 'image',
+        size: 4096,
+        date: '12-25-95',
+        time: '10:30a',
+        section: null,
+        isHeadshot: true
+      });
+    }
+
+    // Add sections as files
+    state.sections.forEach(function(section) {
+      var name = section.title.toUpperCase().substring(0, 8);
+      files.push({
+        name: name,
+        ext: 'TXT',
+        type: 'file',
+        size: section.element.textContent.length,
+        date: '12-25-95',
+        time: '10:30a',
+        section: section
+      });
+    });
+
+    // Add nav links as URL files
+    state.navLinks.forEach(function(link, i) {
+      var name = link.text.toUpperCase().substring(0, 8).replace(/[^A-Z0-9]/g, '');
+      if (!name) name = 'LINK' + i;
+      files.push({
+        name: name,
+        ext: 'URL',
+        type: 'url',
+        size: link.href.length,
+        date: '12-25-95',
+        time: '10:30a',
+        href: link.href
+      });
+    });
+
+    return files;
+  }
+
+  function initNortonCommander(container) {
+    var fm = container.querySelector('#dos-filemanager');
+    var prompt = container.querySelector('#dos-prompt');
+
+    // Build file list for both panels
+    var files = buildFileList();
+    state.nc.panels[0].files = files.slice();
+    state.nc.panels[1].files = files.slice();
+    state.nc.panels[0].selectedIndex = 0;
+    state.nc.panels[1].selectedIndex = 0;
+
+    // Hide prompt, show file manager
+    prompt.style.display = 'none';
+    fm.style.display = 'flex';
+    state.currentView = 'filemanager';
+
+    // Render both panels
+    renderPanel(container, 0);
+    renderPanel(container, 1);
+    updateActivePanel(container);
+
+    // Setup event handlers
+    setupNCKeyboard(container);
+    setupNCMouse(container);
+  }
+
+  function renderPanel(container, panelIndex) {
+    var fm = container.querySelector('#dos-filemanager');
+    var panel = fm.querySelector('.fm-panel[data-panel="' + panelIndex + '"]');
+    var content = panel.querySelector('.fm-panel-content');
+    var footer = panel.querySelector('.fm-panel-footer');
+    var header = panel.querySelector('.fm-panel-header');
+
+    var panelState = state.nc.panels[panelIndex];
+    var files = panelState.files;
+
+    // Update header
+    header.textContent = panelState.path;
+
+    // Clear and rebuild file list
+    content.innerHTML = '';
+
+    files.forEach(function(file, index) {
+      var row = createElement('div');
+      row.className = 'fm-file';
+      if (file.type === 'dir') row.className += ' directory';
+      if (index === panelState.selectedIndex && panelIndex === state.nc.activePanel) {
+        row.className += ' selected';
+      }
+      row.dataset.index = index;
+
+      var nameSpan = createElement('span');
+      nameSpan.className = 'fm-file-name';
+      nameSpan.textContent = file.name;
+
+      var extSpan = createElement('span');
+      extSpan.className = 'fm-file-ext';
+      extSpan.textContent = file.ext;
+
+      var sizeSpan = createElement('span');
+      sizeSpan.className = 'fm-file-size';
+      sizeSpan.textContent = file.type === 'dir' ? '<DIR>' : file.size.toLocaleString();
+
+      var dateSpan = createElement('span');
+      dateSpan.className = 'fm-file-date';
+      dateSpan.textContent = file.date + ' ' + file.time;
+
+      row.appendChild(nameSpan);
+      row.appendChild(extSpan);
+      row.appendChild(sizeSpan);
+      row.appendChild(dateSpan);
+
+      content.appendChild(row);
+    });
+
+    // Update footer with file count
+    var fileCount = files.filter(function(f) { return f.type !== 'dir'; }).length;
+    footer.textContent = fileCount + ' file(s)';
+
+    // Scroll selected into view
+    var selectedRow = content.querySelector('.fm-file.selected');
+    if (selectedRow) {
+      selectedRow.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  function updateActivePanel(container) {
+    var fm = container.querySelector('#dos-filemanager');
+    var panels = fm.querySelectorAll('.fm-panel');
+
+    panels.forEach(function(panel, index) {
+      if (index === state.nc.activePanel) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
+      }
+    });
+
+    // Re-render both to update selection highlight
+    renderPanel(container, 0);
+    renderPanel(container, 1);
+  }
+
+  function ncMoveSelection(container, delta) {
+    var panelState = state.nc.panels[state.nc.activePanel];
+    var newIndex = panelState.selectedIndex + delta;
+
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex >= panelState.files.length) newIndex = panelState.files.length - 1;
+
+    panelState.selectedIndex = newIndex;
+    renderPanel(container, state.nc.activePanel);
+  }
+
+  function ncSwitchPanel(container) {
+    state.nc.activePanel = state.nc.activePanel === 0 ? 1 : 0;
+    updateActivePanel(container);
+  }
+
+  function ncGetSelectedFile() {
+    var panelState = state.nc.panels[state.nc.activePanel];
+    return panelState.files[panelState.selectedIndex];
+  }
+
+  function ncViewFile(container) {
+    var file = ncGetSelectedFile();
+    if (!file || file.type === 'dir') return;
+
+    if (file.isHeadshot) {
+      // View headshot - switch back to prompt and run command
+      ncQuit(container);
+      var terminal = container.querySelector('.dos-terminal');
+      showHeadshot(terminal);
+      return;
+    }
+
+    if (file.type === 'url') {
+      // Open URL in new tab
+      window.open(file.href, '_blank');
+      return;
+    }
+
+    if (file.section) {
+      // View section content
+      var fm = container.querySelector('#dos-filemanager');
+      fm.style.display = 'none';
+      showViewer(container, file.section);
+      // Override viewer close to return to NC
+      state.ncReturnOnClose = true;
+    }
+  }
+
+  function ncCopyFile(container) {
+    var file = ncGetSelectedFile();
+    if (!file || file.type === 'dir') {
+      ncShowMessage(container, 'Cannot copy directories');
+      return;
+    }
+
+    // Copy to other panel
+    var otherPanel = state.nc.activePanel === 0 ? 1 : 0;
+    var otherFiles = state.nc.panels[otherPanel].files;
+
+    // Check if already exists
+    var exists = otherFiles.some(function(f) {
+      return f.name === file.name && f.ext === file.ext;
+    });
+
+    if (exists) {
+      ncShowMessage(container, file.name + '.' + file.ext + ' already exists');
+      return;
+    }
+
+    // Add copy to other panel
+    var copy = Object.assign({}, file);
+    otherFiles.push(copy);
+
+    ncShowMessage(container, 'Copied ' + file.name + '.' + file.ext);
+    renderPanel(container, otherPanel);
+  }
+
+  function ncMoveFile(container) {
+    var file = ncGetSelectedFile();
+    if (!file || file.type === 'dir') {
+      ncShowMessage(container, 'Cannot move directories');
+      return;
+    }
+
+    // Move to other panel
+    var otherPanel = state.nc.activePanel === 0 ? 1 : 0;
+    var currentFiles = state.nc.panels[state.nc.activePanel].files;
+    var otherFiles = state.nc.panels[otherPanel].files;
+
+    // Check if already exists in destination
+    var exists = otherFiles.some(function(f) {
+      return f.name === file.name && f.ext === file.ext;
+    });
+
+    if (exists) {
+      ncShowMessage(container, file.name + '.' + file.ext + ' already exists in destination');
+      return;
+    }
+
+    // Remove from current panel
+    var index = currentFiles.indexOf(file);
+    if (index > -1) {
+      currentFiles.splice(index, 1);
+    }
+
+    // Adjust selection if needed
+    var panelState = state.nc.panels[state.nc.activePanel];
+    if (panelState.selectedIndex >= currentFiles.length) {
+      panelState.selectedIndex = currentFiles.length - 1;
+    }
+    if (panelState.selectedIndex < 0) panelState.selectedIndex = 0;
+
+    // Add to other panel
+    otherFiles.push(file);
+
+    ncShowMessage(container, 'Moved ' + file.name + '.' + file.ext);
+    renderPanel(container, 0);
+    renderPanel(container, 1);
+  }
+
+  function ncMakeDir(container) {
+    // Prompt for directory name
+    var name = prompt('Create directory:');
+    if (!name) return;
+
+    name = name.toUpperCase().substring(0, 8).replace(/[^A-Z0-9]/g, '');
+    if (!name) {
+      ncShowMessage(container, 'Invalid directory name');
+      return;
+    }
+
+    var panelState = state.nc.panels[state.nc.activePanel];
+
+    // Check if exists
+    var exists = panelState.files.some(function(f) {
+      return f.name === name && f.type === 'dir';
+    });
+
+    if (exists) {
+      ncShowMessage(container, 'Directory already exists');
+      return;
+    }
+
+    // Add directory after ..
+    panelState.files.splice(1, 0, {
+      name: name,
+      ext: '',
+      type: 'dir',
+      size: 0,
+      date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '-'),
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase().replace(' ', '')
+    });
+
+    ncShowMessage(container, 'Created directory ' + name);
+    renderPanel(container, state.nc.activePanel);
+  }
+
+  function ncDeleteFile(container) {
+    var file = ncGetSelectedFile();
+    if (!file) return;
+
+    if (file.type === 'dir' && file.name === '..') {
+      ncShowMessage(container, 'Cannot delete parent directory');
+      return;
+    }
+
+    var confirmed = confirm('Delete ' + file.name + (file.ext ? '.' + file.ext : '') + '?');
+    if (!confirmed) return;
+
+    var panelState = state.nc.panels[state.nc.activePanel];
+    var index = panelState.files.indexOf(file);
+
+    if (index > -1) {
+      panelState.files.splice(index, 1);
+    }
+
+    // Adjust selection
+    if (panelState.selectedIndex >= panelState.files.length) {
+      panelState.selectedIndex = panelState.files.length - 1;
+    }
+    if (panelState.selectedIndex < 0) panelState.selectedIndex = 0;
+
+    ncShowMessage(container, 'Deleted ' + file.name + (file.ext ? '.' + file.ext : ''));
+    renderPanel(container, state.nc.activePanel);
+  }
+
+  function ncEnterDir(container) {
+    var file = ncGetSelectedFile();
+    if (!file) return;
+
+    if (file.type === 'dir') {
+      if (file.name === '..') {
+        // Already at root, do nothing
+        ncShowMessage(container, 'Already at root directory');
+      } else {
+        // Enter subdirectory - for now just show message
+        ncShowMessage(container, 'Entering ' + file.name + '...');
+      }
+    } else {
+      // View file
+      ncViewFile(container);
+    }
+  }
+
+  function ncShowMessage(container, msg) {
+    var fm = container.querySelector('#dos-filemanager');
+    var statusbar = fm.querySelector('.fm-statusbar');
+    statusbar.textContent = msg;
+
+    // Clear after 3 seconds
+    clearTimeout(state.nc.messageTimeout);
+    state.nc.messageTimeout = setTimeout(function() {
+      statusbar.textContent = '';
+    }, 3000);
+  }
+
+  function ncQuit(container) {
+    var fm = container.querySelector('#dos-filemanager');
+    var prompt = container.querySelector('#dos-prompt');
+
+    fm.style.display = 'none';
     prompt.style.display = 'flex';
     state.currentView = 'prompt';
 
     // Focus input
     var input = prompt.querySelector('.dos-input');
     if (input) input.focus();
+  }
+
+  function setupNCKeyboard(container) {
+    // Note: we'll use the existing keydown handler, but need to extend it
+  }
+
+  function setupNCMouse(container) {
+    var fm = container.querySelector('#dos-filemanager');
+
+    // Panel clicks
+    fm.querySelectorAll('.fm-panel').forEach(function(panel) {
+      panel.addEventListener('click', function(e) {
+        var panelIndex = parseInt(panel.dataset.panel);
+
+        // Switch to this panel if not active
+        if (state.nc.activePanel !== panelIndex) {
+          state.nc.activePanel = panelIndex;
+          updateActivePanel(container);
+        }
+
+        // Check if clicked on a file row
+        var fileRow = e.target.closest('.fm-file');
+        if (fileRow) {
+          var index = parseInt(fileRow.dataset.index);
+          state.nc.panels[panelIndex].selectedIndex = index;
+          renderPanel(container, panelIndex);
+        }
+      });
+
+      // Double-click to open
+      panel.addEventListener('dblclick', function(e) {
+        var fileRow = e.target.closest('.fm-file');
+        if (fileRow) {
+          ncEnterDir(container);
+        }
+      });
+    });
+
+    // Function key clicks
+    fm.querySelectorAll('.func-key[data-func]').forEach(function(key) {
+      key.addEventListener('click', function() {
+        var func = key.dataset.func;
+        switch (func) {
+          case 'view': ncViewFile(container); break;
+          case 'edit': ncViewFile(container); break; // Same as view for now
+          case 'copy': ncCopyFile(container); break;
+          case 'move': ncMoveFile(container); break;
+          case 'mkdir': ncMakeDir(container); break;
+          case 'delete': ncDeleteFile(container); break;
+          case 'quit': ncQuit(container); break;
+        }
+      });
+    });
+  }
+
+  function handleNCKeydown(container, e) {
+    switch (e.key) {
+      case 'Tab':
+        e.preventDefault();
+        ncSwitchPanel(container);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        ncMoveSelection(container, -1);
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        ncMoveSelection(container, 1);
+        break;
+      case 'PageUp':
+        e.preventDefault();
+        ncMoveSelection(container, -10);
+        break;
+      case 'PageDown':
+        e.preventDefault();
+        ncMoveSelection(container, 10);
+        break;
+      case 'Home':
+        e.preventDefault();
+        state.nc.panels[state.nc.activePanel].selectedIndex = 0;
+        renderPanel(container, state.nc.activePanel);
+        break;
+      case 'End':
+        e.preventDefault();
+        var files = state.nc.panels[state.nc.activePanel].files;
+        state.nc.panels[state.nc.activePanel].selectedIndex = files.length - 1;
+        renderPanel(container, state.nc.activePanel);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        ncEnterDir(container);
+        break;
+      case 'Escape':
+        e.preventDefault();
+        ncQuit(container);
+        break;
+      case 'F3':
+        e.preventDefault();
+        ncViewFile(container);
+        break;
+      case 'F4':
+        e.preventDefault();
+        ncViewFile(container); // Edit = View for now
+        break;
+      case 'F5':
+        e.preventDefault();
+        ncCopyFile(container);
+        break;
+      case 'F6':
+        e.preventDefault();
+        ncMoveFile(container);
+        break;
+      case 'F7':
+        e.preventDefault();
+        ncMakeDir(container);
+        break;
+      case 'F8':
+        e.preventDefault();
+        ncDeleteFile(container);
+        break;
+      case 'F10':
+        e.preventDefault();
+        ncQuit(container);
+        break;
+    }
   }
 
   // ============================================
