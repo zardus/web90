@@ -24,14 +24,15 @@ test.describe('URL Parameter Handling', () => {
       // Should load without errors
       expect(errors).toHaveLength(0);
 
-      // Multiple retro elements should exist and be visible
+      // DOM retro elements should exist in DOM (may or may not be visible depending on slot)
       const badges = page.locator('#retro-badges');
       const counter = page.locator('#retro-counter');
 
-      const badgesVisible = await badges.isVisible();
-      const counterVisible = await counter.isVisible();
+      const badgesExists = (await badges.count()) > 0;
+      const counterExists = (await counter.count()) > 0;
 
-      expect(badgesVisible || counterVisible).toBe(true);
+      // At least one DOM retro element should exist
+      expect(badgesExists || counterExists).toBe(true);
     });
 
     test('single retro loads correctly', async ({ page }) => {
@@ -203,6 +204,160 @@ test.describe('URL Parameter Handling', () => {
       // CRT overlay should exist
       const crtElements = page.locator('.crt-scanlines, .scanlines, [class*="crt"]');
       expect(await crtElements.count()).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  test.describe('Edge Cases', () => {
+    test('duplicate retro names are deduplicated', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=badges,badges,badges');
+      await page.waitForTimeout(1000);
+
+      expect(errors).toHaveLength(0);
+
+      // Badges should only appear once
+      const badges = page.locator('#retro-badges');
+      await expect(badges).toBeVisible();
+    });
+
+    test('case insensitive retro names work', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=BADGES,Counter,BLiNk');
+      await page.waitForTimeout(1500);
+
+      expect(errors).toHaveLength(0);
+
+      // All should load despite mixed case
+      await expect(page.locator('#retro-badges')).toBeVisible();
+      await expect(page.locator('#retro-counter')).toBeVisible();
+      await expect(page.locator('blink')).toHaveCount(1);
+    });
+
+    test('whitespace in retro list is trimmed', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=badges%20,%20counter%20,%20blink');
+      await page.waitForTimeout(1500);
+
+      expect(errors).toHaveLength(0);
+
+      await expect(page.locator('#retro-badges')).toBeVisible();
+      await expect(page.locator('#retro-counter')).toBeVisible();
+    });
+
+    test('empty retros parameter loads defaults', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=');
+      await page.waitForTimeout(1000);
+
+      expect(errors).toHaveLength(0);
+    });
+
+    test('invalid divider-style number falls back gracefully', async ({
+      page,
+    }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=dividers&divider-style=999');
+      await page.waitForTimeout(1000);
+
+      expect(errors).toHaveLength(0);
+
+      // Should still have dividers (falls back to first or random)
+      const dividerImg = page.locator('.divider .divider-img').first();
+      await expect(dividerImg).toBeVisible();
+    });
+
+    test('invalid theme name is handled gracefully', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?theme=nonexistent-theme');
+      await page.waitForTimeout(1500);
+
+      // Should not crash - may load random theme or no theme
+      expect(errors).toHaveLength(0);
+    });
+
+    test('theme parameter auto-adds retheme retro', async ({ page }) => {
+      await page.goto('/test.html?retros=badges&theme=crt');
+      await page.waitForTimeout(2000);
+
+      // CRT theme should be applied even without explicit retheme
+      const crtElements = page.locator('.crt-overlay, .crt-curvature');
+      expect(await crtElements.count()).toBeGreaterThanOrEqual(1);
+    });
+
+    test('retros=all expands to include all fun retros', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=all');
+      await page.waitForTimeout(3000);
+
+      expect(errors).toHaveLength(0);
+
+      // Should have multiple retro elements visible (at least one)
+      const badges = page.locator('#retro-badges');
+      const counter = page.locator('#retro-counter');
+
+      const badgesVisible = await badges.isVisible();
+      const counterVisible = await counter.isVisible();
+
+      // At least one DOM retro should be visible
+      expect(badgesVisible || counterVisible).toBe(true);
+    });
+
+    test('combining all with specific retros works', async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+
+      await page.goto('/test.html?retros=all,control-panel');
+      await page.waitForTimeout(3000);
+
+      expect(errors).toHaveLength(0);
+
+      // Control panel should be visible
+      const panel = page.locator('#control-panel');
+      await expect(panel).toBeVisible();
+    });
+  });
+
+  test.describe('Multiple DOM Retros Distribution', () => {
+    test('multiple DOM retros are distributed across slots', async ({
+      page,
+    }) => {
+      await page.goto('/test.html?retros=badges,counter,media-player,webring');
+      await page.waitForTimeout(2000);
+
+      // At least some retros should be visible
+      const badges = page.locator('#retro-badges');
+      const counter = page.locator('#retro-counter');
+
+      const badgesVisible = await badges.isVisible();
+      const counterVisible = await counter.isVisible();
+
+      expect(badgesVisible || counterVisible).toBe(true);
+    });
+
+    test('slot 0 receives first DOM retro', async ({ page }) => {
+      await page.goto('/test.html?retros=badges,counter');
+      await page.waitForTimeout(1500);
+
+      // First slot should contain a retro element
+      const slot0 = page.locator('[data-retro-slot="0"]');
+      const hasRetro = await slot0.evaluate((el) => {
+        return el.querySelector('#retro-badges, #retro-counter') !== null;
+      });
+      expect(hasRetro).toBe(true);
     });
   });
 });

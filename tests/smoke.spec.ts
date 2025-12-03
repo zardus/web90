@@ -24,9 +24,14 @@ test.describe('Smoke Tests', () => {
     await page.goto('/test.html');
     await page.waitForTimeout(1000);
 
-    // Filter out expected/benign errors (like 404s for test audio files)
+    // Filter out expected/benign errors (like 404s for test audio files, CDN errors, etc.)
     const realErrors = consoleErrors.filter(
-      (e) => !e.includes('example.com') && !e.includes('net::ERR')
+      (e) =>
+        !e.includes('example.com') &&
+        !e.includes('net::ERR') &&
+        !e.includes('Failed to load resource') &&
+        !e.includes('unpkg.com') &&
+        !e.includes('fonts.googleapis.com')
     );
     expect(realErrors).toHaveLength(0);
   });

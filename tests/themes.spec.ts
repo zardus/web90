@@ -186,6 +186,61 @@ test.describe('Themes', () => {
       // Should be green-ish
       expect(color).toBeTruthy();
     });
+
+    test('Norton Commander launches with NC command', async ({ page }) => {
+      await page.goto('/test.html?theme=dos');
+      await page.waitForTimeout(3500); // Wait for boot sequence
+
+      // Wait for prompt to be visible
+      await page.waitForSelector('#dos-prompt', { state: 'visible' });
+
+      // Type NC command
+      await page.keyboard.type('nc');
+      await page.keyboard.press('Enter');
+
+      // Wait for file manager to appear
+      await page.waitForSelector('#dos-filemanager', { state: 'visible', timeout: 2000 });
+
+      // Check that panels exist
+      const panels = page.locator('.fm-panel');
+      expect(await panels.count()).toBe(2);
+
+      // Check that function bar exists
+      const funcbar = page.locator('.fm-funcbar');
+      expect(await funcbar.count()).toBe(1);
+    });
+
+    test('Norton Commander keyboard navigation works', async ({ page }) => {
+      await page.goto('/test.html?theme=dos');
+      await page.waitForTimeout(3500);
+
+      await page.waitForSelector('#dos-prompt', { state: 'visible' });
+      await page.keyboard.type('nc');
+      await page.keyboard.press('Enter');
+
+      await page.waitForSelector('#dos-filemanager', { state: 'visible', timeout: 2000 });
+
+      // Test Tab switches panels
+      const initialActivePanel = await page.evaluate(() => {
+        // @ts-ignore
+        return document.querySelector('.fm-panel.active')?.dataset?.panel;
+      });
+
+      await page.keyboard.press('Tab');
+      await page.waitForTimeout(100);
+
+      const newActivePanel = await page.evaluate(() => {
+        // @ts-ignore
+        return document.querySelector('.fm-panel.active')?.dataset?.panel;
+      });
+
+      expect(newActivePanel).not.toBe(initialActivePanel);
+
+      // Test Escape quits
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('#dos-prompt', { state: 'visible' });
+      await page.waitForSelector('#dos-filemanager', { state: 'hidden' });
+    });
   });
 
   test.describe('Flash Theme', () => {
