@@ -615,6 +615,57 @@
   display: none;
 }
 
+/* Profile icon with headshot - keep 75px width for alignment, let label overflow */
+.desktop-icon[data-action="profile"] {
+  overflow: visible;
+}
+
+.desktop-icon[data-action="profile"] .icon-label {
+  white-space: nowrap;
+  max-width: none;
+}
+
+.desktop-icon .profile-icon-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 2px solid #808080;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Profile window content */
+.profile-window-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(180deg, #c0c0c0 0%, #e0e0e0 100%);
+  min-height: 100%;
+  text-align: center;
+}
+
+.profile-headshot {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 3px solid;
+  border-color: #fff #808080 #808080 #fff;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 16px;
+}
+
+.profile-name {
+  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000080;
+  margin: 0;
+  text-shadow: 1px 1px 0 #fff;
+}
+
 /* Explorer content (My Computer, etc.) */
 .explorer-content {
   padding: 8px;

@@ -63,6 +63,42 @@
   })();
 
   // ============================================
+  // Inject Scoped system.css Stylesheet (macOS Classic)
+  // ============================================
+
+  (function() {
+    fetch('https://unpkg.com/@sakun/system.css')
+      .then(function(r) { return r.text(); })
+      .then(function(css) {
+        // Prefix all selectors with .macos-classic scope class
+        var scoped = css.replace(/([^{}]+)(\{[^{}]*\})/g, function(match, selectorBlock, rules) {
+          // Skip @-rules and font-face
+          var trimmed = selectorBlock.trim();
+          if (trimmed.charAt(0) === '@' || trimmed.indexOf('@font-face') !== -1) {
+            return match;
+          }
+          // Handle each selector
+          var selectors = selectorBlock.split(',');
+          var prefixed = selectors.map(function(sel) {
+            sel = sel.trim();
+            if (!sel || sel.charAt(0) === '@') return sel;
+            // Skip pseudo-element selectors that target html/body (like scrollbars)
+            if (sel.indexOf('::-webkit-scrollbar') === 0) {
+              return '.macos-classic ' + sel.replace('::-webkit-scrollbar', '::-webkit-scrollbar');
+            }
+            // Prefix with .macos-classic scope
+            return '.macos-classic ' + sel;
+          }).join(', ');
+          return prefixed + rules;
+        });
+        var style = document.createElement('style');
+        style.id = 'scoped-system-css';
+        style.textContent = scoped;
+        document.head.appendChild(style);
+      });
+  })();
+
+  // ============================================
   // Utility Functions
   // ============================================
 
@@ -272,6 +308,7 @@
     { name: 'cascade', type: 'theme', emoji: '🦠', label: 'Cascade Virus', resources: { js: 'cascade.js', css: 'cascade.css' } },
     { name: 'pipes', type: 'theme', emoji: '🔧', label: '3D Pipes', resources: { js: 'pipes.js' } },
     { name: 'win98', type: 'theme', emoji: '🖥️', label: 'Windows 98', resources: { js: 'win98.js', css: 'win98.css' } },
+    { name: 'macos-classic', type: 'theme', emoji: '🍎', label: 'Mac OS Classic', resources: { js: 'macos-classic.js', css: 'macos-classic.css' } },
     { name: 'dos', type: 'theme', emoji: '💾', label: 'MS-DOS', resources: { js: 'dos.js', css: 'dos.css' } },
     { name: 'comic-sans', type: 'theme', emoji: '🤪', label: 'Comic Sans Mode', init: initThemeComicSans }
   ];

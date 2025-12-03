@@ -1,0 +1,707 @@
+/**
+ * macOS Classic Theme Styles
+ * Lazy-loaded CSS for the Mac OS 7/8/9 desktop theme
+ *
+ * Uses system.css (scoped to .macos-classic) for authentic Mac components.
+ * This file only contains custom additions and overrides.
+ */
+
+/* ============================================
+   Classic Mac Fonts (from system.css package)
+   ============================================ */
+@font-face {
+  font-family: 'Chicago';
+  src: url('https://unpkg.com/@sakun/system.css/fonts/ChicagoFLF.woff2') format('woff2'),
+       url('https://unpkg.com/@sakun/system.css/fonts/ChicagoFLF.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ChicagoFLF';
+  src: url('https://unpkg.com/@sakun/system.css/fonts/ChicagoFLF.woff2') format('woff2'),
+       url('https://unpkg.com/@sakun/system.css/fonts/ChicagoFLF.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Chicago_12';
+  src: url('https://unpkg.com/@sakun/system.css/fonts/ChiKareGo2.woff2') format('woff2'),
+       url('https://unpkg.com/@sakun/system.css/fonts/ChiKareGo2.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geneva_9';
+  src: url('https://unpkg.com/@sakun/system.css/fonts/FindersKeepers.woff2') format('woff2'),
+       url('https://unpkg.com/@sakun/system.css/fonts/FindersKeepers.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Monaco';
+  src: url('https://unpkg.com/@sakun/system.css/fonts/monaco.woff2') format('woff2'),
+       url('https://unpkg.com/@sakun/system.css/fonts/monaco.woff') format('woff');
+  font-display: swap;
+}
+
+/* ============================================
+   Global Theme Setup
+   ============================================ */
+.macos-classic-mode {
+  overflow: hidden;
+}
+
+#macos-classic-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  font-family: 'ChicagoFLF', 'Chicago', 'Chicago_12', Geneva, sans-serif;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+}
+
+#macos-classic-container * {
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Happy Mac Boot Screen
+   ============================================ */
+#macos-boot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.5s ease;
+}
+
+#macos-boot.fade-out {
+  opacity: 0;
+}
+
+.happy-mac {
+  width: 64px;
+  height: 64px;
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 8px 8px 4px 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.happy-mac-screen {
+  width: 44px;
+  height: 32px;
+  background: #000;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.happy-mac-face {
+  color: #0f0;
+  font-size: 20px;
+  font-family: monospace;
+  animation: mac-blink 3s infinite;
+}
+
+@keyframes mac-blink {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0; }
+}
+
+.happy-mac-base {
+  position: absolute;
+  bottom: -8px;
+  width: 50px;
+  height: 6px;
+  background: #fff;
+  border: 2px solid #000;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+.boot-progress {
+  width: 200px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid #000;
+  padding: 2px;
+}
+
+.boot-progress-bar {
+  height: 100%;
+  background: #000;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.boot-text {
+  margin-top: 15px;
+  font-size: 12px;
+  color: #000;
+  font-family: Chicago_12, Chicago, Geneva, sans-serif;
+}
+
+/* ============================================
+   Desktop
+   ============================================ */
+#macos-desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #6699cc 0%, #336699 100%);
+  display: none;
+  flex-direction: column;
+}
+
+#macos-desktop.desktop-startup {
+  animation: mac-desktop-fade-in 0.5s ease forwards;
+}
+
+@keyframes mac-desktop-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ============================================
+   Menu Bar - Classic Mac style
+   ============================================ */
+.mac-menu-bar-container {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10000;
+}
+
+#macos-classic-container ul[role=menu-bar] {
+  height: 20px;
+  background: #fff;
+  border-bottom: 1px solid #000;
+  padding: 0 8px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  font-family: 'ChicagoFLF', 'Chicago', 'Chicago_12', sans-serif !important;
+  font-size: 13px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+}
+
+#macos-classic-container ul[role=menu-bar] > li {
+  position: relative;
+  list-style: none;
+}
+
+#macos-classic-container ul[role=menu-bar] > li[role=menu-item] {
+  padding: 1px 10px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+#macos-classic-container ul[role=menu-bar] > li[role=menu-item]:hover,
+#macos-classic-container ul[role=menu-bar] > li[role=menu-item].active {
+  background: #000;
+  color: #fff;
+}
+
+#macos-classic-container ul[role=menu-bar] .apple-menu {
+  padding: 1px 6px;
+  font-size: 14px;
+}
+
+/* Dropdown menus */
+#macos-classic-container ul[role=menu] {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  padding: 2px 0;
+  margin: 0;
+  list-style: none;
+  z-index: 10001;
+}
+
+/* Show dropdown when parent is active */
+#macos-classic-container ul[role=menu-bar] > li[role=menu-item].active > ul[role=menu] {
+  display: block;
+}
+
+#macos-classic-container ul[role=menu] > li {
+  list-style: none;
+}
+
+#macos-classic-container ul[role=menu] > li[role=menu-item] {
+  position: relative;
+}
+
+#macos-classic-container ul[role=menu] > li[role=menu-item] > button {
+  all: unset;
+  display: block;
+  width: 100%;
+  padding: 2px 20px;
+  cursor: default;
+  font-family: 'ChicagoFLF', 'Chicago', 'Chicago_12', sans-serif !important;
+  font-size: 13px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  -webkit-font-smoothing: none;
+}
+
+#macos-classic-container ul[role=menu] > li[role=menu-item] > button:hover {
+  background: #000;
+  color: #fff;
+}
+
+#macos-classic-container ul[role=menu] > li.divider {
+  height: 1px;
+  margin: 4px 0;
+  background: linear-gradient(90deg,
+    transparent 0px,
+    transparent 4px,
+    #808080 4px,
+    #808080 calc(100% - 4px),
+    transparent calc(100% - 4px)
+  );
+}
+
+.menu-spacer {
+  flex: 1;
+  pointer-events: none;
+}
+
+.menu-clock {
+  font-size: 12px;
+  font-family: Chicago_12, Chicago, Geneva, sans-serif;
+  padding: 1px 8px;
+  pointer-events: none;
+}
+
+.menu-shortcut {
+  float: right;
+  color: #808080;
+  font-size: 11px;
+  margin-left: 20px;
+}
+
+li[role=menu-item] > button:hover .menu-shortcut {
+  color: #c0c0c0;
+}
+
+.menu-disabled {
+  color: #808080 !important;
+}
+
+.menu-disabled:hover {
+  background: transparent !important;
+  color: #808080 !important;
+}
+
+/* ============================================
+   Desktop Area
+   ============================================ */
+.mac-desktop-area {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+/* ============================================
+   Desktop Icons
+   ============================================ */
+.mac-desktop-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.mac-desktop-icon {
+  width: 72px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+}
+
+.mac-desktop-icon .icon-image {
+  font-size: 32px;
+  margin-bottom: 4px;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.3));
+}
+
+.mac-desktop-icon .icon-label {
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 1px 1px 1px #000;
+  word-wrap: break-word;
+  max-width: 100px;
+  font-family: 'Geneva_9', Geneva, sans-serif;
+}
+
+.mac-desktop-icon.selected .icon-label {
+  background: #000;
+  color: #fff;
+  padding: 1px 3px;
+  text-shadow: none;
+}
+
+/* Trash at bottom right */
+.mac-desktop-icon.trash-icon {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  top: auto;
+}
+
+/* ============================================
+   Windows - Uses system.css .window classes
+   ============================================ */
+#macos-classic-container .window {
+  position: absolute;
+  min-width: 200px;
+  min-height: 100px;
+  animation: mac-window-open 0.15s ease-out;
+  box-shadow: 1px 1px 0 #000, 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+@keyframes mac-window-open {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#macos-classic-container .window.window-closing {
+  animation: mac-window-close 0.15s ease-in forwards;
+}
+
+@keyframes mac-window-close {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0; }
+}
+
+#macos-classic-container .window.dragging {
+  cursor: move;
+  user-select: none;
+}
+
+/* Title bar adjustments */
+#macos-classic-container .window .title-bar {
+  cursor: move;
+}
+
+#macos-classic-container .window .title-bar button.close {
+  margin-left: 4px;
+}
+
+/* Add zoom button */
+#macos-classic-container .window .title-bar button.resize {
+  margin-right: 4px;
+}
+
+/* Window pane/content */
+#macos-classic-container .window .window-pane {
+  padding: 12px;
+  font-size: 18px;
+  font-family: 'Geneva_9', Geneva, sans-serif;
+}
+
+/* ============================================
+   Finder List View
+   ============================================ */
+.finder-list {
+  font-size: 18px;
+  font-family: 'Geneva_9', Geneva, sans-serif;
+}
+
+.finder-item {
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: default;
+}
+
+.finder-item:hover {
+  background: #000;
+  color: #fff;
+}
+
+.finder-item .item-icon {
+  font-size: 24px;
+}
+
+.finder-item .item-name {
+  flex: 1;
+}
+
+.finder-item .item-size,
+.finder-item .item-kind {
+  color: #808080;
+  font-size: 16px;
+  min-width: 110px;
+}
+
+.finder-item:hover .item-size,
+.finder-item:hover .item-kind {
+  color: #c0c0c0;
+}
+
+/* ============================================
+   SimpleText Content
+   ============================================ */
+.simpletext-content {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 18px;
+  line-height: 1.6;
+  padding: 16px;
+  min-height: 100%;
+  background: #fff;
+  color: #000;
+}
+
+.simpletext-content section {
+  display: block !important;
+}
+
+.simpletext-content h1,
+.simpletext-content h2,
+.simpletext-content h3,
+.simpletext-content h4 {
+  font-family: 'ChicagoFLF', 'Chicago', Geneva, sans-serif;
+  color: #000;
+  margin: 20px 0 10px;
+}
+
+.simpletext-content h1 { font-size: 28px; }
+.simpletext-content h2 { font-size: 24px; }
+.simpletext-content h3 { font-size: 20px; }
+
+.simpletext-content p {
+  margin: 6px 0;
+  color: #000;
+}
+
+.simpletext-content a {
+  color: #0000ff;
+  text-decoration: underline;
+}
+
+.simpletext-content a:hover {
+  color: #ff0000;
+}
+
+.simpletext-content ul,
+.simpletext-content ol {
+  margin: 6px 0 6px 16px;
+}
+
+.simpletext-content li {
+  margin: 3px 0;
+}
+
+.simpletext-content .headshot {
+  display: none;
+}
+
+/* Profile icon with headshot */
+.mac-desktop-icon[data-action="profile"] {
+  overflow: visible;
+}
+
+.mac-desktop-icon[data-action="profile"] .icon-label {
+  white-space: nowrap;
+  max-width: none;
+}
+
+.mac-desktop-icon .profile-icon-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 2px solid #000;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Profile window content */
+.profile-window-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #fff;
+  min-height: 100%;
+  text-align: center;
+}
+
+#macos-classic-container .profile-headshot {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 3px solid #000;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  margin-bottom: 16px;
+}
+
+#macos-classic-container .profile-name {
+  font-family: 'ChicagoFLF', 'Chicago', Geneva, sans-serif;
+  font-size: 24px;
+  font-weight: normal;
+  color: #000;
+  margin: 0;
+}
+
+/* ============================================
+   About This Macintosh - Uses system.css modal
+   ============================================ */
+.about-mac {
+  text-align: center;
+  padding: 20px;
+}
+
+.about-mac .mac-logo {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.about-mac h2 {
+  font-family: Chicago_12, Chicago, Geneva, sans-serif;
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+
+.about-mac p {
+  font-family: Geneva_9, Geneva, Chicago, sans-serif;
+  font-size: 10px;
+  margin: 4px 0;
+  color: #000;
+}
+
+.about-mac .memory-bar {
+  margin: 15px auto;
+  width: 200px;
+  height: 16px;
+  background: #fff;
+  border: 1px solid #000;
+  position: relative;
+}
+
+.about-mac .memory-used {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    #000 0px,
+    #000 2px,
+    #fff 2px,
+    #fff 4px
+  );
+}
+
+/* ============================================
+   Shutdown Screen
+   ============================================ */
+#macos-shutdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  animation: mac-shutdown-appear 0.5s ease;
+}
+
+@keyframes mac-shutdown-appear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Shutdown dialog uses system.css .standard-dialog */
+#macos-classic-container .shutdown-dialog {
+  padding: 30px 50px;
+  text-align: center;
+}
+
+#macos-classic-container .shutdown-dialog .power-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+#macos-classic-container .shutdown-dialog p {
+  font-family: Chicago_12, Chicago, Geneva, sans-serif;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 768px) {
+  .mac-desktop-icons {
+    gap: 5px;
+  }
+
+  .mac-desktop-icon {
+    width: 60px;
+  }
+
+  .mac-desktop-icon .icon-image {
+    font-size: 24px;
+  }
+
+  .mac-desktop-icon .icon-label {
+    font-size: 9px;
+    max-width: 55px;
+  }
+
+  #macos-classic-container .window {
+    width: calc(100% - 20px) !important;
+    max-height: calc(100% - 50px);
+    left: 10px !important;
+    top: 30px !important;
+  }
+
+  #macos-classic-container .window .window-pane {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  #macos-classic-container ul[role=menu-bar] {
+    font-size: 10px;
+    height: 18px;
+  }
+
+  #macos-classic-container ul[role=menu-bar] > [role=menu-item] {
+    padding: 2px 8px;
+  }
+}

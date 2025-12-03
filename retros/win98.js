@@ -172,6 +172,16 @@
   function buildDesktopIconsHTML(sectionData, navLinks, headerContent) {
     var html = '';
 
+    // Profile icon (with headshot and name)
+    if (headerContent.title) {
+      html += '\
+        <div class="desktop-icon" data-action="profile">\
+          <div class="icon-image">' + (headerContent.headshot ? '<img src="' + headerContent.headshot + '" class="profile-icon-img">' : '👤') + '</div>\
+          <div class="icon-label">' + headerContent.title + '</div>\
+        </div>\
+      ';
+    }
+
     // My Computer icon
     html += '\
       <div class="desktop-icon" data-action="my-computer">\
@@ -372,6 +382,8 @@
     if (sectionId) {
       // Open section in Notepad
       openNotepadWindow(container, sectionId, icon.dataset.title);
+    } else if (action === 'profile') {
+      openProfileWindow(container);
     } else if (action === 'my-computer') {
       openMyComputerWindow(container);
     } else if (action === 'recycle-bin') {
@@ -690,6 +702,27 @@
       item.addEventListener('dblclick', function() {
         window.open(this.dataset.href, '_blank');
       });
+    });
+  }
+
+  function openProfileWindow(container) {
+    var headerContent = container.headerContent || {};
+    var title = headerContent.title || 'Profile';
+    var headshot = headerContent.headshot;
+
+    var profileHTML = '<div class="profile-window-content">';
+    if (headshot) {
+      profileHTML += '<img src="' + headshot + '" class="profile-headshot" alt="' + title + '">';
+    }
+    profileHTML += '<h1 class="profile-name">' + title + '</h1>';
+    profileHTML += '</div>';
+
+    createWindow(container, {
+      title: title + ' - Profile',
+      icon: '👤',
+      content: profileHTML,
+      width: 1000,
+      height: headshot ? 500 : 400
     });
   }
 
