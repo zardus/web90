@@ -501,9 +501,18 @@ body.retheme-vhs.glitch-active .glitch-overlay {
   100% { transform: translate(0); filter: hue-rotate(0deg); }
 }
 
+/* Disable body transform in dark mode - breaks position:fixed backgrounds */
+body.retheme-vhs.glitch-active.dark-mode { animation: none; }
+
 body.retheme-vhs.glitch-active main,
 body.retheme-vhs.glitch-active #main {
   animation: glitch-text 0.1s steps(2) infinite;
+}
+
+/* In dark mode, apply the transform to main content instead */
+body.retheme-vhs.glitch-active.dark-mode main,
+body.retheme-vhs.glitch-active.dark-mode #main {
+  animation: vhs-glitch 0.1s steps(2) infinite, glitch-text 0.1s steps(2) infinite;
 }
 
 @keyframes glitch-text {
