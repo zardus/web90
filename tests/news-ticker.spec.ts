@@ -3,10 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('News Ticker', () => {
   test('ticker element is rendered at bottom of page', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
+    // Wait for ticker to be added to the page
     const ticker = page.locator('#news-ticker');
-    await expect(ticker).toBeVisible();
+    await expect(ticker).toBeVisible({ timeout: 5000 });
     
     // Check it's positioned at the bottom
     const box = await ticker.boundingBox();
@@ -19,18 +19,18 @@ test.describe('News Ticker', () => {
 
   test('ticker has breaking news label', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const label = page.locator('.news-ticker-label');
-    await expect(label).toBeVisible();
+    await expect(label).toBeVisible({ timeout: 5000 });
     await expect(label).toContainText('BREAKING NEWS');
   });
 
   test('ticker displays news items', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const newsItems = page.locator('.news-item');
+    // Wait for at least one news item to appear
+    await newsItems.first().waitFor({ timeout: 5000 });
     const count = await newsItems.count();
     
     // Should have at least one news item (actually will have many due to duplication)
@@ -45,10 +45,9 @@ test.describe('News Ticker', () => {
 
   test('ticker content is scrolling', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const content = page.locator('.news-ticker-content');
-    await expect(content).toBeVisible();
+    await expect(content).toBeVisible({ timeout: 5000 });
     
     // Check that scrolling class is applied
     await expect(content).toHaveClass(/scrolling/);
@@ -62,9 +61,9 @@ test.describe('News Ticker', () => {
 
   test('ticker has separators between items', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const separators = page.locator('.news-separator');
+    await separators.first().waitFor({ timeout: 5000 });
     const count = await separators.count();
     
     // Should have separators
@@ -78,9 +77,9 @@ test.describe('News Ticker', () => {
 
   test('ticker CSS is loaded', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const content = page.locator('.news-ticker-content');
+    await content.waitFor({ timeout: 5000 });
     
     // Verify the ticker content has proper styling
     const hasAnimation = await content.evaluate((el) => {
@@ -93,7 +92,10 @@ test.describe('News Ticker', () => {
 
   test('ticker can accept custom config', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
+    
+    // Wait for ticker to be rendered
+    const content = page.locator('.news-ticker-content');
+    await content.waitFor({ timeout: 5000 });
 
     // Verify that WEB90_CONFIG exists (from test.html)
     const hasConfig = await page.evaluate(() => {
@@ -103,7 +105,6 @@ test.describe('News Ticker', () => {
     expect(hasConfig).toBe(true);
     
     // Verify the ticker is working with some content
-    const content = page.locator('.news-ticker-content');
     const text = await content.textContent();
     expect(text).toBeTruthy();
     expect(text!.length).toBeGreaterThan(0);
@@ -111,9 +112,9 @@ test.describe('News Ticker', () => {
 
   test('ticker displays default news when no config', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const content = page.locator('.news-ticker-content');
+    await content.waitFor({ timeout: 5000 });
     const text = await content.textContent();
     
     // Should contain some default news items
@@ -130,9 +131,9 @@ test.describe('News Ticker', () => {
 
   test('ticker is fixed at bottom with high z-index', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const ticker = page.locator('#news-ticker');
+    await ticker.waitFor({ timeout: 5000 });
     
     // Check CSS properties
     const position = await ticker.evaluate((el) => 
@@ -153,9 +154,9 @@ test.describe('News Ticker', () => {
 
   test('ticker has proper styling', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
     const ticker = page.locator('.news-ticker-container');
+    await ticker.waitFor({ timeout: 5000 });
     
     // Check background styling
     const background = await ticker.evaluate((el) => 
@@ -175,17 +176,21 @@ test.describe('News Ticker', () => {
     page.on('pageerror', (error) => errors.push(error.message));
     
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(2000);
     
-    // Filter out network errors which are expected (external CSS may fail)
-    const jsErrors = errors.filter(e => !e.includes('Failed to fetch'));
+    // Wait for ticker to be rendered
+    await page.locator('#news-ticker').waitFor({ timeout: 5000 });
+    
+    // Filter out network errors which are expected (external CSS may fail from CDN)
+    const jsErrors = errors.filter(e => !/Failed to fetch|net::ERR/.test(e));
     expect(jsErrors).toHaveLength(0);
   });
 
   test('ticker does not interfere with page content', async ({ page }) => {
     await page.goto('/test.html?retros=news-ticker');
-    await page.waitForTimeout(1500);
-
+    
+    // Wait for both ticker and main content to load
+    await page.locator('#news-ticker').waitFor({ timeout: 5000 });
+    
     // Check that main page content is still visible
     const heading = page.locator('h1');
     await expect(heading).toBeVisible();

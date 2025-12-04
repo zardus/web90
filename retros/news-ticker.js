@@ -6,6 +6,10 @@
 (function() {
   'use strict';
 
+  // Configuration constants
+  var DUPLICATION_FACTOR = 2; // Duplicate news items for seamless loop
+  var SCROLL_SPEED = 50; // pixels per second
+  
   // Default news items if none configured
   var DEFAULT_NEWS = [
     '🔥 BREAKING: Y2K bug still not fixed!',
@@ -81,9 +85,8 @@
     // Calculate animation duration based on content width
     // Longer content = slower scroll for readability
     var updateAnimationDuration = function() {
-      var contentWidth = content.scrollWidth / 2; // Divide by 2 because we duplicated items
-      var speed = 50; // pixels per second
-      var duration = contentWidth / speed;
+      var contentWidth = content.scrollWidth / DUPLICATION_FACTOR;
+      var duration = contentWidth / SCROLL_SPEED;
       content.style.animationDuration = duration + 's';
     };
     
