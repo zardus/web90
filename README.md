@@ -85,6 +85,7 @@ Clone this repo into your site, then:
 | `click-sparkles` | Sparkle effects when you click |
 | `dvd-bounce` | DVD logo bouncing around the screen |
 | `aol-dialup` | AOL dialup connection sounds and UI |
+| `news-ticker` | Breaking news style scrolling ticker at bottom of page |
 
 ### Special
 
@@ -192,6 +193,13 @@ Configure web90 by setting `window.WEB90_CONFIG` before loading the script:
 
     // Text that glitches on the visitor counter (leave empty to disable)
     counterGlitchText: 'My Fans',
+
+    // Custom news items for the news ticker (leave empty for defaults)
+    newsTickerItems: [
+      '🔥 Breaking news from your website!',
+      '📰 Custom messages scroll here',
+      '⚡ Add your own headlines'
+    ],
 
     // Limit which retros can be randomly selected (when no ?retros= param is set)
     // null/omitted = all retros; empty array = no retros; array = only these retros

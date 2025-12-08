@@ -293,6 +293,7 @@
     { name: 'click-sparkles', type: 'js', emoji: '💥', label: 'Click Sparkles', resources: { js: 'click-sparkles.js' } },
     { name: 'dvd-bounce', type: 'js', emoji: '📀', label: 'DVD Bounce', resources: { js: 'dvd-bounce.js' } },
     { name: 'aol-dialup', type: 'js', emoji: '📞', label: 'AOL Dialup', resources: { js: 'aol-dialup.js', css: 'aol-dialup.css' } },
+    { name: 'news-ticker', type: 'js', emoji: '📰', label: 'News Ticker', resources: { js: 'news-ticker.js', css: 'news-ticker.css' } },
     // Themes (inline init)
     { name: 'matrix', type: 'theme', emoji: '🕴️', label: 'Matrix', init: initThemeMatrix },
     { name: 'crt', type: 'theme', emoji: '📺', label: 'CRT Monitor', init: initThemeCRT },
