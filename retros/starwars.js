@@ -48,21 +48,33 @@
       return;
     }
 
-    // Clone nav elements first (if they exist)
-    var navElements = document.querySelectorAll('nav');
-    navElements.forEach(function(nav) {
-      content.appendChild(nav.cloneNode(true));
-    });
-
-    // Clone the content into our container
-    // Use cloneNode to avoid issues with moving nodes
-    var children = Array.prototype.slice.call(main.children);
-    children.forEach(function(child) {
-      // Skip slots but keep dividers
-      if (child.hasAttribute('data-retro-slot')) {
+    // Clone body children in their original order (nav, main, etc.)
+    var bodyChildren = Array.prototype.slice.call(document.body.children);
+    bodyChildren.forEach(function(element) {
+      // Skip retro-specific elements and slots
+      if (element.hasAttribute('data-retro-slot') ||
+          element.classList.contains('starwars-stars') ||
+          element.classList.contains('starwars-stage')) {
         return;
       }
-      content.appendChild(child.cloneNode(true));
+
+      // Clone nav elements
+      if (element.tagName === 'NAV') {
+        content.appendChild(element.cloneNode(true));
+        return;
+      }
+
+      // Clone main content
+      if (element === main) {
+        var children = Array.prototype.slice.call(main.children);
+        children.forEach(function(child) {
+          // Skip slots but keep dividers
+          if (child.hasAttribute('data-retro-slot')) {
+            return;
+          }
+          content.appendChild(child.cloneNode(true));
+        });
+      }
     });
 
     // Assemble the DOM
