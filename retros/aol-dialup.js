@@ -18,19 +18,19 @@
 
   // Connection sequence steps with realistic timing
   var CONNECTION_STEPS = [
-    { panel: 0, status: 'Initializing modem...', duration: 800 },
-    { panel: 0, status: 'Detecting COM port...', duration: 600 },
-    { panel: 0, status: 'Dialing 1-800-AOL-1234...', duration: 1500, modem: true },
-    { panel: 0, status: 'Establishing connection...', duration: 1200, modem: true },
-    { panel: 0, status: function() { return 'Connected at ' + randomFrom(MODEM_SPEEDS) + ' Kbps'; }, duration: 400, complete: true },
-    { panel: 1, status: 'Sending username...', duration: 600 },
-    { panel: 1, status: 'Verifying password...', duration: 900 },
-    { panel: 1, status: 'Authenticating...', duration: 700 },
-    { panel: 1, status: 'Authentication successful', duration: 400, complete: true },
-    { panel: 2, status: 'Connecting to AOL network...', duration: 800 },
-    { panel: 2, status: 'Checking for new mail...', duration: 600 },
-    { panel: 2, status: 'Loading your profile...', duration: 500 },
-    { panel: 2, status: 'Welcome to AOL!', duration: 400, complete: true }
+    { panel: 0, status: 'Initializing modem...', duration: 500 },
+    { panel: 0, status: 'Detecting COM port...', duration: 400 },
+    { panel: 0, status: 'Dialing 1-800-AOL-1234...', duration: 900, modem: true },
+    { panel: 0, status: 'Establishing connection...', duration: 700, modem: true },
+    { panel: 0, status: function() { return 'Connected at ' + randomFrom(MODEM_SPEEDS) + ' Kbps'; }, duration: 300, complete: true },
+    { panel: 1, status: 'Sending username...', duration: 400 },
+    { panel: 1, status: 'Verifying password...', duration: 500 },
+    { panel: 1, status: 'Authenticating...', duration: 400 },
+    { panel: 1, status: 'Authentication successful', duration: 300, complete: true },
+    { panel: 2, status: 'Connecting to AOL network...', duration: 500 },
+    { panel: 2, status: 'Checking for new mail...', duration: 400 },
+    { panel: 2, status: 'Loading your profile...', duration: 300 },
+    { panel: 2, status: 'Welcome to AOL!', duration: 300, complete: true }
   ];
 
   var currentStep = 0;
@@ -175,8 +175,8 @@
     var continueBtn = overlay.querySelector('.aol-btn-continue');
     continueBtn.addEventListener('click', hideOverlay);
 
-    // Auto-continue after 2 seconds
-    setTimeout(hideOverlay, 2000);
+    // Auto-continue after 1.5 seconds
+    setTimeout(hideOverlay, 1500);
   }
 
   function hideOverlay() {

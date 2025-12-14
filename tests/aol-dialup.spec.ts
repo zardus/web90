@@ -70,9 +70,9 @@ test.describe('AOL Dialup Retro', () => {
   test('aol-dialup shows success screen after sequence completes', async ({ page }) => {
     await page.goto('/test.html?retros=aol-dialup');
 
-    // Wait for success screen (connection sequence takes ~10s)
+    // Wait for success screen (connection sequence takes ~6s)
     const successScreen = page.locator('.aol-success.visible');
-    await expect(successScreen).toBeVisible({ timeout: 15000 });
+    await expect(successScreen).toBeVisible({ timeout: 10000 });
 
     // Check for "You've Got Mail!" message
     const successText = page.locator('.aol-success-subtext');
@@ -82,12 +82,12 @@ test.describe('AOL Dialup Retro', () => {
   test('aol-dialup overlay fades out after completion', async ({ page }) => {
     await page.goto('/test.html?retros=aol-dialup');
 
-    // Wait for overlay to fade out (sequence + 2s auto-continue + 0.5s fade)
+    // Wait for overlay to fade out (sequence + 1.5s auto-continue + 0.5s fade)
     const overlay = page.locator('#aol-dialup-overlay');
     await expect(overlay).toBeVisible({ timeout: 5000 });
 
     // Eventually should be removed from DOM
-    await expect(overlay).toBeHidden({ timeout: 20000 });
+    await expect(overlay).toBeHidden({ timeout: 12000 });
   });
 
   test('aol-dialup loads without JavaScript errors', async ({ page }) => {
