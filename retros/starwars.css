@@ -171,6 +171,17 @@ body.retheme-starwars main {
   color: #fff !important;
 }
 
+.starwars-content nav {
+  font-size: 1.3em;
+  margin: 1em 0 2em 0;
+  text-align: center;
+}
+
+.starwars-content nav a {
+  margin: 0 0.5em;
+  display: inline-block;
+}
+
 .starwars-content img {
   max-width: 100%;
   height: auto;
@@ -251,8 +262,8 @@ body.retheme-starwars { scrollbar-width: none; -ms-overflow-style: none; }
 
 /* Hide theme-irrelevant elements */
 body.retheme-starwars [data-retro-slot],
-body.retheme-starwars nav,
-body.retheme-starwars footer {
+body.retheme-starwars footer,
+body.retheme-starwars > nav {
   display: none !important;
 }
 

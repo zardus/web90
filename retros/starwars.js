@@ -48,6 +48,12 @@
       return;
     }
 
+    // Clone nav elements first (if they exist)
+    var navElements = document.querySelectorAll('nav');
+    navElements.forEach(function(nav) {
+      content.appendChild(nav.cloneNode(true));
+    });
+
     // Clone the content into our container
     // Use cloneNode to avoid issues with moving nodes
     var children = Array.prototype.slice.call(main.children);
@@ -85,6 +91,8 @@
 
     console.log('[StarWars] Setup - contentHeight:', contentHeight, 'startOffset:', startOffset, 'endOffset:', endOffset);
     var animating = false;
+    var autoScrolling = false;
+    var userHasInteracted = false;
 
     function updateCrawl() {
       content.style.setProperty('--crawl-y', currentY + 'px');
@@ -119,26 +127,44 @@
 
     // ===== AUTO-SCROLL ON LOAD =====
     // After a brief delay, scroll in at constant speed like Star Wars
+    // Continue until user interacts or content ends
     setTimeout(function() {
-      var introTarget = -viewportHeight * 0.25;
       var speed = 0.8;  // Pixels per frame (constant speed)
+      autoScrolling = true;
 
-      function introAnimate() {
-        if (currentY > introTarget) {
-          currentY -= speed;
-          if (currentY < introTarget) currentY = introTarget;
-          updateCrawl();
-          requestAnimationFrame(introAnimate);
-        } else {
+      function autoScrollAnimate() {
+        // Stop if user has interacted
+        if (userHasInteracted) {
+          autoScrolling = false;
           targetY = currentY;  // Sync targetY for manual scrolling
+          console.log('[StarWars] Auto-scroll stopped by user interaction');
+          return;
+        }
+
+        // Continue scrolling until we reach the end
+        if (currentY > endOffset) {
+          currentY -= speed;
+          if (currentY < endOffset) currentY = endOffset;
+          updateCrawl();
+          requestAnimationFrame(autoScrollAnimate);
+        } else {
+          // Reached the end
+          autoScrolling = false;
+          targetY = currentY;
+          console.log('[StarWars] Auto-scroll completed - reached end of content');
         }
       }
-      introAnimate();
+      autoScrollAnimate();
     }, 500);
 
     // ===== WHEEL SCROLL =====
     function onWheel(e) {
       e.preventDefault();
+
+      // Stop auto-scroll on first interaction
+      if (!userHasInteracted) {
+        userHasInteracted = true;
+      }
 
       // Scroll down (positive deltaY) = move content UP (negative Y) = into distance
       targetY -= e.deltaY * SCROLL_SPEED;
@@ -153,6 +179,11 @@
     function onTouchStart(e) {
       touchStartY = e.touches[0].clientY;
       touchLastY = touchStartY;
+
+      // Stop auto-scroll on first interaction
+      if (!userHasInteracted) {
+        userHasInteracted = true;
+      }
     }
 
     function onTouchMove(e) {
@@ -190,11 +221,19 @@
           break;
         case 'Home':
           e.preventDefault();
+          // Stop auto-scroll on first interaction
+          if (!userHasInteracted) {
+            userHasInteracted = true;
+          }
           targetY = startOffset;
           startAnimation();
           return;
         case 'End':
           e.preventDefault();
+          // Stop auto-scroll on first interaction
+          if (!userHasInteracted) {
+            userHasInteracted = true;
+          }
           targetY = endOffset;
           startAnimation();
           return;
@@ -203,6 +242,10 @@
       }
 
       e.preventDefault();
+      // Stop auto-scroll on first interaction
+      if (!userHasInteracted) {
+        userHasInteracted = true;
+      }
       targetY += delta;
       clampTarget();
       startAnimation();
