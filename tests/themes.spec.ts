@@ -261,6 +261,75 @@ test.describe('Themes', () => {
       const crawlElements = page.locator('.crawl, [class*="starwars"], [class*="crawl"]');
       expect(await crawlElements.count()).toBeGreaterThanOrEqual(1);
     });
+
+    test('auto-scrolls continuously', async ({ page }) => {
+      await page.goto('/test.html?theme=starwars');
+      await page.waitForSelector('.starwars-content', { timeout: 5000 });
+
+      // Get initial position after load
+      await page.waitForTimeout(1000);
+      const initialY = await page.evaluate(() => {
+        const content = document.querySelector('.starwars-content') as HTMLElement;
+        return content ? parseFloat(getComputedStyle(content).getPropertyValue('--crawl-y')) : null;
+      });
+
+      // Wait and check position changed (scrolled)
+      await page.waitForTimeout(2000);
+      const afterY = await page.evaluate(() => {
+        const content = document.querySelector('.starwars-content') as HTMLElement;
+        return content ? parseFloat(getComputedStyle(content).getPropertyValue('--crawl-y')) : null;
+      });
+
+      expect(initialY).not.toBeNull();
+      expect(afterY).not.toBeNull();
+      expect(afterY).toBeLessThan(initialY!); // Should be scrolling up (decreasing Y)
+    });
+
+    test('stops auto-scroll on user wheel interaction', async ({ page }) => {
+      await page.goto('/test.html?theme=starwars');
+      await page.waitForSelector('.starwars-content', { timeout: 5000 });
+
+      // Wait for auto-scroll to start
+      await page.waitForTimeout(1000);
+
+      // Trigger wheel event to stop auto-scroll
+      await page.mouse.wheel(0, 100);
+      await page.waitForTimeout(100);
+
+      // Get position after wheel
+      const positionAfterWheel = await page.evaluate(() => {
+        const content = document.querySelector('.starwars-content') as HTMLElement;
+        return content ? parseFloat(getComputedStyle(content).getPropertyValue('--crawl-y')) : null;
+      });
+
+      // Wait a bit more and check position stayed the same (or changed only due to user scroll)
+      await page.waitForTimeout(1000);
+      const positionAfterWait = await page.evaluate(() => {
+        const content = document.querySelector('.starwars-content') as HTMLElement;
+        return content ? parseFloat(getComputedStyle(content).getPropertyValue('--crawl-y')) : null;
+      });
+
+      // Position should be stable or close to where user left it (not auto-scrolling)
+      // Allow small difference due to smoothing
+      expect(Math.abs(positionAfterWait! - positionAfterWheel!)).toBeLessThan(5);
+    });
+
+    test('includes nav elements in crawl', async ({ page }) => {
+      await page.goto('/test.html?theme=starwars');
+      await page.waitForSelector('.starwars-content', { timeout: 5000 });
+
+      // Check that nav is cloned into the crawl content
+      const navInCrawl = page.locator('.starwars-content nav');
+      expect(await navInCrawl.count()).toBeGreaterThan(0);
+
+      // Check that nav links are preserved
+      const navLinks = navInCrawl.locator('a');
+      expect(await navLinks.count()).toBeGreaterThan(0);
+      
+      // Verify at least one link has the expected text
+      const homeLink = navLinks.filter({ hasText: 'Home' });
+      expect(await homeLink.count()).toBeGreaterThan(0);
+    });
   });
 
   test.describe('Cascade Virus Theme', () => {
