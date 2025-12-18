@@ -634,6 +634,43 @@ body.toolbar-infected {
   transition: margin-top 0.5s ease-out;
 }
 
+/* Toolbar Action Popups */
+.toolbar-action-popup {
+  animation: toolbar-popup-appear 0.3s ease-out;
+}
+
+@keyframes toolbar-popup-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+.toolbar-action-popup .window {
+  min-width: 280px;
+  max-width: 400px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.toolbar-action-popup .window-body button {
+  cursor: pointer;
+  padding: 4px 12px;
+  font-family: 'Tahoma', 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
+}
+
+.toolbar-action-popup .window-body button:hover {
+  background: #e0e0e0;
+}
+
+.toolbar-action-popup .window-body button:active {
+  border-style: inset;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .toolbar-content {
