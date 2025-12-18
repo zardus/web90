@@ -392,11 +392,11 @@
   function showGatorDeals() {
     var deals = [
       { item: 'FREE iPod Nano!!!', price: 'CLICK HERE', icon: '🎵' },
-      { item: 'Viagra - 90% OFF', price: '$9.99', icon: '💊' },
       { item: 'FREE Ringtones!', price: 'Download Now', icon: '📱' },
       { item: 'You Won $1,000,000!', price: 'Claim Prize', icon: '💰' },
-      { item: 'Hot Singles Near You', price: 'Meet Now', icon: '❤️' },
-      { item: 'Work From Home $$$', price: '$500/day', icon: '🏠' }
+      { item: 'Work From Home $$$', price: '$500/day', icon: '🏠' },
+      { item: 'Win a FREE Cruise!', price: 'Enter Now', icon: '🚢' },
+      { item: 'Lose Weight FAST!', price: 'Try Now', icon: '⚖️' }
     ];
 
     var deal = deals[Math.floor(Math.random() * deals.length)];
