@@ -396,7 +396,7 @@
       { item: 'You Won $1,000,000!', price: 'Claim Prize', icon: '💰' },
       { item: 'Work From Home $$$', price: '$500/day', icon: '🏠' },
       { item: 'Win a FREE Cruise!', price: 'Enter Now', icon: '🚢' },
-      { item: 'Lose Weight FAST!', price: 'Try Now', icon: '⚖️' }
+      { item: 'Get Rich Quick!', price: 'Easy Money', icon: '💸' }
     ];
 
     var deal = deals[Math.floor(Math.random() * deals.length)];
