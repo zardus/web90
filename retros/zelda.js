@@ -45,15 +45,20 @@
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.matchMedia('(hover: none)').matches;
   }
 
-  // Tile types
+  // Tile types - using CSS classes for colors instead of emojis for base tiles
   const TILES = {
-    GRASS: { emoji: '🌿', walkable: true },
-    TREE: { emoji: '🌲', walkable: false },
-    FLOWER: { emoji: '🌸', walkable: true },
-    ROCK: { emoji: '🪨', walkable: false },
-    WATER: { emoji: '🌊', walkable: false },
-    PATH: { emoji: '🟫', walkable: true },
-    SAND: { emoji: '🟨', walkable: true }
+    GRASS: { emoji: '', walkable: true, cssClass: 'tile-grass' },
+    TREE: { emoji: '🌲', walkable: false, cssClass: 'tile-tree' },
+    FLOWER: { emoji: '🌸', walkable: true, cssClass: 'tile-flower' },
+    ROCK: { emoji: '🪨', walkable: false, cssClass: 'tile-rock' },
+    WATER: { emoji: '🌊', walkable: false, cssClass: 'tile-water' },
+    PATH: { emoji: '', walkable: true, cssClass: 'tile-path' },
+    SAND: { emoji: '', walkable: true, cssClass: 'tile-sand' },
+    WALL: { emoji: '', walkable: false, cssClass: 'tile-wall' },
+    ROOF: { emoji: '', walkable: false, cssClass: 'tile-roof' },
+    FLOOR: { emoji: '', walkable: true, cssClass: 'tile-floor' },
+    FENCE: { emoji: '', walkable: false, cssClass: 'tile-fence' },
+    WELL: { emoji: '⛲', walkable: false, cssClass: 'tile-well' }
   };
 
   // ============================================
@@ -63,7 +68,7 @@
   const DEFAULT_CONFIG = {
     title: 'Zelda Mode',
     playerEmoji: '🧝',
-    playerStart: { x: 12, y: 9 },
+    playerStart: { x: 12, y: 11 },
     mapWidth: 25,
     mapHeight: 18,
     exitUrl: '/?retros=none',
@@ -73,19 +78,55 @@
         emoji: '🧙',
         name: 'The Guide',
         x: 12,
-        y: 5,
+        y: 8,
         dialog: null // Will be generated dynamically based on device type
       }
     ],
     doors: [
       {
         id: 'exit',
-        emoji: '🏠',
+        emoji: '🚪',
         label: 'Exit',
         url: null, // Will use exitUrl
         x: 12,
-        y: 15,
+        y: 4,
         description: 'Exit Zelda Mode'
+      },
+      {
+        id: 'shop',
+        emoji: '🏪',
+        label: 'Shop',
+        url: null,
+        x: 5,
+        y: 6,
+        description: 'Visit the shop'
+      },
+      {
+        id: 'inn',
+        emoji: '🏨',
+        label: 'Inn',
+        url: null,
+        x: 19,
+        y: 6,
+        description: 'Rest at the inn'
+      },
+      {
+        id: 'library',
+        emoji: '📚',
+        label: 'Library',
+        url: null,
+        x: 5,
+        y: 14,
+        description: 'Browse the archives'
+      },
+      {
+        id: 'blacksmith',
+        emoji: '⚒️',
+        label: 'Smithy',
+        url: null,
+        x: 19,
+        y: 14,
+        description: 'Visit the blacksmith'
       }
     ],
     decorations: []
@@ -164,6 +205,27 @@
   // Map Generation
   // ============================================
 
+  // Helper to draw a building on the map
+  function drawBuilding(startX, startY, width, height, doorX) {
+    // Roof (top row)
+    for (let x = startX; x < startX + width; x++) {
+      gameMap[startY][x] = 'ROOF';
+    }
+    // Walls (middle rows)
+    for (let y = startY + 1; y < startY + height; y++) {
+      for (let x = startX; x < startX + width; x++) {
+        if (y === startY + height - 1 && x === doorX) {
+          // Door position - leave as path for door placement
+          gameMap[y][x] = 'PATH';
+        } else if (x === startX || x === startX + width - 1) {
+          gameMap[y][x] = 'WALL';
+        } else {
+          gameMap[y][x] = 'WALL';
+        }
+      }
+    }
+  }
+
   function generateMap() {
     const { mapWidth, mapHeight, npcs, doors, decorations } = config;
 
@@ -176,7 +238,7 @@
       }
     }
 
-    // Border with trees
+    // Border with trees (forest edge)
     for (let x = 0; x < mapWidth; x++) {
       gameMap[0][x] = 'TREE';
       gameMap[mapHeight - 1][x] = 'TREE';
@@ -185,47 +247,106 @@
       gameMap[y][0] = 'TREE';
       gameMap[y][mapWidth - 1] = 'TREE';
     }
-
-    // Create paths (crossroads layout)
-    const midY = Math.floor(mapHeight / 2);
-    const midX = Math.floor(mapWidth / 2);
-
-    // Horizontal main path
-    for (let x = 1; x < mapWidth - 1; x++) {
-      gameMap[midY][x] = 'PATH';
+    // Extra trees for depth
+    for (let x = 2; x < mapWidth - 2; x += 3) {
+      if (gameMap[1]) gameMap[1][x] = 'TREE';
+      if (gameMap[mapHeight - 2]) gameMap[mapHeight - 2][x] = 'TREE';
     }
-    // Vertical main path
-    for (let y = 1; y < mapHeight - 1; y++) {
+
+    // === VILLAGE LAYOUT ===
+    const midX = Math.floor(mapWidth / 2);
+    const midY = Math.floor(mapHeight / 2);
+
+    // Main village square (central plaza)
+    for (let y = midY - 2; y <= midY + 2; y++) {
+      for (let x = midX - 3; x <= midX + 3; x++) {
+        if (y > 0 && y < mapHeight - 1 && x > 0 && x < mapWidth - 1) {
+          gameMap[y][x] = 'PATH';
+        }
+      }
+    }
+
+    // Central well/fountain
+    gameMap[midY][midX] = 'WELL';
+
+    // Main paths leading out from plaza
+    // North path
+    for (let y = 2; y < midY - 2; y++) {
       gameMap[y][midX] = 'PATH';
     }
+    // South path
+    for (let y = midY + 3; y < mapHeight - 2; y++) {
+      gameMap[y][midX] = 'PATH';
+    }
+    // West path
+    for (let x = 2; x < midX - 3; x++) {
+      gameMap[midY][x] = 'PATH';
+    }
+    // East path
+    for (let x = midX + 4; x < mapWidth - 2; x++) {
+      gameMap[midY][x] = 'PATH';
+    }
 
-    // Add some default decorative elements
-    const defaultDecorations = [
-      // Corners
-      { x: 2, y: 2, type: 'FLOWER' },
-      { x: mapWidth - 3, y: 2, type: 'FLOWER' },
-      { x: 2, y: mapHeight - 3, type: 'FLOWER' },
-      { x: mapWidth - 3, y: mapHeight - 3, type: 'FLOWER' },
-      // Some rocks and trees
-      { x: 3, y: 3, type: 'ROCK' },
-      { x: mapWidth - 4, y: 3, type: 'ROCK' },
-      { x: 3, y: mapHeight - 4, type: 'ROCK' },
-      { x: mapWidth - 4, y: mapHeight - 4, type: 'ROCK' },
-      // Water features
-      { x: Math.floor(mapWidth / 3), y: midY - 2, type: 'WATER' },
-      { x: Math.floor(mapWidth / 3), y: midY - 1, type: 'WATER' },
-      { x: Math.floor(mapWidth / 3), y: midY + 1, type: 'WATER' },
-      { x: Math.floor(mapWidth / 3), y: midY + 2, type: 'WATER' },
-      { x: Math.floor(2 * mapWidth / 3), y: midY - 2, type: 'WATER' },
-      { x: Math.floor(2 * mapWidth / 3), y: midY - 1, type: 'WATER' },
-      { x: Math.floor(2 * mapWidth / 3), y: midY + 1, type: 'WATER' },
-      { x: Math.floor(2 * mapWidth / 3), y: midY + 2, type: 'WATER' }
+    // === BUILDINGS ===
+    // North building (main hall/exit) - centered at top
+    drawBuilding(midX - 2, 2, 5, 3, midX);
+
+    // West buildings
+    // Shop (northwest)
+    drawBuilding(3, 4, 4, 3, 5);
+    // Library (southwest)
+    drawBuilding(3, 12, 4, 3, 5);
+
+    // East buildings
+    // Inn (northeast)
+    drawBuilding(17, 4, 4, 3, 19);
+    // Blacksmith (southeast)
+    drawBuilding(17, 12, 4, 3, 19);
+
+    // Side paths to buildings
+    // Path to shop
+    for (let x = 5; x < midX - 3; x++) {
+      gameMap[6][x] = 'PATH';
+    }
+    // Path to inn
+    for (let x = midX + 4; x < 19; x++) {
+      gameMap[6][x] = 'PATH';
+    }
+    // Path to library
+    for (let x = 5; x < midX - 3; x++) {
+      gameMap[14][x] = 'PATH';
+    }
+    // Path to smithy
+    for (let x = midX + 4; x < 19; x++) {
+      gameMap[14][x] = 'PATH';
+    }
+
+    // Decorative elements
+    // Flowers around the plaza
+    const flowerSpots = [
+      { x: midX - 4, y: midY - 1 },
+      { x: midX - 4, y: midY + 1 },
+      { x: midX + 4, y: midY - 1 },
+      { x: midX + 4, y: midY + 1 },
+      { x: midX - 2, y: midY + 3 },
+      { x: midX + 2, y: midY + 3 },
     ];
+    flowerSpots.forEach(({ x, y }) => {
+      if (gameMap[y] && gameMap[y][x] === 'GRASS') {
+        gameMap[y][x] = 'FLOWER';
+      }
+    });
 
-    // Apply default decorations
-    defaultDecorations.forEach(({ x, y, type }) => {
-      if (x > 0 && x < mapWidth - 1 && y > 0 && y < mapHeight - 1) {
-        if (TILES[type]) gameMap[y][x] = type;
+    // Some rocks for decoration
+    const rockSpots = [
+      { x: 2, y: 9 },
+      { x: mapWidth - 3, y: 9 },
+      { x: 8, y: 3 },
+      { x: 16, y: 3 },
+    ];
+    rockSpots.forEach(({ x, y }) => {
+      if (gameMap[y] && gameMap[y][x] === 'GRASS') {
+        gameMap[y][x] = 'ROCK';
       }
     });
 
@@ -251,10 +372,11 @@
       doorMap[door.id] = door;
     });
 
-    // Mark interactable positions as walkable paths (if not already)
+    // Ensure door/NPC positions are on walkable path
     interactables.forEach(item => {
       if (item.y > 0 && item.y < mapHeight - 1 && item.x > 0 && item.x < mapWidth - 1) {
-        if (gameMap[item.y][item.x] === 'TREE') {
+        // Don't overwrite buildings, but ensure doors have path in front
+        if (gameMap[item.y][item.x] === 'GRASS' || gameMap[item.y][item.x] === 'TREE') {
           gameMap[item.y][item.x] = 'PATH';
         }
       }
@@ -308,11 +430,17 @@
     for (let y = 0; y < config.mapHeight; y++) {
       html += '<div class="zelda-row">';
       for (let x = 0; x < config.mapWidth; x++) {
-        const tile = TILES[gameMap[y][x]];
+        const tileType = gameMap[y][x];
+        const tile = TILES[tileType];
         const interactable = interactables.find(i => i.x === x && i.y === y);
 
-        let cellContent = tile.emoji;
+        let cellContent = tile.emoji || '';
         let cellClass = 'zelda-cell';
+
+        // Add tile-specific CSS class
+        if (tile.cssClass) {
+          cellClass += ' ' + tile.cssClass;
+        }
 
         if (interactable) {
           if (interactable.type === 'npc') {
@@ -348,12 +476,26 @@
         const interactable = interactables.find(i => i.x === x && i.y === y);
         const isPlayer = (x === Math.round(player.x) && y === Math.round(player.y));
 
-        let color = '#228b22'; // grass
-        if (gameMap[y][x] === 'TREE') color = '#006400';
-        else if (gameMap[y][x] === 'PATH') color = '#8b4513';
-        else if (gameMap[y][x] === 'WATER') color = '#4169e1';
-        else if (gameMap[y][x] === 'ROCK') color = '#696969';
-        else if (gameMap[y][x] === 'FLOWER') color = '#ff69b4';
+        let color = '#228b22'; // grass default
+        const tileType = gameMap[y][x];
+
+        // Map tile types to minimap colors
+        const tileColors = {
+          'GRASS': '#228b22',
+          'TREE': '#006400',
+          'PATH': '#c4a35a',
+          'SAND': '#daa520',
+          'WATER': '#4169e1',
+          'ROCK': '#696969',
+          'FLOWER': '#ff69b4',
+          'WALL': '#8b7355',
+          'ROOF': '#8b0000',
+          'FLOOR': '#deb887',
+          'FENCE': '#8b4513',
+          'WELL': '#4682b4'
+        };
+
+        color = tileColors[tileType] || color;
 
         if (interactable) {
           color = interactable.type === 'npc' ? '#ffd700' : '#ff4500';
@@ -400,31 +542,45 @@
     checkNearbyInteractables();
   }
 
+  // Get nearby interactable with improved detection
+  // Uses distance-based check to be more forgiving
+  function findNearbyInteractable(interactionRange = 1.5) {
+    const playerCenterX = player.x + 0.5;
+    const playerCenterY = player.y + 0.5;
+
+    let closest = null;
+    let closestDist = Infinity;
+
+    for (const interactable of interactables) {
+      // Center of the interactable tile
+      const ix = interactable.x + 0.5;
+      const iy = interactable.y + 0.5;
+
+      const dist = Math.sqrt((playerCenterX - ix) ** 2 + (playerCenterY - iy) ** 2);
+
+      if (dist < interactionRange && dist < closestDist) {
+        closestDist = dist;
+        closest = interactable;
+      }
+    }
+
+    return closest;
+  }
+
   function checkNearbyInteractables() {
     const infoEl = gameContainer.querySelector('.zelda-hint');
-    const px = Math.round(player.x);
-    const py = Math.round(player.y);
-
-    const adjacent = [
-      { x: px, y: py - 1 },
-      { x: px, y: py + 1 },
-      { x: px - 1, y: py },
-      { x: px + 1, y: py }
-    ];
-
     const actionKey = isTouchDevice() ? 'A' : 'SPACE';
 
-    for (const pos of adjacent) {
-      const interactable = interactables.find(i => i.x === pos.x && i.y === pos.y);
-      if (interactable) {
-        if (interactable.type === 'npc') {
-          infoEl.textContent = `Talk to ${npcMap[interactable.id].name} (${actionKey})`;
-        } else if (interactable.type === 'door') {
-          const door = doorMap[interactable.id];
-          infoEl.textContent = `Enter ${door.label}: ${door.description} (${actionKey})`;
-        }
-        return;
+    const nearby = findNearbyInteractable(1.8);
+
+    if (nearby) {
+      if (nearby.type === 'npc') {
+        infoEl.textContent = `Talk to ${npcMap[nearby.id].name} (${actionKey})`;
+      } else if (nearby.type === 'door') {
+        const door = doorMap[nearby.id];
+        infoEl.textContent = `Enter ${door.label}: ${door.description} (${actionKey})`;
       }
+      return;
     }
 
     infoEl.textContent = isTouchDevice() ? 'Use D-pad to move, A to interact!' : 'Walk up to characters and doors!';
@@ -483,33 +639,14 @@
       return;
     }
 
-    const px = Math.round(player.x);
-    const py = Math.round(player.y);
+    // Use improved distance-based detection
+    const interactable = findNearbyInteractable(1.8);
 
-    const facingPos = {
-      up: { x: px, y: py - 1 },
-      down: { x: px, y: py + 1 },
-      left: { x: px - 1, y: py },
-      right: { x: px + 1, y: py }
-    }[player.direction];
-
-    const adjacent = [
-      facingPos,
-      { x: px, y: py - 1 },
-      { x: px, y: py + 1 },
-      { x: px - 1, y: py },
-      { x: px + 1, y: py }
-    ];
-
-    for (const pos of adjacent) {
-      const interactable = interactables.find(i => i.x === pos.x && i.y === pos.y);
-      if (interactable) {
-        if (interactable.type === 'npc') {
-          startDialog(interactable.id);
-        } else if (interactable.type === 'door') {
-          enterDoor(interactable.id);
-        }
-        return;
+    if (interactable) {
+      if (interactable.type === 'npc') {
+        startDialog(interactable.id);
+      } else if (interactable.type === 'door') {
+        enterDoor(interactable.id);
       }
     }
   }
