@@ -229,16 +229,17 @@
 .zelda-touch-controls {
   display: none;
   position: absolute;
-  bottom: 90px;
+  bottom: 100px;
   left: 0;
   right: 0;
-  padding: 10px;
+  padding: 15px 20px;
   justify-content: space-between;
   align-items: flex-end;
   pointer-events: none;
+  z-index: 300;
 }
 
-@media (max-width: 768px), (hover: none) {
+@media (max-width: 768px), (hover: none), (pointer: coarse) {
   .zelda-touch-controls {
     display: flex;
   }
@@ -246,74 +247,89 @@
   .zelda-controls {
     display: none;
   }
+
+  /* Give more room for touch controls */
+  .zelda-hud {
+    padding-bottom: 10px;
+  }
 }
 
 .zelda-dpad {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   pointer-events: auto;
 }
 
 .zelda-dpad button {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 215, 0, 0.8);
-  border: 2px solid #8b4513;
-  border-radius: 8px;
-  font-size: 16px;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 215, 0, 0.9);
+  border: 3px solid #8b4513;
+  border-radius: 10px;
+  font-size: 20px;
   font-weight: bold;
   color: #1a1a2e;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
   touch-action: manipulation;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .zelda-dpad button:active {
   background: #ffd700;
-  transform: scale(0.95);
+  transform: scale(0.92);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.dpad-up { top: 0; left: 40px; }
-.dpad-down { bottom: 0; left: 40px; }
-.dpad-left { top: 40px; left: 0; }
-.dpad-right { top: 40px; right: 0; }
+.dpad-up { top: 0; left: 46px; }
+.dpad-down { bottom: 0; left: 46px; }
+.dpad-left { top: 46px; left: 0; }
+.dpad-right { top: 46px; right: 0; }
 
 .zelda-action-buttons {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 12px;
   pointer-events: auto;
 }
 
 .action-btn {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
-  border: 3px solid;
+  border: 4px solid;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
   touch-action: manipulation;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
 }
 
 .action-btn[data-action="interact"] {
-  background: #32cd32;
+  background: linear-gradient(180deg, #4ade4a 0%, #32cd32 100%);
   border-color: #228b22;
   color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .action-btn[data-action="exit"] {
-  background: #dc143c;
+  background: linear-gradient(180deg, #ff4545 0%, #dc143c 100%);
   border-color: #8b0000;
   color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .action-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.88);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================
@@ -346,7 +362,7 @@
   .zelda-dialog {
     width: 95%;
     padding: 12px;
-    bottom: 150px;
+    bottom: 260px; /* Above touch controls */
   }
 
   .zelda-dialog-text {
@@ -365,6 +381,77 @@
 
   .zelda-hint {
     font-size: 8px;
+  }
+
+  /* Adjust touch controls for smaller screens */
+  .zelda-touch-controls {
+    bottom: 90px;
+    padding: 10px 15px;
+  }
+
+  .zelda-dpad {
+    width: 120px;
+    height: 120px;
+  }
+
+  .zelda-dpad button {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+
+  .dpad-up { left: 39px; }
+  .dpad-down { left: 39px; }
+  .dpad-left { top: 39px; }
+  .dpad-right { top: 39px; }
+
+  .action-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 18px;
+  }
+}
+
+/* Even smaller screens */
+@media (max-width: 380px) {
+  .zelda-title {
+    font-size: 8px;
+  }
+
+  .zelda-dialog {
+    bottom: 240px;
+    padding: 10px;
+  }
+
+  .zelda-dialog-name {
+    font-size: 10px;
+  }
+
+  .zelda-dialog-text {
+    font-size: 9px;
+    line-height: 1.6;
+  }
+
+  .zelda-dpad {
+    width: 100px;
+    height: 100px;
+  }
+
+  .zelda-dpad button {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .dpad-up { left: 32px; }
+  .dpad-down { left: 32px; }
+  .dpad-left { top: 32px; }
+  .dpad-right { top: 32px; }
+
+  .action-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 16px;
   }
 }
 

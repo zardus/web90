@@ -26,6 +26,7 @@
  * };
  *
  * Controls: Arrow keys / WASD to move, Space/Enter to interact, ESC to exit
+ * Mobile: On-screen D-pad and action buttons
  */
 
 (function() {
@@ -38,6 +39,11 @@
   const TILE_SIZE = 32;
   const PLAYER_SPEED = 4;
   const ANIMATION_FRAME_DURATION = 150;
+
+  // Touch device detection
+  function isTouchDevice() {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.matchMedia('(hover: none)').matches;
+  }
 
   // Tile types
   const TILES = {
@@ -68,13 +74,7 @@
         name: 'The Guide',
         x: 12,
         y: 5,
-        dialog: [
-          'Welcome to Zelda Mode!',
-          'Walk around with Arrow Keys or WASD.',
-          'Press SPACE to interact with characters and doors.',
-          'Press ESC to exit.',
-          'Configure this theme via WEB90_CONFIG.zelda!'
-        ]
+        dialog: null // Will be generated dynamically based on device type
       }
     ],
     doors: [
@@ -95,9 +95,38 @@
   // Configuration Loading
   // ============================================
 
+  // Generate device-appropriate default dialog for the guide NPC
+  function getDefaultGuideDialog() {
+    if (isTouchDevice()) {
+      return [
+        'Welcome to Zelda Mode!',
+        'Use the D-pad to walk around.',
+        'Tap A to interact with characters and doors.',
+        'Tap ✕ to exit.',
+        'Configure this theme via WEB90_CONFIG.zelda!'
+      ];
+    }
+    return [
+      'Welcome to Zelda Mode!',
+      'Walk around with Arrow Keys or WASD.',
+      'Press SPACE to interact with characters and doors.',
+      'Press ESC to exit.',
+      'Configure this theme via WEB90_CONFIG.zelda!'
+    ];
+  }
+
   function getConfig() {
     const web90Config = window.WEB90_CONFIG || {};
     const zeldaConfig = web90Config.zelda || {};
+
+    // Get NPCs, filling in null dialogs with defaults
+    let npcs = zeldaConfig.npcs || DEFAULT_CONFIG.npcs;
+    npcs = npcs.map(npc => {
+      if (npc.id === 'guide' && npc.dialog === null) {
+        return { ...npc, dialog: getDefaultGuideDialog() };
+      }
+      return npc;
+    });
 
     // Merge with defaults
     return {
@@ -107,7 +136,7 @@
       mapWidth: zeldaConfig.mapWidth || DEFAULT_CONFIG.mapWidth,
       mapHeight: zeldaConfig.mapHeight || DEFAULT_CONFIG.mapHeight,
       exitUrl: zeldaConfig.exitUrl || DEFAULT_CONFIG.exitUrl,
-      npcs: zeldaConfig.npcs || DEFAULT_CONFIG.npcs,
+      npcs: npcs,
       doors: zeldaConfig.doors || DEFAULT_CONFIG.doors,
       decorations: zeldaConfig.decorations || DEFAULT_CONFIG.decorations
     };
@@ -254,7 +283,7 @@
       <div class="zelda-dialog" style="display: none;">
         <div class="zelda-dialog-name"></div>
         <div class="zelda-dialog-text"></div>
-        <div class="zelda-dialog-hint">Press SPACE to continue</div>
+        <div class="zelda-dialog-hint">${isTouchDevice() ? 'Tap A to continue' : 'Press SPACE to continue'}</div>
       </div>
       <div class="zelda-hud">
         <div class="zelda-minimap"></div>
@@ -383,20 +412,22 @@
       { x: px + 1, y: py }
     ];
 
+    const actionKey = isTouchDevice() ? 'A' : 'SPACE';
+
     for (const pos of adjacent) {
       const interactable = interactables.find(i => i.x === pos.x && i.y === pos.y);
       if (interactable) {
         if (interactable.type === 'npc') {
-          infoEl.textContent = `Talk to ${npcMap[interactable.id].name} (SPACE)`;
+          infoEl.textContent = `Talk to ${npcMap[interactable.id].name} (${actionKey})`;
         } else if (interactable.type === 'door') {
           const door = doorMap[interactable.id];
-          infoEl.textContent = `Enter ${door.label}: ${door.description} (SPACE)`;
+          infoEl.textContent = `Enter ${door.label}: ${door.description} (${actionKey})`;
         }
         return;
       }
     }
 
-    infoEl.textContent = 'Walk up to characters and doors!';
+    infoEl.textContent = isTouchDevice() ? 'Use D-pad to move, A to interact!' : 'Walk up to characters and doors!';
   }
 
   // ============================================
@@ -588,41 +619,67 @@
     touchZone.className = 'zelda-touch-controls';
     touchZone.innerHTML = `
       <div class="zelda-dpad">
-        <button class="dpad-up" data-dir="up">^</button>
-        <button class="dpad-left" data-dir="left"><</button>
-        <button class="dpad-right" data-dir="right">></button>
-        <button class="dpad-down" data-dir="down">v</button>
+        <button class="dpad-up" data-dir="up">▲</button>
+        <button class="dpad-left" data-dir="left">◀</button>
+        <button class="dpad-right" data-dir="right">▶</button>
+        <button class="dpad-down" data-dir="down">▼</button>
       </div>
       <div class="zelda-action-buttons">
         <button class="action-btn" data-action="interact">A</button>
-        <button class="action-btn" data-action="exit">X</button>
+        <button class="action-btn" data-action="exit">✕</button>
       </div>
     `;
 
     gameContainer.appendChild(touchZone);
 
+    const keyMap = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
+
     touchZone.querySelectorAll('.dpad-up, .dpad-down, .dpad-left, .dpad-right').forEach(btn => {
       const dir = btn.dataset.dir;
 
-      const startMove = () => {
-        const keyMap = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
+      const startMove = (e) => {
+        if (e) e.preventDefault();
         keys[keyMap[dir]] = true;
       };
 
-      const stopMove = () => {
-        const keyMap = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
+      const stopMove = (e) => {
+        if (e) e.preventDefault();
         keys[keyMap[dir]] = false;
       };
 
-      btn.addEventListener('touchstart', (e) => { e.preventDefault(); startMove(); });
-      btn.addEventListener('touchend', (e) => { e.preventDefault(); stopMove(); });
+      // Touch events with passive: false to allow preventDefault
+      btn.addEventListener('touchstart', startMove, { passive: false });
+      btn.addEventListener('touchend', stopMove, { passive: false });
+      btn.addEventListener('touchcancel', stopMove, { passive: false });
+
+      // Mouse fallback for desktop testing
       btn.addEventListener('mousedown', startMove);
       btn.addEventListener('mouseup', stopMove);
       btn.addEventListener('mouseleave', stopMove);
     });
 
-    touchZone.querySelector('[data-action="interact"]').addEventListener('click', interact);
-    touchZone.querySelector('[data-action="exit"]').addEventListener('click', exitZeldaMode);
+    // Action buttons - use touchstart for immediate response
+    const interactBtn = touchZone.querySelector('[data-action="interact"]');
+    const exitBtn = touchZone.querySelector('[data-action="exit"]');
+
+    interactBtn.addEventListener('touchstart', (e) => { e.preventDefault(); interact(); }, { passive: false });
+    interactBtn.addEventListener('click', interact);
+
+    exitBtn.addEventListener('touchstart', (e) => { e.preventDefault(); exitZeldaMode(); }, { passive: false });
+    exitBtn.addEventListener('click', exitZeldaMode);
+
+    // Clear all keys when touch ends anywhere (safety net)
+    document.addEventListener('touchend', () => {
+      // Small delay to let button-specific handlers run first
+      setTimeout(() => {
+        const activeTouch = document.querySelector('.dpad-up:active, .dpad-down:active, .dpad-left:active, .dpad-right:active');
+        if (!activeTouch) {
+          Object.keys(keyMap).forEach(dir => {
+            keys[keyMap[dir]] = false;
+          });
+        }
+      }, 50);
+    }, { passive: true });
   }
 
   // ============================================
