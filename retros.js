@@ -310,7 +310,8 @@
     { name: 'win98', type: 'theme', emoji: '🖥️', label: 'Windows 98', resources: { js: 'win98.js', css: 'win98.css' } },
     { name: 'macos-classic', type: 'theme', emoji: '🍎', label: 'Mac OS Classic', resources: { js: 'macos-classic.js', css: 'macos-classic.css' } },
     { name: 'dos', type: 'theme', emoji: '💾', label: 'MS-DOS', resources: { js: 'dos.js', css: 'dos.css' } },
-    { name: 'comic-sans', type: 'theme', emoji: '🤪', label: 'Comic Sans Mode', init: initThemeComicSans }
+    { name: 'comic-sans', type: 'theme', emoji: '🤪', label: 'Comic Sans Mode', init: initThemeComicSans },
+    { name: 'zelda', type: 'theme', emoji: '🗡️', label: 'Zelda Mode', resources: { js: 'zelda.js', css: 'zelda.css' } }
   ];
 
   // Derived arrays
