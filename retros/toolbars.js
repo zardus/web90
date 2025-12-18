@@ -472,7 +472,7 @@
     var subjects = [
       'FW: FW: FW: HILARIOUS!!1!',
       'You have been selected!!!',
-      'Important message from a Nigerian Prince',
+      'Urgent: Claim your prize now!',
       'RE: That thing we discussed',
       'FREE AOL HOURS - ACT NOW',
       'Your horoscope for today'
